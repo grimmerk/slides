@@ -6,6 +6,7 @@ import {
   useSlidePageNumber,
 } from '@open-slide/core';
 import { type CSSProperties, type ReactNode, useEffect, useRef } from 'react';
+import matchapackQr from './assets/matchapack-qr.svg';
 import qr from './assets/memsaga-qr.svg';
 import syncSequence from './assets/sync-sequence-light.png';
 
@@ -362,8 +363,33 @@ const Extra = ({ name, line, status }: { name: string; line: string; status: str
 
 const OneMoreThing: Page = () => (
   <Content eyebrow="One more thing" heading="Two more side projects">
-    <div style={{ marginTop: 64 }}>
-      <Extra name="matchapack" line="npm ci with copy-on-write clones: ten git worktrees for about the disk of one." status="coming soon" />
+    <div style={{ display: 'flex', gap: 80, marginTop: 56 }}>
+      <div style={{ flex: 1 }}>
+        <Extra
+          name="matchapack"
+          line="Ten git worktrees, the disk space of one: copy-on-write node_modules for npm and Yarn 1."
+          status="released 2026-11-24 · github.com/grimmerk/matchapack"
+        />
+        <div style={{ fontSize: 30, color: muted, marginTop: -28, marginBottom: 28 }}>
+          10 worktrees of a large project: 20.68 GiB with plain npm → 61 MiB, plus one 1.82 GiB store
+        </div>
+        <div
+          style={{
+            fontFamily: mono,
+            fontSize: 30,
+            background: panel,
+            border: `1px solid ${rule}`,
+            borderRadius: 'var(--osd-radius)',
+            padding: '18px 28px',
+            display: 'inline-block',
+          }}
+        >
+          brew install grimmerk/tap/matchapack
+        </div>
+      </div>
+      <img src={matchapackQr} alt="QR code for github.com/grimmerk/matchapack" style={{ width: 300, height: 300, marginTop: 8, imageRendering: 'pixelated' }} />
+    </div>
+    <div style={{ marginTop: 52 }}>
       <Extra name="CodeV" line="Several Claude Code accounts on one Mac, sharing one CLAUDE.md, skills and memory." status="github.com/grimmerk/codev · macOS" />
     </div>
   </Content>
@@ -409,7 +435,8 @@ My second Mac is a backup machine; restoring it was one clone. And if I fix a me
 Testing on the backup Mac found a real bug: a file missing on one machine looked like a deletion. Fixed.
 Someone asked about API keys; since 0.1.5 a file that looks like it holds a secret is held back.`,
   `~10s. memsaga.grimmer.io — free and open source. Scan the code, or brew install.`,
-  `~15s, Taipei only, drop if over time. Two more side projects: matchapack (coming soon) and CodeV.`,
+  `~15s, Taipei only, drop if over time. matchapack went public yesterday: ten git worktrees for the disk space of one — scan the code.
+And CodeV, if you run more than one Claude Code account on a Mac.`,
   `Appendix, for questions only.`,
   `Appendix, for questions only.`,
 ];
