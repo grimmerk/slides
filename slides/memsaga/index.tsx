@@ -291,9 +291,9 @@ const Numbers: Page = () => (
   <Content eyebrow="Two months of my own data" heading="What actually happened">
     <div style={{ fontSize: 34, color: muted, marginTop: 48 }}>Different sessions that changed…</div>
     <div style={{ display: 'grid', gridTemplateColumns: '500px 500px 500px', columnGap: 70, marginTop: 16 }}>
-      <Stat n="25" label="my CLAUDE.md" narrow />
-      <Stat n="57" label="my skills" narrow />
-      <Stat n="136" label="my memory files" narrow />
+      <Stat n="25" label="CLAUDE.md" narrow />
+      <Stat n="57" label="skills" narrow />
+      <Stat n="136" label="memory files" narrow />
     </div>
     <div style={{ display: 'grid', gridTemplateColumns: '760px 760px', columnGap: 120, marginTop: 56 }}>
       <Stat n="~90" label="files Claude deleted while tidying up, all recoverable" />
