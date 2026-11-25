@@ -232,7 +232,10 @@ const HowItWorks: Page = () => (
       <Line>{'Agent: main'}</Line>
       <Line color="var(--osd-text)" bold>{'Session-Title: weekly memory tidy-up'}</Line>
     </div>
-    <p style={{ fontSize: 28, color: muted, margin: '32px 0 0' }}>
+    <p style={{ fontSize: 34, margin: '30px 0 0' }}>
+      It keeps history; it does not take over. Your files stay where they are.
+    </p>
+    <p style={{ fontSize: 26, color: muted, margin: '10px 0 0' }}>
       Claude Code hooks · one Rust binary · <A href={URL_FAQ_SPEED}>about 5 ms for most tool calls</A> · a private Git repository you own
     </p>
   </Content>
@@ -282,7 +285,7 @@ const Answers: Page = () => (
     {/* Opt-in clip: set src to the recorded clip A (assets/clip-provenance.mp4) when it exists. */}
     <Clip src={undefined} width={1440} height={420} fallback={<ProvenanceFlow />} />
     <p style={{ fontSize: 32, lineHeight: 1.45, margin: '30px 0 0' }}>
-      It had, and said so in its reply. My rule since: skills and memory, Claude edits and tells me; CLAUDE.md waits for my yes.
+      I just asked Claude, and it looked this up in the history itself. It had added the rule, and said so in its reply. My rule since: skills and memory, Claude edits and tells me; CLAUDE.md waits for my yes.
     </p>
     <div style={{ fontSize: 28, color: muted, fontWeight: 600, margin: '34px 0 10px' }}>Other questions the history answered, for me and for other sessions:</div>
     <ul style={{ fontSize: 30, lineHeight: 1.4, margin: 0, paddingLeft: 40 }}>
@@ -534,10 +537,10 @@ const NeedIt: Page = () => (
   </Content>
 );
 
-const RepoBox = ({ title, sub, lines, strong }: { title: string; sub: string; lines: string[]; strong?: boolean }) => (
+const RepoBox = ({ title, sub, lines, strong, width = 700 }: { title: string; sub: string; lines: string[]; strong?: boolean; width?: number }) => (
   <div
     style={{
-      width: 700,
+      width,
       boxSizing: 'border-box',
       padding: '28px 32px',
       borderRadius: 'var(--osd-radius)',
@@ -553,28 +556,44 @@ const RepoBox = ({ title, sub, lines, strong }: { title: string; sub: string; li
 
 const Companion: Page = () => (
   <Content eyebrow="Appendix · Companion docs" heading="Notes beside a repository, never committed to it" headingSize={60}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 28, marginTop: 48 }}>
+    {/* Mirrors the "Companion docs" section of memsaga.grimmer.io. */}
+    <div style={{ display: 'flex', alignItems: 'center', gap: 28, marginTop: 40 }}>
       <RepoBox
-        title="A repository you can't commit to"
-        sub="say, your employer's"
-        lines={['webapp/', '  docs/design.md']}
+        title="~/git/webapp"
+        sub="the project · not yours to commit to"
+        lines={['docs/', '  architecture.md', '  review-process.md', 'README.md']}
+        width={560}
       />
       <div style={{ textAlign: 'center', width: 180 }}>
         <div style={{ fontSize: 48, color: muted }}>→</div>
-        <div style={{ fontSize: 24, color: muted }}>“translate this”, “keep a note on it”</div>
+        <div style={{ fontSize: 24, color: muted }}>same path, plus the language</div>
       </div>
       <RepoBox
-        title="Your memsaga data repository"
-        sub="versioned and synced with your memory"
-        lines={['companion/webapp/', '  docs/design.zh-tw.md', '    sources: docs/design.md @ a1b2c3d', '    status: draft']}
+        title="companion/webapp"
+        sub="in your data repository"
+        lines={['_notes/', '  pr-2107-review.md      note', 'docs/', '  architecture.zh-tw.md  translation', '  new-design.zh-tw.md    draft, no source yet']}
         strong
+        width={880}
       />
     </div>
-    <ul style={{ fontSize: 30, lineHeight: 1.45, margin: '40px 0 0', paddingLeft: 40 }}>
-      <li>Same path as the source, so a later session finds it before translating again.</li>
-      <li>The source file and commit are recorded, so you can tell when it is out of date.</li>
-      <li><Code>memsaga companions</Code> lists them; a note about the whole repository goes in <Code>_notes/</Code>.</li>
-    </ul>
+    <div
+      style={{
+        marginTop: 28,
+        fontFamily: mono,
+        fontSize: 22,
+        lineHeight: 1.5,
+        whiteSpace: 'pre',
+        background: '#1f1d1a',
+        color: '#f1ede4',
+        borderRadius: 'var(--osd-radius)',
+        padding: '16px 24px',
+      }}
+    >
+      {'/companions webapp\nstable  webapp/_notes/pr-2107-review.md    ~ docs/review-process.md, acme/webapp#2107\nstable  webapp/docs/architecture.zh-tw.md  <- ~/git/webapp/docs/architecture.md\ndraft   webapp/docs/new-design.zh-tw.md    (no source yet)'}
+    </div>
+    <p style={{ fontSize: 26, color: muted, margin: '20px 0 0', lineHeight: 1.45 }}>
+      Ask in your own words (中文版, 日本語版, a note on this repo). Before translating, Claude checks for an existing companion, so the next session builds on the last.
+    </p>
   </Content>
 );
 
@@ -689,14 +708,15 @@ export const notes: (string | undefined)[] = [
 It edits all three by itself, and none of it has history. What did it change, when, in which session? I couldn't tell,
 so I rarely let it touch a skill, and never asked it to clean up its memory.`,
   `~30s. memsaga hooks into Claude Code. At the end of every turn that changed something, it commits,
-and the commit carries the session's title and ID. One small Rust binary, about 5 ms for most tool calls. The repository is yours.
+and the commit carries the session's title and ID. It keeps history; it does not take over: your files stay where they are,
+and Claude works as before. One small Rust binary, about 5 ms for most tool calls. The repository is yours.
 (If asked: Account is the label of the config folder, ~/.claude -> claude, ~/.claude-work -> claude-work.
 Agent is main, or a subagent's name when a subagent made the edit.
 A commit holds every change since the last one, including a hand edit or another parallel session's edit;
 it is named after the session whose turn ended. The conversation tells you who actually made it.)`,
   `~55s. Now I can answer page 2's questions. A real case: I found a rule in my CLAUDE.md and asked, did you add this on your own?
 git blame gives the commit, the commit names the session, claude --resume reopens it.
-It had, and it had said so in its reply. Since then: skills and memory, Claude edits and tells me; CLAUDE.md waits for my yes.
+I didn't run these myself: I asked Claude, and it looked it up in the history. It had added the rule, and had said so in its reply. Since then: skills and memory, Claude edits and tells me; CLAUDE.md waits for my yes.
 The other questions: which version of a skill was loaded, what another session just changed, where a file went.
 I run many sessions in parallel; the log is how they, and I, see each other's edits. Some I asked; some a session checked on its own.
 (If asked: the session reopens only while Claude Code keeps the transcript, 30 days by default; memsaga does not copy transcripts.)`,
