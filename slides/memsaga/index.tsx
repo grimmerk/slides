@@ -172,7 +172,9 @@ const Cover: Page = () => (
     <p style={{ fontSize: 30, color: muted, margin: '64px 0 0', fontFamily: mono }}>
       Grimmer Kang · Tech Lead, Fireflies.ai · <A href={URL_ME}>github.com/grimmerk</A>
     </p>
-    <p style={{ fontSize: 26, color: muted, margin: '14px 0 0' }}>memsaga is a personal open-source project.</p>
+    <p style={{ fontSize: 26, color: muted, margin: '14px 0 0' }}>
+      memsaga is a personal open-source project: <A href={URL_SITE}>memsaga.grimmer.io</A>
+    </p>
   </div>
 );
 
