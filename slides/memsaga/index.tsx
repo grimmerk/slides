@@ -176,25 +176,27 @@ const Cover: Page = () => (
   </div>
 );
 
-const Term = ({ name, body }: { name: string; body: string }) => (
+// A role first, the file's name second: the cover already names the three files.
+const Role = ({ role, name, body }: { role: string; name: string; body: string }) => (
   <div style={{ flex: 1, background: panel, border: `1px solid ${rule}`, borderRadius: 'var(--osd-radius)', padding: '26px 30px' }}>
-    <div style={{ fontSize: 36, fontWeight: 800, fontFamily: mono }}>{name}</div>
-    <div style={{ fontSize: 28, color: muted, marginTop: 12, lineHeight: 1.4 }}>{body}</div>
+    <div style={{ fontSize: 34, fontWeight: 800 }}>{role}</div>
+    <div style={{ fontSize: 28, fontFamily: mono, color: 'var(--osd-accent)', marginTop: 8 }}>{name}</div>
+    <div style={{ fontSize: 26, color: muted, marginTop: 10, lineHeight: 1.4 }}>{body}</div>
   </div>
 );
 
 const Problem: Page = () => (
   <Content eyebrow="The problem" heading="Claude edits these files by itself, every day">
     <div style={{ display: 'flex', gap: 32, marginTop: 48 }}>
-      <Term name="CLAUDE.md" body="Instructions Claude reads at the start of every session." />
-      <Term name="auto memory" body="Notes Claude writes for itself as it works, or when you ask it to remember." />
-      <Term name="skills" body="Folders of instructions Claude loads when a task needs them." />
+      <Role role="Its standing instructions" name="CLAUDE.md" body="Read at the start of every session." />
+      <Role role="What it remembers" name="auto memory" body="Notes it writes as it works, or when you ask it to remember." />
+      <Role role="How it does a task" name="skills" body="Instructions it loads when a task needs them." />
     </div>
     <p style={{ fontSize: 46, lineHeight: 1.35, margin: '56px 0 0' }}>
       What did it change? When? <span style={{ color: 'var(--osd-accent)' }}>In which session?</span>
     </p>
     <p style={{ fontSize: 34, lineHeight: 1.5, color: muted, margin: '28px 0 0', maxWidth: 1560 }}>
-      I couldn't tell. So I let Claude change a skill only now and then, and never asked it to clean up its memory: I was afraid it would break something I couldn't undo.
+      I couldn't tell, so I rarely let Claude touch a skill, and never asked it to clean up its memory.
     </p>
   </Content>
 );
@@ -240,7 +242,7 @@ const FlowBox = ({ label, body, accent }: { label: string; body: ReactNode; acce
   <div
     style={{
       width: 350,
-      height: 236,
+      height: 214,
       boxSizing: 'border-box',
       padding: '26px 28px',
       borderRadius: 'var(--osd-radius)',
@@ -256,7 +258,7 @@ const FlowBox = ({ label, body, accent }: { label: string; body: ReactNode; acce
 const Arrow = () => <div style={{ fontSize: 44, color: muted, alignSelf: 'center' }}>→</div>;
 
 const ProvenanceFlow = () => (
-  <div style={{ display: 'flex', gap: 18, marginTop: 56 }}>
+  <div style={{ display: 'flex', gap: 18, marginTop: 36 }}>
     <FlowBox label="A rule in CLAUDE.md" body="“Run the tests before every push.”" />
     <Arrow />
     <FlowBox label="git blame" body="a1b2c3d, Tue 14:02" />
@@ -267,16 +269,27 @@ const ProvenanceFlow = () => (
   </div>
 );
 
-const Provenance: Page = () => (
-  <Content eyebrow="Who changed this, and why?" heading="“Did you add this rule on your own?”">
+const Question = ({ q, note }: { q: string; note: string }) => (
+  <li style={{ marginBottom: 12 }}>
+    <span style={{ fontWeight: 700 }}>{q}</span>
+    <span style={{ color: muted }}> — {note}</span>
+  </li>
+);
+
+// The answer to page 2's three questions: one worked example, then the other questions history answered.
+const Answers: Page = () => (
+  <Content eyebrow="Now I can tell" heading="“Did you add this rule on your own?”" headingSize={64}>
     {/* Opt-in clip: set src to the recorded clip A (assets/clip-provenance.mp4) when it exists. */}
-    <Clip src={undefined} width={1440} height={560} fallback={<ProvenanceFlow />} />
-    <p style={{ fontSize: 36, lineHeight: 1.45, margin: '52px 0 0' }}>
-      It had, and said so in its reply. That answer helped me set my rule: Claude edits skills and memory on its own and tells me; a change to CLAUDE.md waits for my yes.
+    <Clip src={undefined} width={1440} height={420} fallback={<ProvenanceFlow />} />
+    <p style={{ fontSize: 32, lineHeight: 1.45, margin: '30px 0 0' }}>
+      It had, and said so in its reply. My rule since: skills and memory, Claude edits and tells me; CLAUDE.md waits for my yes.
     </p>
-    <p style={{ fontSize: 26, color: muted, margin: '24px 0 0' }}>
-      The session reopens while Claude Code still keeps its transcript (30 days by default, <span style={{ fontFamily: mono }}>cleanupPeriodDays</span>). memsaga never copies transcripts.
-    </p>
+    <div style={{ fontSize: 28, color: muted, fontWeight: 600, margin: '34px 0 10px' }}>Other questions the history answered, for me and for other sessions:</div>
+    <ul style={{ fontSize: 30, lineHeight: 1.4, margin: 0, paddingLeft: 40 }}>
+      <Question q="“Which version of the skill did you load?”" note="last night's" />
+      <Question q="“What did the other session just change?”" note="a shared skill, earlier that day" />
+      <Question q="“Where did this file go?”" note="git log showed the new path, and the session that moved it" />
+    </ul>
   </Content>
 );
 
@@ -294,28 +307,9 @@ const Numbers: Page = () => (
       <Stat n="57" label="sessions changed skills" narrow />
       <Stat n="136" label="sessions changed memory" narrow />
     </div>
-    <div style={{ display: 'grid', gridTemplateColumns: '760px 760px', columnGap: 120, marginTop: 56 }}>
-      <Stat n="~90" label="files Claude deleted while tidying up, all recoverable" />
-      <Stat n="~12" label="times I asked “who changed this, and why?”" accent />
+    <div style={{ marginTop: 64 }}>
+      <Stat n="~12" label="times “who changed this, and why?” was answered from the history" accent wide />
     </div>
-  </Content>
-);
-
-const Question = ({ q, note }: { q: string; note: string }) => (
-  <li style={{ marginBottom: 34 }}>
-    <span style={{ fontWeight: 700 }}>{q}</span>
-    <span style={{ color: muted }}> — {note}</span>
-  </li>
-);
-
-const Questions: Page = () => (
-  <Content eyebrow="Questions the history answered" heading={<>Every session sees what the others changed,<br />and what it changed itself</>} headingSize={60}>
-    <ul style={{ fontSize: 'var(--osd-size-body)', lineHeight: 1.4, margin: '64px 0 0', paddingLeft: 44 }}>
-      <Question q="“Did you add this rule on your own?”" note="yes, and it said so" />
-      <Question q="“Which version of the skill did you load?”" note="last night's" />
-      <Question q="“What did the other session just change?”" note="a shared skill, earlier that day" />
-      <Question q="“Where did this file go?”" note="git log showed the new path, and the session that moved it" />
-    </ul>
   </Content>
 );
 
@@ -370,15 +364,10 @@ const Lessons: Page = () => (
   <Content eyebrow="What I learned" heading="Rollback is a seatbelt">
     <ul style={{ fontSize: 'var(--osd-size-body)', lineHeight: 1.35, margin: '52px 0 0', paddingLeft: 44, maxWidth: 1600 }}>
       <Lesson head="Undo is what makes a cleanup safe.">
-        Because every change can come back, I let Claude reorganize its memory: about 90 files deleted along the way. <Code>memsaga restore &lt;file&gt; --at &lt;commit&gt;</Code> shows the diff first, then brings it back.
+        Now I let Claude reorganize its memory: about 90 files deleted so far, every one recoverable with <Code>memsaga restore &lt;file&gt; --at &lt;commit&gt;</Code>.
       </Lesson>
-      <Lesson head="The two real rollbacks undid the tool's own sync bugs.">
-        Oct 22: a restore test on my backup Mac deleted a file on my main Mac; brought back, <A href={URL_BUG}>fixed in v0.1.1</A>.
-        <br />
-        Nov 24: the backup Mac committed stale copies of 77 files over newer ones; one revert, <A href={URL_V016}>fixed in 0.1.6</A>.
-      </Lesson>
-      <Lesson head="Rehearse a restore while nothing is at stake.">
-        My first rehearsal, on the backup Mac, found that first bug: better then than on the day I need my files back.
+      <Lesson head="The tool made mistakes too; history undid them.">
+        Twice a sync bug in memsaga itself damaged files; each was one undo, and both are fixed (<A href={URL_BUG}>v0.1.1</A>, <A href={URL_V016}>0.1.6</A>). The first showed up while I rehearsed a restore on a backup Mac: rehearse yours before you need it.
       </Lesson>
     </ul>
   </Content>
@@ -692,38 +681,33 @@ const SyncDetail: Page = () => (
 export const notes: (string | undefined)[] = [
   `~10s. Hi, I'm Grimmer. Five minutes on giving Claude Code's files a Git history.
 (Taipei: you just wrote your first Mod — it has no history either.)`,
-  `~35s. Three kinds of files: CLAUDE.md, auto memory, skills. Claude edits all three by itself.
-None of it has history. After a while I couldn't tell what it had remembered or when it changed,
-so I let it touch a skill only now and then, and never asked it to clean up its memory.`,
+  `~35s. Claude keeps three kinds of files: its standing instructions, what it remembers, how it does tasks.
+It edits all three by itself, and none of it has history. What did it change, when, in which session? I couldn't tell,
+so I rarely let it touch a skill, and never asked it to clean up its memory.`,
   `~30s. memsaga hooks into Claude Code. At the end of every turn that changed something, it commits,
 and the commit carries the session's title and ID. One small Rust binary, about 5 ms for most tool calls. The repository is yours.
 (If asked: Account is the label of the config folder, ~/.claude -> claude, ~/.claude-work -> claude-work.
 Agent is main, or a subagent's name when a subagent made the edit.
 A commit holds every change since the last one, including a hand edit or another parallel session's edit;
 it is named after the session whose turn ended. The conversation tells you who actually made it.)`,
-  `~50s. A real case. I found a rule in my CLAUDE.md and asked: did you add this on your own?
-git blame gives the commit, the commit gives the session, claude --resume reopens it.
-It had added the rule by itself, and said so in the same reply. That is when I set my rule:
-skills and memory, Claude may change and report; CLAUDE.md, it proposes and waits for my yes.
-The session can be reopened only while Claude Code keeps the transcript; memsaga does not copy transcripts.`,
-  `~25s. I measured my own data before this talk, since late September.
-25 different sessions changed my CLAUDE.md, 57 changed my skills, 136 changed my memory. Nobody can follow that from memory.
+  `~55s. Now I can answer page 2's questions. A real case: I found a rule in my CLAUDE.md and asked, did you add this on your own?
+git blame gives the commit, the commit names the session, claude --resume reopens it.
+It had, and it had said so in its reply. Since then: skills and memory, Claude edits and tells me; CLAUDE.md waits for my yes.
+The other questions: which version of a skill was loaded, what another session just changed, where a file went.
+I run many sessions in parallel; the log is how they, and I, see each other's edits. Some I asked; some a session checked on its own.
+(If asked: the session reopens only while Claude Code keeps the transcript, 30 days by default; memsaga does not copy transcripts.)`,
+  `~20s. My own data since late September: 25 different sessions changed my CLAUDE.md, 57 my skills, 136 my memory.
+Nobody can follow that from memory. About a dozen times, the history answered "who changed this, and why?".
 (If asked about volume: 57 commits on a typical day, 460 on the busiest, all from live sessions. You don't read them;
-you search them when a question comes up, with git log -S or git blame.)
-Claude deleted about 90 files while tidying up, every one recoverable.
-And about a dozen times I asked: who changed this, and why?`,
-  `~20s. These are the questions. I run many sessions in parallel, and they edit the same files.
-The Git log shows a session what the others changed, and what it changed itself, without digging through transcripts.
-Some of these I asked; some a session found by checking the history on its own.`,
-  `~25s. Everything is pushed to a private GitHub repository: an off-site backup I can browse anywhere
-(I even pinned it to my Dock). My second Mac is a backup machine: clone, memsaga restore --all, and it had everything.
+you search them when a question comes up, with git log -S or git blame.)`,
+  `~25s, skip if over time. Everything is pushed to a private GitHub repository: an off-site backup I can browse anywhere
+(I pinned it to my Dock). My second Mac is a backup machine: clone, memsaga restore --all, and it had everything.
 An edit on my phone, in the GitHub editor, comes back to the live file.`,
-  `~30s. Rollback is a seatbelt: undo is what makes a cleanup safe. I let Claude reorganize memory.
-The only two real rollbacks so far undid memsaga's own sync bugs.
-Oct 22: a restore test on the backup Mac deleted a file on my main Mac; brought back with memsaga restore, fixed in v0.1.1.
-Nov 24: a sync on the backup Mac was cut off half-way, and the next commit put stale copies of 77 files over newer ones;
-the commit named the session, one revert, fixed in 0.1.6 (released last night).
-Lesson: test a restore before you need it. (Fukuoka: drop the "77".)`,
+  `~35s. Rollback is a seatbelt. Undo is what makes a cleanup safe: now I let Claude reorganize its memory, about 90 files deleted, all recoverable.
+The tool made mistakes too: the only two real rollbacks so far undid memsaga's own sync bugs, and both are fixed.
+(Details if asked: Oct 22, a restore rehearsal on the backup Mac deleted a file on my main Mac, brought back with memsaga restore, fixed in v0.1.1.
+Nov 24, a sync on the backup Mac was cut off half-way and the next commit put stale copies of 77 files over newer ones;
+one revert, fixed in 0.1.6, released last night.) Rehearse a restore before you need it.`,
   `~10s. memsaga.grimmer.io — free and open source. A reader asked about API keys, so since 0.1.5 a file that looks like one is held back.
 If you only use one account on one computer, the README compares memsaga with a do-it-yourself setup.`,
   `~15s, Taipei only, drop if over time. matchapack went public yesterday: extra git worktrees cost almost no disk.
@@ -747,9 +731,8 @@ export default [
   Cover,
   Problem,
   HowItWorks,
-  Provenance,
+  Answers,
   Numbers,
-  Questions,
   NotJustThisMachine,
   Lessons,
   Links,
