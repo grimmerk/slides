@@ -294,6 +294,7 @@ const Answers: Page = () => (
       <Question q="“Which version of the skill did you load?”" note="last night's" />
       <Question q="“What did the other session just change?”" note="a shared skill, earlier that day" />
       <Question q="“Where did this file go?”" note="git log showed the new path, and the session that moved it" />
+      <Question q="“Which session added this to-do?”" note="the commit names it; reopen it for the why" />
     </ul>
   </Content>
 );
@@ -352,8 +353,11 @@ const NotJustThisMachine: Page = () => (
   <Content eyebrow="Not just this machine" heading="Off-site backup, readable anywhere">
     {/* Opt-in clip: assets/sync-demo.mp4 is memsaga's recorded two-way sync demo. */}
     <Clip src={undefined} width={1440} height={560} fallback={<SyncDiagram />} />
-    <p style={{ fontSize: 'var(--osd-size-body)', color: muted, margin: '64px 0 0' }}>
+    <p style={{ fontSize: 36, color: muted, margin: '56px 0 0', lineHeight: 1.45 }}>
       Setting up my backup Mac: clone the repository, run <span style={{ fontFamily: mono }}>memsaga restore --all</span>, and its CLAUDE.md, skills and memory were back.
+    </p>
+    <p style={{ fontSize: 36, margin: '24px 0 0', lineHeight: 1.45 }}>
+      Not only memory: my drafts folder, my PR/to-do board and the Mod I wrote live in the same repository.
     </p>
   </Content>
 );
@@ -785,7 +789,8 @@ it is named after the session whose turn ended. The conversation tells you who a
   `~55s. Now I can answer page 2's questions. A real case: I found a rule in my CLAUDE.md and asked, did you add this on your own?
 git blame gives the commit, the commit names the session, claude --resume reopens it.
 I didn't run these myself: I asked Claude, and it looked it up in the history. It had added the rule, and had said so in its reply. Since then: skills and memory, Claude edits and tells me; CLAUDE.md waits for my yes.
-The other questions: which version of a skill was loaded, what another session just changed, where a file went.
+The other questions: which version of a skill was loaded, what another session just changed, where a file went,
+and which session added a to-do on the PR board Claude keeps for me (the item says what; the session says why).
 I run many sessions in parallel; the log is how they, and I, see each other's edits. Some I asked; some a session checked on its own.
 (If asked: the session reopens only while Claude Code keeps the transcript, 30 days by default; memsaga does not copy transcripts.)`,
   `~20s. My own data since late September: 25 different sessions changed my CLAUDE.md, 57 my skills, 136 my memory.
@@ -794,7 +799,9 @@ Nobody can follow that from memory. About a dozen times, the history answered "w
 you search them when a question comes up, with git log -S or git blame.)`,
   `~25s, skip if over time. Everything is pushed to a private GitHub repository: an off-site backup I can browse anywhere
 (I pinned it to my Dock). My second Mac is a backup machine: clone, memsaga restore --all, and it had everything.
-An edit on my phone, in the GitHub editor, comes back to the live file.`,
+An edit on my phone, in the GitHub editor, comes back to the live file.
+Not only memory: my drafts folder, my PR/to-do board (50 sessions edited it) and the Mod I wrote are in the same repository.
+(Taipei: the Mod you wrote today can go in too, by adding ~/.claude/mods to memsaga's dirs.)`,
   `~35s. Rollback is a seatbelt. Undo is what makes a cleanup safe: now I let Claude reorganize its memory, about 90 files deleted, all recoverable.
 The tool made mistakes too: the only two real rollbacks so far undid memsaga's own sync bugs, and both are fixed.
 (Details if asked: Oct 22, a restore rehearsal on the backup Mac deleted a file on my main Mac, brought back with memsaga restore, fixed in v0.1.1.
