@@ -5,7 +5,7 @@ import {
   useIsActivePage,
   useSlidePageNumber,
 } from '@open-slide/core';
-import { type CSSProperties, type ReactNode, useEffect, useRef } from 'react';
+import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
 import matchapackQr from './assets/matchapack-qr.svg';
 import qr from './assets/memsaga-qr.svg';
 
@@ -376,6 +376,74 @@ const Lessons: Page = () => (
   </Content>
 );
 
+const INSTALL_PROMPT =
+  'Install memsaga for me. Follow\nhttps://raw.githubusercontent.com/grimmerk/memsaga/main/INSTALL-WITH-CLAUDE.md\nand ask me before each step that changes my machine.';
+
+// A code block with a GitHub-style copy button in its top-right corner. A <button> is exempt from
+// open-slide's click-to-navigate, so clicking it in present mode copies without turning the page.
+const CopyBlock = ({ text }: { text: string }) => {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard?.writeText(text).then(
+      () => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+      },
+      () => {},
+    );
+  };
+  return (
+    <div
+      style={{
+        position: 'relative',
+        fontFamily: mono,
+        fontSize: 23,
+        lineHeight: 1.5,
+        background: panel,
+        border: `1px solid ${rule}`,
+        borderRadius: 'var(--osd-radius)',
+        padding: '20px 72px 20px 28px',
+        whiteSpace: 'pre',
+      }}
+    >
+      {text}
+      <button
+        type="button"
+        onClick={copy}
+        aria-label={copied ? 'Copied' : 'Copy'}
+        title={copied ? 'Copied' : 'Copy'}
+        style={{
+          position: 'absolute',
+          top: 12,
+          right: 12,
+          width: 44,
+          height: 44,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'var(--osd-bg)',
+          border: `1px solid ${rule}`,
+          borderRadius: 8,
+          color: copied ? teal : muted,
+          cursor: 'pointer',
+          padding: 0,
+        }}
+      >
+        {copied ? (
+          <svg width="22" height="22" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 0 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z" />
+          </svg>
+        ) : (
+          <svg width="22" height="22" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z" />
+            <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z" />
+          </svg>
+        )}
+      </button>
+    </div>
+  );
+};
+
 const Links: Page = () => (
   <div style={{ ...fill, padding: `120px ${PAD}px 0`, display: 'flex', gap: 80 }}>
     <div style={{ flex: 1 }}>
@@ -384,20 +452,7 @@ const Links: Page = () => (
         <A href={URL_SITE}>memsaga.grimmer.io</A>
       </Heading>
       <div style={{ fontSize: 28, color: muted, fontWeight: 600, margin: '40px 0 10px' }}>Paste into Claude Code (it asks before each step):</div>
-      <div
-        style={{
-          fontFamily: mono,
-          fontSize: 23,
-          lineHeight: 1.5,
-          background: panel,
-          border: `1px solid ${rule}`,
-          borderRadius: 'var(--osd-radius)',
-          padding: '20px 28px',
-          whiteSpace: 'pre',
-        }}
-      >
-        {'Install memsaga for me. Follow\nhttps://raw.githubusercontent.com/grimmerk/memsaga/main/INSTALL-WITH-CLAUDE.md\nand ask me before each step that changes my machine.'}
-      </div>
+      <CopyBlock text={INSTALL_PROMPT} />
       <div style={{ fontSize: 28, color: muted, margin: '20px 0 0' }}>
         Or by hand: <Code>brew install grimmerk/tap/memsaga</Code>, then the <A href={URL_INSTALL}>Quick start</A>.
       </div>
