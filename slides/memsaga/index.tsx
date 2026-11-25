@@ -509,21 +509,30 @@ const Cell = ({ children, head }: { children: ReactNode; head?: boolean }) => (
   </div>
 );
 
-// From memsaga's code (check_remote): the same check at three moments; only how old an answer may be, and whether Claude Code waits, differ.
+// From memsaga 0.1.6's code (sync.rs: on_session_start, on_prompt, checked_tool), checked by the memsaga session on 2026-11-26.
+// Two kinds of wait: the GitHub check (about 0.5 s), and a pull (fetch + merge + write) when a change is already known to be waiting.
 const CheckTable = () => (
-  <div style={{ display: 'grid', gridTemplateColumns: '440px 540px 660px', fontSize: 26, border: `1px solid ${rule}`, borderRadius: 'var(--osd-radius)', overflow: 'hidden', width: 1640 }}>
+  <div style={{ display: 'grid', gridTemplateColumns: '400px 260px 420px 560px', fontSize: 24, border: `1px solid ${rule}`, borderRadius: 'var(--osd-radius)', overflow: 'hidden', width: 1640 }}>
     <Cell head>When</Cell>
-    <Cell head>Re-check if the answer is older than</Cell>
-    <Cell head>Does Claude Code wait?</Cell>
+    <Cell head>Reuses an answer up to</Cell>
+    <Cell head>Waits for the GitHub check?</Cell>
+    <Cell head>If a change is already waiting</Cell>
     <Cell>A session starts</Cell>
     <Cell>60 s</Cell>
     <Cell>Yes, about 0.5 s</Cell>
-    <Cell>Before Claude writes a file memsaga keeps</Cell>
+    <Cell>Pulls every waiting file now (waits)</Cell>
+    <Cell>Each prompt</Cell>
+    <Cell>60 s</Cell>
+    <Cell>No, runs in the background</Cell>
+    <Cell>Pulls every waiting file now (waits)</Cell>
+    <Cell>Before Claude reads a kept file</Cell>
+    <Cell>60 s</Cell>
+    <Cell>No, runs in the background</Cell>
+    <Cell>Pulls only if this file is waiting (waits)</Cell>
+    <Cell>Before Claude writes a kept file</Cell>
     <Cell>10 s</Cell>
     <Cell>Yes, about 0.5 s</Cell>
-    <Cell>A prompt, or before a read</Cell>
-    <Cell>60 s</Cell>
-    <Cell>No: runs in the background, the last answer is used</Cell>
+    <Cell>Pulls only if this file is waiting (waits)</Cell>
   </div>
 );
 
@@ -534,8 +543,11 @@ const Timing: Page = () => (
       <li>The commit at the end of a reply: in the background; the reply does not wait</li>
       <li>Push: in the background, at most every 10 minutes; right away when a session ends</li>
     </ul>
-    <div style={{ fontSize: 30, fontWeight: 700, margin: '26px 0 12px' }}>Checking GitHub for edits made elsewhere (one answer shared by every session on the machine)</div>
+    <div style={{ fontSize: 30, fontWeight: 700, margin: '24px 0 10px' }}>Checking GitHub for edits made elsewhere</div>
     <CheckTable />
+    <p style={{ fontSize: 24, color: muted, margin: '12px 0 0', lineHeight: 1.4 }}>
+      Claude Code waits for GitHub only at session start and before writing a kept file; a pull happens only when something actually changed. Answers are shared by every session on the machine. A kept file is one memsaga mirrors.
+    </p>
     <p style={{ fontSize: 24, color: muted, margin: '16px 0 0' }}>
       Sources: <A href={URL_FAQ_SPEED}>memsaga FAQ, “Does it slow Claude Code down?”</A> and <A href={URL_TIMING}>README, “Timing”</A>
     </p>
@@ -572,7 +584,7 @@ const SyncDetail: Page = () => (
   <Content eyebrow="Appendix · Two-way sync" heading="An edit on GitHub reaches Claude like this" headingSize={56}>
     <div style={{ marginTop: 36 }}>
       <Step n="1" head="You edit a memory file on GitHub, in a browser or on a phone." body="Or on another computer, then push." />
-      <Step n="2" head="memsaga's hooks ask GitHub: did anything change?" body="When a session starts (Claude Code waits, about 0.5 s); at each prompt and when Claude reads a file memsaga keeps (in the background). At most once a minute, every 10 s before a write." />
+      <Step n="2" head="memsaga's hooks ask GitHub: did anything change?" body="When a session starts, at each prompt, and before Claude reads or writes a file memsaga keeps. How often, and when Claude Code waits: the table on the previous page." />
       <Step n="3" head="The edit is merged into the data repository." body="If both sides changed the same line, that file waits: Claude is told and asked to tell you, and memsaga sync lets you pick a side." />
       <Step n="4" head="The live file is updated before Claude reads or writes it." body="By the hook that runs before the tool; at session start and at each prompt, for every waiting file." />
       <Step n="5" head="A session that already read the old text is told which lines changed." body="So Claude re-reads the file before using it." />
