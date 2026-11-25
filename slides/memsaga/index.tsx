@@ -169,8 +169,9 @@ const Cover: Page = () => (
       Hooks, settings (opt-in) and any file you choose, too.
     </p>
     <p style={{ fontSize: 30, color: muted, margin: '64px 0 0', fontFamily: mono }}>
-      Grimmer Kang · <A href={URL_ME}>github.com/grimmerk</A>
+      Grimmer Kang · Tech Lead, Fireflies.ai · <A href={URL_ME}>github.com/grimmerk</A>
     </p>
+    <p style={{ fontSize: 26, color: muted, margin: '14px 0 0' }}>memsaga is a personal open-source project.</p>
   </div>
 );
 
