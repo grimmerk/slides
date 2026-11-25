@@ -42,6 +42,7 @@ const URL_SECRETS = `${URL_REPO}/blob/main/docs/faq.md#what-if-claude-writes-an-
 const URL_INSTALL = `${URL_REPO}#quick-start`;
 const URL_REV_NEWS = 'https://git.github.io/rev_news/2026/10/31/edition-140/';
 const URL_ENGRAM = 'https://github.com/Sen-CaPoo/engram';
+const URL_OTHER_TOOLS = `${URL_REPO}/blob/main/docs/design.md#31-open-source-two-rounds-of-search-github-in-all-languages-plus-the-web`;
 const URL_MATCHAPACK = 'https://github.com/grimmerk/matchapack';
 const URL_MATCHAPACK_INSTALL = `${URL_MATCHAPACK}#install`;
 const URL_CODEV = 'https://github.com/grimmerk/codev';
@@ -287,7 +288,7 @@ const Stat = ({ n, label, accent }: { n: string; label: string; accent?: boolean
 const Numbers: Page = () => (
   <Content eyebrow="Two months of my own data" heading="What actually happened">
     <div style={{ display: 'grid', gridTemplateColumns: '760px 760px', columnGap: 120, rowGap: 64, marginTop: 64 }}>
-      <Stat n="~90" label="commits a day: too many to read, easy to search" />
+      <Stat n="460" label="commits on my busiest day (57 on a typical one): too many to read, easy to search" />
       <Stat n="25 / 57" label="sessions that changed my CLAUDE.md / my skills" />
       <Stat n="~90" label="files Claude deleted while tidying up, all recoverable" />
       <Stat n="~12" label="times I asked “who changed this, and why?”" accent />
@@ -479,7 +480,7 @@ const NeedIt: Page = () => (
           One account on one computer: <span style={{ fontFamily: mono, fontSize: 26 }}>git init ~/.claude</span>, an allowlist <span style={{ fontFamily: mono, fontSize: 26 }}>.gitignore</span> and a Stop hook that commits.
         </li>
         <li style={{ marginBottom: 14 }}>
-          You keep your own memory in a folder outside <span style={{ fontFamily: mono, fontSize: 26 }}>~/.claude</span> (say <span style={{ fontFamily: mono, fontSize: 26 }}>~/notes</span>), by an instruction or a skill — usable from Claude Code, Codex and Cursor.
+          You keep your own memory in a folder outside <span style={{ fontFamily: mono, fontSize: 26 }}>~/.claude</span> (say <span style={{ fontFamily: mono, fontSize: 26 }}>~/notes</span>), by an instruction or a skill — usable from Claude Code, Codex and Cursor — or with <A href={URL_OTHER_TOOLS}>another open-source memory tool</A>.
         </li>
         <li>
           You are on Windows: <A href={URL_ENGRAM}>Engram</A> is a similar tool.
@@ -500,15 +501,40 @@ const NeedIt: Page = () => (
   </Content>
 );
 
+const Cell = ({ children, head }: { children: ReactNode; head?: boolean }) => (
+  <div style={{ padding: '9px 20px', borderBottom: `1px solid ${rule}`, fontWeight: head ? 700 : 400, color: head ? muted : 'var(--osd-text)', background: head ? panel : 'transparent' }}>
+    {children}
+  </div>
+);
+
+// From memsaga's code (check_remote): the same check at three moments; only how old an answer may be, and whether Claude Code waits, differ.
+const CheckTable = () => (
+  <div style={{ display: 'grid', gridTemplateColumns: '440px 540px 660px', fontSize: 26, border: `1px solid ${rule}`, borderRadius: 'var(--osd-radius)', overflow: 'hidden', width: 1640 }}>
+    <Cell head>When</Cell>
+    <Cell head>Re-check if the answer is older than</Cell>
+    <Cell head>Does Claude Code wait?</Cell>
+    <Cell>A session starts</Cell>
+    <Cell>60 s</Cell>
+    <Cell>Yes, about 0.5 s</Cell>
+    <Cell>Before Claude writes a file memsaga keeps</Cell>
+    <Cell>10 s</Cell>
+    <Cell>Yes, about 0.5 s</Cell>
+    <Cell>A prompt, or before a read</Cell>
+    <Cell>60 s</Cell>
+    <Cell>No: runs in the background, the last answer is used</Cell>
+  </div>
+);
+
 const Timing: Page = () => (
   <Content eyebrow="Appendix · Does it slow Claude Code down?" heading="Barely — measured">
-    <ul style={{ fontSize: 'var(--osd-size-body)', lineHeight: 1.5, margin: '56px 0 0', paddingLeft: 44 }}>
+    <ul style={{ fontSize: 32, lineHeight: 1.4, margin: '36px 0 0', paddingLeft: 44 }}>
       <li>Most tool calls: about 5 ms</li>
       <li>The commit at the end of a reply: in the background; the reply does not wait</li>
       <li>Push: in the background, at most every 10 minutes; right away when a session ends</li>
-      <li>Checking GitHub for edits made elsewhere: about 0.5 s when a session starts; otherwise in the background, at most once a minute (every 10 s before a write)</li>
     </ul>
-    <p style={{ fontSize: 28, color: muted, margin: '48px 0 0' }}>
+    <div style={{ fontSize: 30, fontWeight: 700, margin: '26px 0 12px' }}>Checking GitHub for edits made elsewhere (one answer shared by every session on the machine)</div>
+    <CheckTable />
+    <p style={{ fontSize: 24, color: muted, margin: '16px 0 0' }}>
       Sources: <A href={URL_FAQ_SPEED}>memsaga FAQ, “Does it slow Claude Code down?”</A> and <A href={URL_TIMING}>README, “Timing”</A>
     </p>
   </Content>
@@ -572,8 +598,8 @@ git blame gives the commit, the commit gives the session, claude --resume reopen
 It had added the rule by itself, and said so in the same reply. That is when I set my rule:
 skills and memory, Claude may change and report; CLAUDE.md, it proposes and waits for my yes.
 The session can be reopened only while Claude Code keeps the transcript; memsaga does not copy transcripts.`,
-  `~25s. I measured my own data before this talk. About 90 commits a day since late September, all from live sessions
-(none rebuilt from old history): not something to read, something to search.
+  `~25s. I measured my own data before this talk. Since late September, 57 commits on a typical day and 460 on the busiest,
+all from live sessions (none rebuilt from old history): not something to read, something to search.
 25 different sessions changed my CLAUDE.md, 57 changed my skills. Nobody can follow that from memory.
 Claude deleted about 90 files while tidying up, every one recoverable.
 And about a dozen times I asked: who changed this, and why?`,
