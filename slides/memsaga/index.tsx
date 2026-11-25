@@ -38,6 +38,7 @@ const URL_FAQ_SPEED = `${URL_REPO}/blob/main/docs/faq.md#does-it-slow-claude-cod
 const URL_TIMING = `${URL_REPO}#timing`;
 const URL_BUG = `${URL_REPO}/pull/28`;
 const URL_V016 = `${URL_REPO}/releases/tag/v0.1.6`;
+const URL_TWO_WAY = `${URL_REPO}/blob/main/docs/two-way-sync.md`;
 const URL_SECRETS = `${URL_REPO}/blob/main/docs/faq.md#what-if-claude-writes-an-api-key-into-a-memory-file`;
 const URL_INSTALL = `${URL_REPO}#quick-start`;
 const URL_REV_NEWS = 'https://git.github.io/rev_news/2026/10/31/edition-140/';
@@ -541,7 +542,7 @@ const Timing: Page = () => (
     <ul style={{ fontSize: 32, lineHeight: 1.4, margin: '36px 0 0', paddingLeft: 44 }}>
       <li>Most tool calls: about 5 ms</li>
       <li>The commit at the end of a reply: in the background; the reply does not wait</li>
-      <li>Push: in the background, at most every 10 minutes; right away when a session ends</li>
+      <li>Push: in the background, at most every 10 minutes by default; right away when a session ends</li>
     </ul>
     <div style={{ fontSize: 30, fontWeight: 700, margin: '24px 0 10px' }}>Checking GitHub for edits made elsewhere</div>
     <CheckTable />
@@ -554,7 +555,11 @@ const Timing: Page = () => (
   </Content>
 );
 
-const Step = ({ n, head, body }: { n: string; head: string; body: string }) => (
+const Code = ({ children }: { children: ReactNode }) => (
+  <span style={{ fontFamily: mono, fontSize: '0.92em', whiteSpace: 'nowrap', color: 'var(--osd-text)' }}>{children}</span>
+);
+
+const Step = ({ n, head, body }: { n: string; head: string; body?: ReactNode }) => (
   <div style={{ display: 'flex', gap: 28, alignItems: 'flex-start', marginBottom: 18 }}>
     <div
       style={{
@@ -583,14 +588,22 @@ const Step = ({ n, head, body }: { n: string; head: string; body: string }) => (
 const SyncDetail: Page = () => (
   <Content eyebrow="Appendix · Two-way sync" heading="An edit on GitHub reaches Claude like this" headingSize={56}>
     <div style={{ marginTop: 36 }}>
-      <Step n="1" head="You edit a memory file on GitHub, in a browser or on a phone." body="Or on another computer, then push." />
-      <Step n="2" head="memsaga's hooks ask GitHub: did anything change?" body="When a session starts, at each prompt, and before Claude reads or writes a file memsaga keeps. How often, and when Claude Code waits: the table on the previous page." />
-      <Step n="3" head="The edit is merged into the data repository." body="If both sides changed the same line, that file waits: Claude is told and asked to tell you, and memsaga sync lets you pick a side." />
-      <Step n="4" head="The live file is updated before each prompt, and before a file-tool read or write." body="A change that lands mid-turn and is read through Bash in that same turn shows the old text until the next prompt." />
-      <Step n="5" head="A session that already read the old text is told which lines changed." body="So Claude re-reads the file before using it." />
+      <Step n="1" head="You edit a memory file on GitHub (browser or phone), or push from another computer." />
+      <Step n="2" head="memsaga's hooks ask GitHub: did anything change?" body="At session start, each prompt, and before Claude reads or writes a file memsaga keeps (timing: previous page)." />
+      <Step
+        n="3"
+        head="The edit is merged into the data repository."
+        body={<>If this Mac committed a change to the same lines and has not pushed it, the merge stops and nothing is pushed: <Code>memsaga status</Code> names the file; fix it in the data repository (git pull, fix, commit).</>}
+      />
+      <Step
+        n="4"
+        head="The live file is updated before each prompt, and before a file-tool read or write."
+        body={<>If the live file was edited here on the same lines, that file waits: Claude and the end-of-turn notice tell you; <Code>memsaga sync --take live|repo &lt;file&gt;</Code> picks a side. Read through Bash mid-turn, a change shows the old text until the next prompt.</>}
+      />
+      <Step n="5" head="A session that already read the old text is told which lines changed." body="So Claude re-reads the file before using it (3 of 3 in a test; without the notice, 0 of 3)." />
     </div>
     <p style={{ fontSize: 26, color: muted, margin: '8px 0 0' }}>
-      Source: <A href={URL_TIMING}>memsaga README, “Timing”</A>
+      Sources: <A href={URL_TIMING}>memsaga README, “Timing”</A> and <A href={URL_TWO_WAY}>docs/two-way-sync.md</A>
     </p>
   </Content>
 );
