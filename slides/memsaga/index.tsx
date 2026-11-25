@@ -298,7 +298,7 @@ const Question = ({ q, note }: { q: string; note: string }) => (
 );
 
 const Questions: Page = () => (
-  <Content eyebrow="The questions I actually asked" heading="History is how parallel sessions see each other">
+  <Content eyebrow="Questions the history answered" heading="History is how parallel sessions see each other">
     <ul style={{ fontSize: 'var(--osd-size-body)', lineHeight: 1.4, margin: '64px 0 0', paddingLeft: 44 }}>
       <Question q="“Did you add this rule on your own?”" note="yes, and it said so" />
       <Question q="“Which version of the skill did you load?”" note="last night's" />
