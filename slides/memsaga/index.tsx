@@ -374,36 +374,40 @@ const Lessons: Page = () => (
 );
 
 const Links: Page = () => (
-  <div style={{ ...fill, padding: `120px ${PAD}px 0`, display: 'flex', gap: 120 }}>
+  <div style={{ ...fill, padding: `120px ${PAD}px 0`, display: 'flex', gap: 80 }}>
     <div style={{ flex: 1 }}>
       <Eyebrow>Try it</Eyebrow>
       <Heading size={96}>
         <A href={URL_SITE}>memsaga.grimmer.io</A>
       </Heading>
+      <div style={{ fontSize: 28, color: muted, fontWeight: 600, margin: '40px 0 10px' }}>Paste into Claude Code (it asks before each step):</div>
       <div
         style={{
-          marginTop: 52,
           fontFamily: mono,
-          fontSize: 36,
+          fontSize: 23,
+          lineHeight: 1.5,
           background: panel,
           border: `1px solid ${rule}`,
           borderRadius: 'var(--osd-radius)',
-          padding: '24px 36px',
-          display: 'inline-block',
+          padding: '20px 28px',
+          whiteSpace: 'pre',
         }}
       >
-        <A href={URL_INSTALL}>brew install grimmerk/tap/memsaga</A>
+        {'Install memsaga for me. Follow\nhttps://raw.githubusercontent.com/grimmerk/memsaga/main/INSTALL-WITH-CLAUDE.md\nand ask me before each step that changes my machine.'}
       </div>
-      <p style={{ fontSize: 30, color: muted, margin: '44px 0 0', lineHeight: 1.6 }}>
+      <div style={{ fontSize: 28, color: muted, margin: '20px 0 0' }}>
+        Or by hand: <Code>brew install grimmerk/tap/memsaga</Code>, then the <A href={URL_INSTALL}>Quick start</A>.
+      </div>
+      <p style={{ fontSize: 26, color: muted, margin: '30px 0 0', lineHeight: 1.55 }}>
         Free and open source (MIT) · macOS and Linux · listed in <A href={URL_REV_NEWS}>Git Rev News #140</A>, the Git community's monthly newsletter
         <br />
         A file whose new lines look like an API key is <A href={URL_SECRETS}>held back, not committed</A> (0.1.5, a reader's question).
         <br />
-        Bonus: companion docs — notes and translations beside repositories you can't commit to (appendix).
+        Bonus: companion docs (appendix).
       </p>
     </div>
-    <div style={{ width: 420, paddingTop: 40 }}>
-      <img src={qr} alt="QR code for memsaga.grimmer.io" style={{ width: 420, height: 420, imageRendering: 'pixelated' }} />
+    <div style={{ width: 340, paddingTop: 40 }}>
+      <img src={qr} alt="QR code for memsaga.grimmer.io" style={{ width: 340, height: 340, imageRendering: 'pixelated' }} />
     </div>
     <Footer />
   </div>
