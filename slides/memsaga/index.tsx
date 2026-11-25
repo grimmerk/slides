@@ -586,7 +586,7 @@ const SyncDetail: Page = () => (
       <Step n="1" head="You edit a memory file on GitHub, in a browser or on a phone." body="Or on another computer, then push." />
       <Step n="2" head="memsaga's hooks ask GitHub: did anything change?" body="When a session starts, at each prompt, and before Claude reads or writes a file memsaga keeps. How often, and when Claude Code waits: the table on the previous page." />
       <Step n="3" head="The edit is merged into the data repository." body="If both sides changed the same line, that file waits: Claude is told and asked to tell you, and memsaga sync lets you pick a side." />
-      <Step n="4" head="The live file is updated before Claude reads or writes it." body="By the hook that runs before the tool; at session start and at each prompt, for every waiting file." />
+      <Step n="4" head="The live file is updated before each prompt, and before a file-tool read or write." body="A change that lands mid-turn and is read through Bash in that same turn shows the old text until the next prompt." />
       <Step n="5" head="A session that already read the old text is told which lines changed." body="So Claude re-reads the file before using it." />
     </div>
     <p style={{ fontSize: 26, color: muted, margin: '8px 0 0' }}>
@@ -636,7 +636,10 @@ If you only use one account on one computer, the README compares memsaga with a 
 And CodeV: a Mac app for Claude Code sessions, projects and several accounts.`,
   `Appendix, for questions only.`,
   `Appendix, for questions only.`,
-  `Appendix, for questions only.`,
+  `Appendix, for questions only. Why each prompt is a sync point, not only session start and file reads:
+the read/write hook matches Claude's file tools (Read, Write, Edit), not paths, so a read through Bash never passes it;
+and CLAUDE.md and MEMORY.md are loaded once at session start, never re-read. Session start covers changes made before
+the session began; each prompt covers changes made while it runs. (memsaga docs/two-way-sync.md, section 7.)`,
 ];
 
 export const meta: SlideMeta = {
