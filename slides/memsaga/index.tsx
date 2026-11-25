@@ -167,7 +167,7 @@ const Cover: Page = () => (
     <p style={{ fontSize: 'var(--osd-size-body)', color: muted, margin: 0, lineHeight: 1.5 }}>
       Every change, committed at the end of a Claude Code turn and named after that session.
       <br />
-      Hooks, settings (opt-in) and any file you choose, too.
+      Hooks and any file you choose, too, inside ~/.claude or not.
     </p>
     <p style={{ fontSize: 30, color: muted, margin: '64px 0 0', fontFamily: mono }}>
       Grimmer Kang · Tech Lead, Fireflies.ai · <A href={URL_ME}>github.com/grimmerk</A>
@@ -280,8 +280,8 @@ const Provenance: Page = () => (
   </Content>
 );
 
-const Stat = ({ n, label, accent, wide }: { n: string; label: string; accent?: boolean; wide?: boolean }) => (
-  <div style={{ width: wide ? 1640 : 760 }}>
+const Stat = ({ n, label, accent, wide, narrow }: { n: string; label: string; accent?: boolean; wide?: boolean; narrow?: boolean }) => (
+  <div style={{ width: wide ? 1640 : narrow ? 500 : 760 }}>
     <div style={{ fontSize: 112, fontWeight: 800, lineHeight: 1, color: accent ? 'var(--osd-accent)' : 'var(--osd-text)', letterSpacing: '-0.02em' }}>{n}</div>
     <div style={{ fontSize: 34, color: muted, marginTop: 14 }}>{label}</div>
   </div>
@@ -289,10 +289,13 @@ const Stat = ({ n, label, accent, wide }: { n: string; label: string; accent?: b
 
 const Numbers: Page = () => (
   <Content eyebrow="Two months of my own data" heading="What actually happened">
-    <div style={{ marginTop: 64 }}>
-      <Stat n="25 / 57 / 136" label="sessions that changed my CLAUDE.md / my skills / my memory" wide />
+    <div style={{ fontSize: 34, color: muted, marginTop: 48 }}>Different sessions that changed…</div>
+    <div style={{ display: 'grid', gridTemplateColumns: '500px 500px 500px', columnGap: 70, marginTop: 16 }}>
+      <Stat n="25" label="my CLAUDE.md" narrow />
+      <Stat n="57" label="my skills" narrow />
+      <Stat n="136" label="my memory files" narrow />
     </div>
-    <div style={{ display: 'grid', gridTemplateColumns: '760px 760px', columnGap: 120, marginTop: 64 }}>
+    <div style={{ display: 'grid', gridTemplateColumns: '760px 760px', columnGap: 120, marginTop: 56 }}>
       <Stat n="~90" label="files Claude deleted while tidying up, all recoverable" />
       <Stat n="~12" label="times I asked “who changed this, and why?”" accent />
     </div>
@@ -312,7 +315,7 @@ const Questions: Page = () => (
       <Question q="“Did you add this rule on your own?”" note="yes, and it said so" />
       <Question q="“Which version of the skill did you load?”" note="last night's" />
       <Question q="“What did the other session just change?”" note="a shared skill, earlier that day" />
-      <Question q="“Where did this file go?”" note="another session moved it" />
+      <Question q="“Where did this file go?”" note="git log showed the new path, and the session that moved it" />
     </ul>
   </Content>
 );
@@ -368,15 +371,15 @@ const Lessons: Page = () => (
   <Content eyebrow="What I learned" heading="Rollback is a seatbelt">
     <ul style={{ fontSize: 'var(--osd-size-body)', lineHeight: 1.35, margin: '52px 0 0', paddingLeft: 44, maxWidth: 1600 }}>
       <Lesson head="Undo is what makes a cleanup safe.">
-        Because every change can come back, I let Claude reorganize its memory: about 90 files deleted along the way.
+        Because every change can come back, I let Claude reorganize its memory: about 90 files deleted along the way. <Code>memsaga restore &lt;file&gt; --at &lt;commit&gt;</Code> shows the diff first, then brings it back.
       </Lesson>
       <Lesson head="The two real rollbacks undid the tool's own sync bugs.">
         Oct 22: a restore test on my backup Mac deleted a file on my main Mac; brought back, <A href={URL_BUG}>fixed in v0.1.1</A>.
         <br />
         Nov 24: the backup Mac committed stale copies of 77 files over newer ones; one revert, <A href={URL_V016}>fixed in 0.1.6</A>.
       </Lesson>
-      <Lesson head="Test a restore before you need it.">
-        The first bug showed up on a spare machine, not in an emergency.
+      <Lesson head="Rehearse a restore while nothing is at stake.">
+        My first rehearsal, on the backup Mac, found that first bug: better then than on the day I need my files back.
       </Lesson>
     </ul>
   </Content>
@@ -404,11 +407,11 @@ const Links: Page = () => (
         <A href={URL_INSTALL}>brew install grimmerk/tap/memsaga</A>
       </div>
       <p style={{ fontSize: 30, color: muted, margin: '44px 0 0', lineHeight: 1.6 }}>
-        Free and open source (MIT) · macOS and Linux · listed in <A href={URL_REV_NEWS}>Git Rev News #140</A>
+        Free and open source (MIT) · macOS and Linux · listed in <A href={URL_REV_NEWS}>Git Rev News #140</A>, the Git community's monthly newsletter
         <br />
         A file whose new lines look like an API key is <A href={URL_SECRETS}>held back, not committed</A> (0.1.5, a reader's question).
         <br />
-        Bonus: companion docs — notes and translations beside repositories you can't commit to.
+        Bonus: companion docs — notes and translations beside repositories you can't commit to (appendix).
       </p>
     </div>
     <div style={{ width: 420, paddingTop: 40 }}>
@@ -504,6 +507,50 @@ const NeedIt: Page = () => (
   </Content>
 );
 
+const RepoBox = ({ title, sub, lines, strong }: { title: string; sub: string; lines: string[]; strong?: boolean }) => (
+  <div
+    style={{
+      width: 700,
+      boxSizing: 'border-box',
+      padding: '28px 32px',
+      borderRadius: 'var(--osd-radius)',
+      border: `2px solid ${strong ? teal : rule}`,
+      background: strong ? '#e6f1ee' : panel,
+    }}
+  >
+    <div style={{ fontSize: 34, fontWeight: 800 }}>{title}</div>
+    <div style={{ fontSize: 26, color: muted, marginTop: 6 }}>{sub}</div>
+    <div style={{ fontFamily: mono, fontSize: 25, lineHeight: 1.55, marginTop: 18, whiteSpace: 'pre' }}>{lines.join('\n')}</div>
+  </div>
+);
+
+const Companion: Page = () => (
+  <Content eyebrow="Appendix · Companion docs" heading="Notes beside a repository, never committed to it" headingSize={60}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 28, marginTop: 48 }}>
+      <RepoBox
+        title="A repository you can't commit to"
+        sub="say, your employer's"
+        lines={['webapp/', '  docs/design.md']}
+      />
+      <div style={{ textAlign: 'center', width: 180 }}>
+        <div style={{ fontSize: 48, color: muted }}>→</div>
+        <div style={{ fontSize: 24, color: muted }}>“translate this”, “keep a note on it”</div>
+      </div>
+      <RepoBox
+        title="Your memsaga data repository"
+        sub="versioned and synced with your memory"
+        lines={['companion/webapp/', '  docs/design.zh-tw.md', '    sources: docs/design.md @ a1b2c3d', '    status: draft']}
+        strong
+      />
+    </div>
+    <ul style={{ fontSize: 30, lineHeight: 1.45, margin: '40px 0 0', paddingLeft: 40 }}>
+      <li>Same path as the source, so a later session finds it before translating again.</li>
+      <li>The source file and commit are recorded, so you can tell when it is out of date.</li>
+      <li><Code>memsaga companions</Code> lists them; a note about the whole repository goes in <Code>_notes/</Code>.</li>
+    </ul>
+  </Content>
+);
+
 const Cell = ({ children, head }: { children: ReactNode; head?: boolean }) => (
   <div style={{ padding: '9px 20px', borderBottom: `1px solid ${rule}`, fontWeight: head ? 700 : 400, color: head ? muted : 'var(--osd-text)', background: head ? panel : 'transparent' }}>
     {children}
@@ -517,23 +564,23 @@ const CheckTable = () => (
     <Cell head>When</Cell>
     <Cell head>Reuses an answer up to</Cell>
     <Cell head>Waits for the GitHub check?</Cell>
-    <Cell head>If a change is already waiting</Cell>
+    <Cell head>If a check already found new changes</Cell>
     <Cell>A session starts</Cell>
     <Cell>60 s</Cell>
     <Cell>Yes, about 0.5 s</Cell>
-    <Cell>Pulls every waiting file now (waits)</Cell>
+    <Cell>Brings them all in now (Claude Code waits)</Cell>
     <Cell>Each prompt</Cell>
     <Cell>60 s</Cell>
     <Cell>No, runs in the background</Cell>
-    <Cell>Pulls every waiting file now (waits)</Cell>
+    <Cell>Brings them all in now (Claude Code waits)</Cell>
     <Cell>Before Claude reads a kept file</Cell>
     <Cell>60 s</Cell>
     <Cell>No, runs in the background</Cell>
-    <Cell>Pulls only if this file is waiting (waits)</Cell>
+    <Cell>Brings in this file, if changed (waits)</Cell>
     <Cell>Before Claude writes a kept file</Cell>
     <Cell>10 s</Cell>
     <Cell>Yes, about 0.5 s</Cell>
-    <Cell>Pulls only if this file is waiting (waits)</Cell>
+    <Cell>Brings in this file, if changed (waits)</Cell>
   </div>
 );
 
@@ -593,12 +640,12 @@ const SyncDetail: Page = () => (
       <Step
         n="3"
         head="The edit is merged into the data repository."
-        body={<>If this Mac committed a change to the same lines and has not pushed it, the merge stops and nothing is pushed: <Code>memsaga status</Code> names the file; fix it in the data repository (git pull, fix, commit).</>}
+        body={<>Usually automatic. It stops only if this Mac has a committed, unpushed change to the same lines: nothing is pushed, <Code>memsaga status</Code> names the file, and you fix it in the data repository.</>}
       />
       <Step
         n="4"
         head="The live file is updated before each prompt, and before a file-tool read or write."
-        body={<>If the live file was edited here on the same lines, that file waits: Claude and the end-of-turn notice tell you; <Code>memsaga sync --take live|repo &lt;file&gt;</Code> picks a side. Read through Bash mid-turn, a change shows the old text until the next prompt.</>}
+        body={<>Usually silent. If the file was also edited here on the same lines, it waits: Claude and the end-of-turn notice tell you, and <Code>memsaga sync --take live|repo &lt;file&gt;</Code> picks a side. (Read through Bash mid-turn, a change shows the old text until the next prompt.)</>}
       />
       <Step n="5" head="A session that already read the old text is told which lines changed." body="So Claude re-reads the file before using it (3 of 3 in a test; without the notice, 0 of 3)." />
     </div>
@@ -648,6 +695,8 @@ If you only use one account on one computer, the README compares memsaga with a 
   `~15s, Taipei only, drop if over time. matchapack went public yesterday: extra git worktrees cost almost no disk.
 And CodeV: a Mac app for Claude Code sessions, projects and several accounts.`,
   `Appendix, for questions only.`,
+  `Appendix, for questions only. A translation or note about a repository you must not commit to (an employer's)
+lives in the data repository under companion/<repo>/, at the source file's path, with the source commit recorded.`,
   `Appendix, for questions only.`,
   `Appendix, for questions only. Why each prompt is a sync point, not only session start and file reads:
 the read/write hook matches Claude's file tools (Read, Write, Edit), not paths, so a read through Bash never passes it;
@@ -672,6 +721,7 @@ export default [
   Links,
   OneMoreThing,
   NeedIt,
+  Companion,
   Timing,
   SyncDetail,
 ] satisfies Page[];
