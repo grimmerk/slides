@@ -278,8 +278,8 @@ const Provenance: Page = () => (
   </Content>
 );
 
-const Stat = ({ n, label, accent }: { n: string; label: string; accent?: boolean }) => (
-  <div style={{ width: 760 }}>
+const Stat = ({ n, label, accent, wide }: { n: string; label: string; accent?: boolean; wide?: boolean }) => (
+  <div style={{ width: wide ? 1640 : 760 }}>
     <div style={{ fontSize: 112, fontWeight: 800, lineHeight: 1, color: accent ? 'var(--osd-accent)' : 'var(--osd-text)', letterSpacing: '-0.02em' }}>{n}</div>
     <div style={{ fontSize: 34, color: muted, marginTop: 14 }}>{label}</div>
   </div>
@@ -287,9 +287,10 @@ const Stat = ({ n, label, accent }: { n: string; label: string; accent?: boolean
 
 const Numbers: Page = () => (
   <Content eyebrow="Two months of my own data" heading="What actually happened">
-    <div style={{ display: 'grid', gridTemplateColumns: '760px 760px', columnGap: 120, rowGap: 64, marginTop: 64 }}>
-      <Stat n="460" label="commits on my busiest day (57 on a typical one): too many to read, easy to search" />
-      <Stat n="25 / 57" label="sessions that changed my CLAUDE.md / my skills" />
+    <div style={{ marginTop: 64 }}>
+      <Stat n="25 / 57 / 136" label="sessions that changed my CLAUDE.md / my skills / my memory" wide />
+    </div>
+    <div style={{ display: 'grid', gridTemplateColumns: '760px 760px', columnGap: 120, marginTop: 64 }}>
       <Stat n="~90" label="files Claude deleted while tidying up, all recoverable" />
       <Stat n="~12" label="times I asked “who changed this, and why?”" accent />
     </div>
@@ -598,9 +599,10 @@ git blame gives the commit, the commit gives the session, claude --resume reopen
 It had added the rule by itself, and said so in the same reply. That is when I set my rule:
 skills and memory, Claude may change and report; CLAUDE.md, it proposes and waits for my yes.
 The session can be reopened only while Claude Code keeps the transcript; memsaga does not copy transcripts.`,
-  `~25s. I measured my own data before this talk. Since late September, 57 commits on a typical day and 460 on the busiest,
-all from live sessions (none rebuilt from old history): not something to read, something to search.
-25 different sessions changed my CLAUDE.md, 57 changed my skills. Nobody can follow that from memory.
+  `~25s. I measured my own data before this talk, since late September.
+25 different sessions changed my CLAUDE.md, 57 changed my skills, 136 changed my memory. Nobody can follow that from memory.
+(If asked about volume: 57 commits on a typical day, 460 on the busiest, all from live sessions. You don't read them;
+you search them when a question comes up, with git log -S or git blame.)
 Claude deleted about 90 files while tidying up, every one recoverable.
 And about a dozen times I asked: who changed this, and why?`,
   `~20s. These are the questions. I run many sessions in parallel, and they edit the same files.
