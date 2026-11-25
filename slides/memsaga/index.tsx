@@ -167,7 +167,7 @@ const Cover: Page = () => (
     <p style={{ fontSize: 'var(--osd-size-body)', color: muted, margin: 0, lineHeight: 1.5 }}>
       Every change, committed at the end of a Claude Code turn and named after that session.
       <br />
-      Hooks and any file you choose, too, inside ~/.claude or not.
+      Hooks and subagents by default; any other file you choose, even outside ~/.claude.
     </p>
     <p style={{ fontSize: 30, color: muted, margin: '64px 0 0', fontFamily: mono }}>
       Grimmer Kang · Tech Lead, Fireflies.ai · <A href={URL_ME}>github.com/grimmerk</A>
