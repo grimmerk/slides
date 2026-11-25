@@ -471,34 +471,69 @@ const OneMoreThing: Page = () => (
   </Content>
 );
 
-const Col = ({ title, children }: { title: string; children: ReactNode }) => (
-  <div style={{ flex: 1 }}>
-    <div style={{ fontSize: 36, fontWeight: 800 }}>{title}</div>
-    <ul style={{ fontSize: 29, lineHeight: 1.45, margin: '20px 0 0', paddingLeft: 36, color: 'var(--osd-text)' }}>{children}</ul>
+const Col = ({ title, children, strong }: { title: string; children: ReactNode; strong?: boolean }) => (
+  <div
+    style={{
+      flex: 1,
+      boxSizing: 'border-box',
+      padding: '28px 32px',
+      borderRadius: 'var(--osd-radius)',
+      border: `2px solid ${strong ? teal : rule}`,
+      background: strong ? '#e6f1ee' : panel,
+    }}
+  >
+    <div style={{ fontSize: 34, fontWeight: 800 }}>{title}</div>
+    <div style={{ marginTop: 18 }}>{children}</div>
   </div>
 );
 
+const Item = ({ mark, children, color }: { mark: string; children: ReactNode; color: string }) => (
+  <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 14 }}>
+    <div
+      style={{
+        width: 38,
+        height: 38,
+        flex: 'none',
+        borderRadius: 19,
+        background: color,
+        color: '#fff',
+        fontSize: 22,
+        fontWeight: 700,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 2,
+      }}
+    >
+      {mark}
+    </div>
+    <div style={{ fontSize: 27, lineHeight: 1.45 }}>{children}</div>
+  </div>
+);
+
+const m = (s: string) => <span style={{ fontFamily: mono, fontSize: 24 }}>{s}</span>;
+
 const NeedIt: Page = () => (
   <Content eyebrow="Appendix · Do you need memsaga?" heading="Maybe not">
-    <div style={{ display: 'flex', gap: 72, marginTop: 44 }}>
-      <Col title="You may not, if…">
-        <li style={{ marginBottom: 14 }}>
-          One account on one computer: <span style={{ fontFamily: mono, fontSize: 26 }}>git init ~/.claude</span>, an allowlist <span style={{ fontFamily: mono, fontSize: 26 }}>.gitignore</span> and a Stop hook that commits.
-        </li>
-        <li style={{ marginBottom: 14 }}>
-          You keep your own memory in a folder outside <span style={{ fontFamily: mono, fontSize: 26 }}>~/.claude</span> (say <span style={{ fontFamily: mono, fontSize: 26 }}>~/notes</span>), by an instruction or a skill — usable from Claude Code, Codex and Cursor — or with <A href={URL_OTHER_TOOLS}>another open-source memory tool</A>.
-        </li>
-        <li>
+    <div style={{ display: 'flex', gap: 40, marginTop: 40, alignItems: 'stretch' }}>
+      <Col title="You may not need it, if…">
+        <Item mark="1" color={muted}>
+          One account on one computer: {m('git init ~/.claude')}, an allowlist {m('.gitignore')} and a Stop hook that commits.
+        </Item>
+        <Item mark="2" color={muted}>
+          You keep your own memory in a folder outside {m('~/.claude')} (say {m('~/notes')}), by an instruction or a skill, or with <A href={URL_OTHER_TOOLS}>another open-source memory tool</A>.
+        </Item>
+        <Item mark="3" color={muted}>
           You are on Windows: <A href={URL_ENGRAM}>Engram</A> is a similar tool.
-        </li>
+        </Item>
       </Col>
-      <Col title="What memsaga adds">
-        <li style={{ marginBottom: 14 }}>Which session made each change</li>
-        <li style={{ marginBottom: 14 }}>History kept away from the live files</li>
-        <li style={{ marginBottom: 14 }}>Several accounts and computers, edits from GitHub or a phone</li>
-        <li style={{ marginBottom: 14 }}>Any file you name, outside <span style={{ fontFamily: mono, fontSize: 26 }}>~/.claude</span> too</li>
-        <li style={{ marginBottom: 14 }}>History from before you started, rebuilt from saved sessions</li>
-        <li>Companion docs</li>
+      <Col title="What memsaga adds" strong>
+        <Item mark="A" color={teal}>Which session made each change</Item>
+        <Item mark="B" color={teal}>History kept away from the live files</Item>
+        <Item mark="C" color={teal}>Several accounts and computers; edits from GitHub or a phone</Item>
+        <Item mark="D" color={teal}>Any file you name, outside {m('~/.claude')} too</Item>
+        <Item mark="E" color={teal}>History from before you started, rebuilt from saved sessions</Item>
+        <Item mark="F" color={teal}>Companion docs (next page)</Item>
       </Col>
     </div>
     <p style={{ fontSize: 26, color: muted, margin: '28px 0 0' }}>
