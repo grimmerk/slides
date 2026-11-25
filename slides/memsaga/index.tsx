@@ -37,6 +37,7 @@ const URL_NEED = `${URL_REPO}#do-you-need-memsaga`;
 const URL_FAQ_SPEED = `${URL_REPO}/blob/main/docs/faq.md#does-it-slow-claude-code-down`;
 const URL_TIMING = `${URL_REPO}#timing`;
 const URL_BUG = `${URL_REPO}/pull/28`;
+const URL_V016 = `${URL_REPO}/releases/tag/v0.1.6`;
 const URL_SECRETS = `${URL_REPO}/blob/main/docs/faq.md#what-if-claude-writes-an-api-key-into-a-memory-file`;
 const URL_REV_NEWS = 'https://git.github.io/rev_news/2026/10/31/edition-140/';
 const URL_MATCHAPACK = 'https://github.com/grimmerk/matchapack';
@@ -361,8 +362,8 @@ const Lessons: Page = () => (
       <Lesson head="Its value is what it lets you do.">
         Because every change can come back, I let Claude reorganize its memory: about 90 files deleted along the way.
       </Lesson>
-      <Lesson head="Test restoring before you need it.">
-        Restoring my backup Mac found a memsaga bug: a file missing on one machine was synced to the others as a deletion. <A href={URL_BUG}>Fixed in v0.1.1</A>.
+      <Lesson head="The tool made mistakes too; history undid them.">
+        Once, sync overwrote 77 files with stale copies: one revert brought them back, and <A href={URL_V016}>0.1.6</A> closes that class of bug. Testing a restore on my backup Mac had found an earlier one (<A href={URL_BUG}>fixed in v0.1.1</A>).
       </Lesson>
       <Lesson head="A reader asked: what about API keys?">
         Since 0.1.5, a file whose new lines look like a secret is <A href={URL_SECRETS}>held back, not committed</A>.
@@ -557,8 +558,11 @@ the Git log is how they, and I, see each other's edits.`,
   `~25s. Everything is pushed to a private GitHub repository: an off-site backup I can browse anywhere.
 My second Mac is a backup machine; restoring it was one clone. An edit on my phone, in the GitHub editor, comes back to the live file.`,
   `~30s. Rollback is a seatbelt: its value is what it lets you do. I let Claude reorganize memory.
-Test restoring before you need it: my backup Mac found a memsaga sync bug, fixed in v0.1.1.
-Someone asked about API keys; since 0.1.5 a file that looks like it holds a secret is held back.`,
+The only two real rollbacks so far undid memsaga's own sync bugs. On 11-24 my backup Mac pushed stale copies of 77 files;
+the commit named the session, one revert brought them back, and 0.1.6 (released 11-25) closes that class of bug.
+The first one, a file missing on one machine synced as a deletion, was found by testing a restore; fixed in v0.1.1.
+Someone asked about API keys; since 0.1.5 a file that looks like it holds a secret is held back.
+(Fukuoka: drop the "77".)`,
   `~10s. memsaga.grimmer.io — free and open source. One account on one computer? A plain Git setup may be enough; the README says how.`,
   `~15s, Taipei only, drop if over time. matchapack went public yesterday: extra git worktrees cost almost no disk.
 And CodeV: a Mac app for Claude Code sessions, projects and several accounts.`,
