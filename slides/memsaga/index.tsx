@@ -289,11 +289,10 @@ const Stat = ({ n, label, accent, wide, narrow }: { n: string; label: string; ac
 
 const Numbers: Page = () => (
   <Content eyebrow="Two months of my own data" heading="What actually happened">
-    <div style={{ fontSize: 34, color: muted, marginTop: 48 }}>Different sessions that changed…</div>
-    <div style={{ display: 'grid', gridTemplateColumns: '500px 500px 500px', columnGap: 70, marginTop: 16 }}>
-      <Stat n="25" label="CLAUDE.md" narrow />
-      <Stat n="57" label="skills" narrow />
-      <Stat n="136" label="memory files" narrow />
+    <div style={{ display: 'grid', gridTemplateColumns: '500px 500px 500px', columnGap: 70, marginTop: 64 }}>
+      <Stat n="25" label="sessions changed CLAUDE.md" narrow />
+      <Stat n="57" label="sessions changed skills" narrow />
+      <Stat n="136" label="sessions changed memory" narrow />
     </div>
     <div style={{ display: 'grid', gridTemplateColumns: '760px 760px', columnGap: 120, marginTop: 56 }}>
       <Stat n="~90" label="files Claude deleted while tidying up, all recoverable" />
