@@ -304,7 +304,7 @@ const WhatGoesIn: Page = () => (
         <T t="  memory/HOME-code-webapp/" keep />
         <T t="    MEMORY.md  project-notes.md" keep />
         <T t="  drafts/  mods/" keep note="folders you add" />
-        <T t="claude-work/" keep note="a second account in ~/.claude-work" />
+        <T t="claude-alt/" keep note="a second account in ~/.claude-alt" />
         <T t="extra/home/" keep note="files outside ~/.claude" />
         <T t="companion/" keep note="your notes on other repos" />
       </TreeBox>
@@ -856,7 +856,7 @@ so I rarely let it touch a skill, and never asked it to clean up its memory.`,
   `~30s. memsaga hooks into Claude Code. At the end of every turn that changed something, it commits,
 and the commit carries the session's title and ID. It keeps history; it does not take over: your files stay where they are,
 and Claude works as before. One small Rust binary, about 5 ms for most tool calls. The repository is yours.
-(If asked: Account is the label of the config folder, ~/.claude -> claude, ~/.claude-work -> claude-work.
+(If asked: Account is the label of the config folder, ~/.claude -> claude, a second account in ~/.claude-alt -> claude-alt.
 Agent is main, or a subagent's name when a subagent made the edit.
 A commit holds every change since the last one, including a hand edit or another parallel session's edit;
 it is named after the session whose turn ended. The conversation tells you who actually made it.)`,
