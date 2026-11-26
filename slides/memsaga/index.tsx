@@ -583,12 +583,15 @@ const OneMoreThing: Page = () => (
           name="matchapack"
           href={URL_MATCHAPACK}
           line="Each extra git worktree's node_modules costs almost no disk: savings like pnpm's, but the exact tree plain npm or Yarn 1 builds."
-          status="v0.1.0, released 2026-11-24"
+          status="first released 2026-11-24"
           small
         />
         <div style={{ fontSize: 26, color: muted, marginTop: 10 }}>
-          Measured, 10 worktrees: 20.68 GiB with plain npm → 61 MiB + one 1.82 GiB store ·{' '}
-          <Code><A href={URL_MATCHAPACK_INSTALL}>brew install grimmerk/tap/matchapack</A></Code>
+          Measured, 10 worktrees: 20.68 GiB with plain npm → 61 MiB + one 1.82 GiB store
+        </div>
+        <div style={{ fontSize: 26, color: muted, marginTop: 6 }}>
+          <Code><A href={URL_MATCHAPACK_INSTALL}>brew install grimmerk/tap/matchapack</A></Code> ·{' '}
+          <Code><A href="https://www.npmjs.com/package/@grimmerk/matchapack">npm i -g @grimmerk/matchapack</A></Code>
         </div>
       </div>
       <img src={matchapackQr} alt="QR code for github.com/grimmerk/matchapack" style={{ width: 220, height: 220, imageRendering: 'pixelated' }} />
