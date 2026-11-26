@@ -304,7 +304,7 @@ const WhatGoesIn: Page = () => (
         <T t="  memory/HOME-code-webapp/" keep />
         <T t="    MEMORY.md  project-notes.md" keep />
         <T t="  drafts/  mods/" keep note="folders you add" />
-        <T t="claude-work/" keep note="a second account" />
+        <T t="claude-work/" keep note="a second account in ~/.claude-work" />
         <T t="extra/home/" keep note="files outside ~/.claude" />
         <T t="companion/" keep note="your notes on other repos" />
       </TreeBox>
