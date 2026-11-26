@@ -11,6 +11,7 @@ import codevQr from './assets/codev-qr.svg';
 import matchapackIcon from './assets/matchapack-icon.png';
 import matchapackQr from './assets/matchapack-qr.svg';
 import qr from './assets/memsaga-qr.svg';
+import slidesQr from './assets/slides-qr.svg';
 
 // memsaga talk, English master deck (Taipei 2026-11-26; the Japanese deck is translated from this).
 // Every number on these pages was measured on 2026-11-24 from the author's own data repository
@@ -173,11 +174,16 @@ const Cover: Page = () => (
       Hooks and subagents by default; any other file you choose, even outside ~/.claude.
     </p>
     <p style={{ fontSize: 30, color: muted, margin: '64px 0 0', fontFamily: mono }}>
-      Grimmer Kang · Tech Lead, Fireflies.ai · <A href={URL_ME}>github.com/grimmerk</A>
+      Grimmer Kang · Tech Lead, <A href="https://fireflies.ai">Fireflies.ai</A> · <A href={URL_ME}>github.com/grimmerk</A>
     </p>
     <p style={{ fontSize: 26, color: muted, margin: '14px 0 0' }}>
       memsaga is a personal open-source project: <A href={URL_SITE}>memsaga.grimmer.io</A>
     </p>
+    {/* These slides, for anyone who wants to follow on a phone. */}
+    <div style={{ position: 'absolute', right: PAD, bottom: 96, textAlign: 'center' }}>
+      <img src={slidesQr} alt="QR code for slides.grimmer.io/s/memsaga" style={{ width: 200, height: 200, imageRendering: 'pixelated' }} />
+      <div style={{ fontSize: 22, color: muted, fontFamily: mono, marginTop: 10 }}>slides.grimmer.io/s/memsaga</div>
+    </div>
   </div>
 );
 
@@ -283,6 +289,7 @@ const WhatGoesIn: Page = () => (
         <T t="projects/" />
         <T t="  -Users-you-code-webapp/" />
         <T t="    memory/" keep note="kept" />
+        <T t="      MEMORY.md  project-notes.md" keep />
         <T t="    3f46…e21.jsonl" note="transcript, not kept" />
         <T t="  -Users-you-Library-Application-…" />
         <T t="cache/  telemetry/  paste-cache/" dim />
@@ -375,6 +382,9 @@ const Numbers: Page = () => (
       <Stat n="57" label="sessions changed skills" narrow />
       <Stat n="136" label="sessions changed memory" narrow />
     </div>
+    <p style={{ fontSize: 28, color: muted, margin: '20px 0 0' }}>
+      And history started before memsaga did: on day one it rebuilt 502 commits (July to September) from Claude Code's saved sessions.
+    </p>
     <div style={{ marginTop: 64 }}>
       <Stat n="~12" label="times “who changed this, and why?” was answered from the history" accent wide />
     </div>
@@ -533,6 +543,8 @@ const Links: Page = () => (
         A file whose new lines look like an API key is <A href={URL_SECRETS}>held back, not committed</A> (0.1.5, a reader's question).
         <br />
         Bonus: companion docs (appendix).
+        <br />
+        These slides: <A href="https://slides.grimmer.io/s/memsaga">slides.grimmer.io/s/memsaga</A>
       </p>
     </div>
     <div style={{ width: 340, paddingTop: 40 }}>
@@ -570,7 +582,7 @@ const OneMoreThing: Page = () => (
         <Extra
           name="matchapack"
           href={URL_MATCHAPACK}
-          line="Copy-on-write node_modules for npm and Yarn 1: each extra git worktree costs almost no disk."
+          line="Each extra git worktree's node_modules costs almost no disk: savings like pnpm's, but the exact tree plain npm or Yarn 1 builds."
           status="v0.1.0, released 2026-11-24"
           small
         />
@@ -722,8 +734,11 @@ const Companion: Page = () => (
     >
       {'/companions webapp\nstable  webapp/_notes/pr-2107-review.md    ~ docs/review-process.md, acme/webapp#2107\nstable  webapp/docs/architecture.zh-tw.md  <- ~/git/webapp/docs/architecture.md\ndraft   webapp/docs/new-design.zh-tw.md    (no source yet)'}
     </div>
+    <div style={{ fontSize: 23, color: muted, marginTop: 10, fontFamily: mono }}>
+      stable / draft: the status you give it · {'<-'} translated from · ~ a note about (a file, a PR)
+    </div>
     <p style={{ fontSize: 26, color: muted, margin: '20px 0 0', lineHeight: 1.45 }}>
-      Ask in your own words (中文版, 日本語版, a note on this repo). Before translating, Claude checks for an existing companion, so the next session builds on the last.
+      Ask in your own words (中文版, 日本語版, a note on this repo); Claude checks for an existing companion first.
     </p>
   </Content>
 );
