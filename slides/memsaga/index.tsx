@@ -6,6 +6,7 @@ import {
   useSlidePageNumber,
 } from '@open-slide/core';
 import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
+import codevQr from './assets/codev-qr.svg';
 import matchapackQr from './assets/matchapack-qr.svg';
 import qr from './assets/memsaga-qr.svg';
 
@@ -243,6 +244,65 @@ const HowItWorks: Page = () => (
   </Content>
 );
 
+// One line of a file tree: kept lines in the text colour, the rest muted; an optional note on the right.
+const T = ({ t, keep, note, dim }: { t: string; keep?: boolean; note?: string; dim?: boolean }) => (
+  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16 }}>
+    <span style={{ whiteSpace: 'pre', color: keep ? 'var(--osd-text)' : dim ? '#a39b8e' : muted, fontWeight: keep ? 700 : 400 }}>{t}</span>
+    {note && <span style={{ color: keep ? teal : '#a39b8e', fontFamily: 'var(--osd-font-body)', fontSize: 21, whiteSpace: 'nowrap' }}>{note}</span>}
+  </div>
+);
+
+const TreeBox = ({ title, sub, strong, children }: { title: ReactNode; sub: string; strong?: boolean; children: ReactNode }) => (
+  <div
+    style={{
+      width: 800,
+      boxSizing: 'border-box',
+      padding: '24px 30px',
+      borderRadius: 'var(--osd-radius)',
+      border: `2px solid ${strong ? teal : rule}`,
+      background: strong ? '#e6f1ee' : panel,
+    }}
+  >
+    <div style={{ fontSize: 32, fontWeight: 800, fontFamily: mono }}>{title}</div>
+    <div style={{ fontSize: 24, color: muted, marginTop: 4 }}>{sub}</div>
+    <div style={{ fontFamily: mono, fontSize: 23, lineHeight: 1.5, marginTop: 14 }}>{children}</div>
+  </div>
+);
+
+// ~/.claude as it is on disk, next to what memsaga keeps of it. Folder names are Claude Code's own; the
+// project is a placeholder. Memory sits under a folder named after the encoded absolute path; the
+// repository names it relative to home, and index.md maps it back to the real folder.
+const WhatGoesIn: Page = () => (
+  <Content eyebrow="What goes in" heading="A hidden, noisy folder becomes a repository you can browse" headingSize={56}>
+    <div style={{ display: 'flex', gap: 40, marginTop: 36 }}>
+      <TreeBox title="~/.claude" sub="hidden; about 60 entries, mostly caches and logs">
+        <T t="CLAUDE.md" keep note="kept" />
+        <T t="skills/  hooks/  scripts/" keep note="kept" />
+        <T t="projects/" />
+        <T t="  -Users-you-code-webapp/" />
+        <T t="    memory/" keep note="kept" />
+        <T t="    3f46…e21.jsonl" note="transcript, not kept" />
+        <T t="  -Users-you-Library-Application-…" />
+        <T t="cache/  telemetry/  paste-cache/" dim />
+        <T t="shell-snapshots/  session-env/" dim />
+        <T t="file-history/  history.jsonl  …" dim note="not kept" />
+      </TreeBox>
+      <TreeBox title="memories/" sub="your data repository, private on GitHub" strong>
+        <T t="index.md" keep note="~/code/webapp → HOME-code-webapp" />
+        <T t="claude/" />
+        <T t="  CLAUDE.md" keep />
+        <T t="  skills/  hooks/  scripts/" keep />
+        <T t="  memory/HOME-code-webapp/" keep />
+        <T t="    MEMORY.md  project-notes.md" keep />
+        <T t="  drafts/  mods/" keep note="folders you add" />
+        <T t="claude-work/" keep note="a second account" />
+        <T t="extra/home/" keep note="files outside ~/.claude" />
+        <T t="companion/" keep note="your notes on other repos" />
+      </TreeBox>
+    </div>
+  </Content>
+);
+
 const FlowBox = ({ label, body, accent }: { label: string; body: ReactNode; accent?: boolean }) => (
   <div
     style={{
@@ -462,6 +522,9 @@ const Links: Page = () => (
       <div style={{ fontSize: 28, color: muted, margin: '20px 0 0' }}>
         Or by hand: <Code>brew install grimmerk/tap/memsaga</Code>, then the <A href={URL_INSTALL}>Quick start</A>.
       </div>
+      <div style={{ fontSize: 28, color: muted, margin: '12px 0 0' }}>
+        Day to day: <Code>memsaga status</Code> · <Code>memsaga restore</Code> · <Code>memsaga sync</Code>, or just ask Claude.
+      </div>
       <p style={{ fontSize: 26, color: muted, margin: '30px 0 0', lineHeight: 1.55 }}>
         Free and open source (MIT) · macOS and Linux · listed in <A href={URL_REV_NEWS}>Git Rev News #140</A>, the Git community's monthly newsletter
         <br />
@@ -499,41 +562,33 @@ const Extra = ({ name, href, line, status, small }: { name: string; href: string
 
 const OneMoreThing: Page = () => (
   <Content eyebrow="One more thing" heading="Two more side projects">
-    <div style={{ display: 'flex', gap: 80, marginTop: 56 }}>
+    <div style={{ display: 'flex', gap: 60, marginTop: 44, alignItems: 'flex-start' }}>
       <div style={{ flex: 1 }}>
         <Extra
           name="matchapack"
           href={URL_MATCHAPACK}
           line="Copy-on-write node_modules for npm and Yarn 1: each extra git worktree costs almost no disk."
           status="v0.1.0, released 2026-11-24"
+          small
         />
-        <div style={{ fontSize: 30, color: muted, marginTop: -28, marginBottom: 28 }}>
-          Measured, 10 worktrees: 20.68 GiB with plain npm → 61 MiB + one 1.82 GiB store
-        </div>
-        <div
-          style={{
-            fontFamily: mono,
-            fontSize: 30,
-            background: panel,
-            border: `1px solid ${rule}`,
-            borderRadius: 'var(--osd-radius)',
-            padding: '18px 28px',
-            display: 'inline-block',
-          }}
-        >
-          <A href={URL_MATCHAPACK_INSTALL}>brew install grimmerk/tap/matchapack</A>
+        <div style={{ fontSize: 26, color: muted, marginTop: 10 }}>
+          Measured, 10 worktrees: 20.68 GiB with plain npm → 61 MiB + one 1.82 GiB store ·{' '}
+          <Code><A href={URL_MATCHAPACK_INSTALL}>brew install grimmerk/tap/matchapack</A></Code>
         </div>
       </div>
-      <img src={matchapackQr} alt="QR code for github.com/grimmerk/matchapack" style={{ width: 300, height: 300, marginTop: 8, imageRendering: 'pixelated' }} />
+      <img src={matchapackQr} alt="QR code for github.com/grimmerk/matchapack" style={{ width: 220, height: 220, imageRendering: 'pixelated' }} />
     </div>
-    <div style={{ marginTop: 40 }}>
-      <Extra
-        name="CodeV"
-        href={URL_CODEV}
-        line="A Mac app for Claude Code: session switcher, project launcher, built-in terminal, and several accounts sharing one CLAUDE.md, skills and memory."
-        status="macOS"
-        small
-      />
+    <div style={{ display: 'flex', gap: 60, marginTop: 44, alignItems: 'flex-start' }}>
+      <div style={{ flex: 1 }}>
+        <Extra
+          name="CodeV"
+          href={URL_CODEV}
+          line="A Mac app for Claude Code: session switcher, project launcher, built-in terminal, and several accounts sharing one CLAUDE.md, skills and memory."
+          status="macOS"
+          small
+        />
+      </div>
+      <img src={codevQr} alt="QR code for github.com/grimmerk/codev" style={{ width: 220, height: 220, imageRendering: 'pixelated' }} />
     </div>
   </Content>
 );
@@ -704,10 +759,9 @@ const CheckTable = () => (
 
 const Timing: Page = () => (
   <Content eyebrow="Appendix · Does it slow Claude Code down?" heading="Barely — measured">
-    <ul style={{ fontSize: 32, lineHeight: 1.4, margin: '36px 0 0', paddingLeft: 44 }}>
-      <li>Most tool calls: about 5 ms</li>
-      <li>The commit at the end of a reply: in the background; the reply does not wait</li>
-      <li>Push: in the background, at most every 10 minutes by default; right away when a session ends</li>
+    <ul style={{ fontSize: 30, lineHeight: 1.4, margin: '32px 0 0', paddingLeft: 44 }}>
+      <li>Most tool calls: about 5 ms. Commit and push run in the background; the reply does not wait.</li>
+      <li>Push: at most every 10 minutes by default, even while Claude Code is idle; right away when a session ends.</li>
     </ul>
     <div style={{ fontSize: 30, fontWeight: 700, margin: '24px 0 10px' }}>Checking GitHub for edits made elsewhere</div>
     <CheckTable />
@@ -775,6 +829,7 @@ const SyncDetail: Page = () => (
 
 export const notes: (string | undefined)[] = [
   `~10s. Hi, I'm Grimmer. Five minutes on giving Claude Code's files a Git history.
+(The name: mem, for memory, plus saga, the Old Norse word for a story or history: the story of how your agent's memory came to be.)
 (Taipei: you just wrote your first Mod — it has no history either.)`,
   `~35s. Claude keeps three kinds of files: its standing instructions, what it remembers, how it does tasks.
 It edits all three by itself, and none of it has history. What did it change, when, in which session? I couldn't tell,
@@ -786,6 +841,9 @@ and Claude works as before. One small Rust binary, about 5 ms for most tool call
 Agent is main, or a subagent's name when a subagent made the edit.
 A commit holds every change since the last one, including a hand edit or another parallel session's edit;
 it is named after the session whose turn ended. The conversation tells you who actually made it.)`,
+  `~20s. ~/.claude is hidden, and most of its sixty-odd entries are caches and logs; memory sits under folders named after
+encoded paths. The repository keeps only what matters, with names you can read, and index.md maps each one back to its
+project. That alone made it easier to browse and tidy: two memory folders with similar files stand out at a glance.`,
   `~55s. Now I can answer page 2's questions. A real case: I found a rule in my CLAUDE.md and asked, did you add this on your own?
 git blame gives the commit, the commit names the session, claude --resume reopens it.
 I didn't run these myself: I asked Claude, and it looked it up in the history. It had added the rule, and had said so in its reply. Since then: skills and memory, Claude edits and tells me; CLAUDE.md waits for my yes.
@@ -830,6 +888,7 @@ export default [
   Cover,
   Problem,
   HowItWorks,
+  WhatGoesIn,
   Answers,
   Numbers,
   NotJustThisMachine,
