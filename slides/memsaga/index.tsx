@@ -6,7 +6,9 @@ import {
   useSlidePageNumber,
 } from '@open-slide/core';
 import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
+import codevIcon from './assets/codev-icon.png';
 import codevQr from './assets/codev-qr.svg';
+import matchapackIcon from './assets/matchapack-icon.png';
 import matchapackQr from './assets/matchapack-qr.svg';
 import qr from './assets/memsaga-qr.svg';
 
@@ -562,7 +564,8 @@ const Extra = ({ name, href, line, status, small }: { name: string; href: string
 
 const OneMoreThing: Page = () => (
   <Content eyebrow="One more thing" heading="Two more side projects">
-    <div style={{ display: 'flex', gap: 60, marginTop: 44, alignItems: 'flex-start' }}>
+    <div style={{ display: 'flex', gap: 40, marginTop: 44, alignItems: 'flex-start' }}>
+      <img src={matchapackIcon} alt="matchapack icon" style={{ width: 120, height: 120, borderRadius: 24, flex: 'none' }} />
       <div style={{ flex: 1 }}>
         <Extra
           name="matchapack"
@@ -578,7 +581,8 @@ const OneMoreThing: Page = () => (
       </div>
       <img src={matchapackQr} alt="QR code for github.com/grimmerk/matchapack" style={{ width: 220, height: 220, imageRendering: 'pixelated' }} />
     </div>
-    <div style={{ display: 'flex', gap: 60, marginTop: 44, alignItems: 'flex-start' }}>
+    <div style={{ display: 'flex', gap: 40, marginTop: 44, alignItems: 'flex-start' }}>
+      <img src={codevIcon} alt="CodeV icon" style={{ width: 120, height: 120, flex: 'none' }} />
       <div style={{ flex: 1 }}>
         <Extra
           name="CodeV"
