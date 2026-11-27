@@ -193,8 +193,9 @@ export function buildDeck(lang: Lang) {
       <p style={{ fontSize: 30, color: muted, margin: '72px 0 0', fontFamily: mono }}>
         Grimmer · Tech Lead, <A href="https://fireflies.ai">Fireflies.ai</A> · {t('from Taiwan')} · <A href={URL_ME}>github.com/grimmerk</A>
       </p>
-      <div style={{ position: 'absolute', right: PAD, top: 96, textAlign: 'center' }}>
-        <img src={slidesQr} alt={`QR code for ${slidesUrl}`} style={{ width: 190, height: 190, imageRendering: 'pixelated' }} />
+      {/* Bottom right, flush with the right margin: the QR and its URL share one right edge. */}
+      <div style={{ position: 'absolute', right: PAD, bottom: 96, textAlign: 'right' }}>
+        <img src={slidesQr} alt={`QR code for ${slidesUrl}`} style={{ display: 'block', marginLeft: 'auto', width: 190, height: 190, imageRendering: 'pixelated' }} />
         <div style={{ fontSize: 22, color: muted, fontFamily: mono, marginTop: 10 }}>{slidesUrl.replace('https://', '')}</div>
       </div>
     </div>
@@ -283,26 +284,75 @@ export function buildDeck(lang: Lang) {
     </a>
   );
 
+  // The same three kinds as page 2 (instructions, notes, how-to guides), in the three places they
+  // can be kept. The appendix page Surfaces uses the same three column names.
+  const PLACE_APP = { title: t('Claude app'), sub: t('web, desktop, phone · kept with your account') };
+  const PLACE_MINE = { title: t('Claude Code · your files'), sub: t('~/.claude on your computer · just you') };
+  const PLACE_PROJECT = { title: t('Claude Code · project files'), sub: t('in the project folder · shared with the team') };
+
+  const GridHead = ({ title, sub, strong }: { title: ReactNode; sub: ReactNode; strong?: boolean }) => (
+    <div style={{ padding: '16px 20px', background: strong ? '#e6f1ee' : panel, borderTopLeftRadius: 14, borderTopRightRadius: 14, border: `2px solid ${strong ? teal : rule}`, borderBottom: 'none' }}>
+      <div style={{ fontSize: 30, fontWeight: 800 }}>{title}</div>
+      <div style={{ fontSize: 22, color: muted, marginTop: 4 }}>{sub}</div>
+    </div>
+  );
+
+  const GridCell = ({ children, strong, accent, last, dim }: { children: ReactNode; strong?: boolean; accent?: boolean; last?: boolean; dim?: boolean }) => (
+    <div
+      style={{
+        padding: '14px 20px',
+        fontSize: 27,
+        lineHeight: 1.35,
+        color: accent ? 'var(--osd-accent)' : dim ? soft : 'var(--osd-text)',
+        fontWeight: accent ? 700 : 400,
+        background: strong ? '#f0f7f5' : '#fff',
+        borderLeft: `2px solid ${strong ? teal : rule}`,
+        borderRight: `2px solid ${strong ? teal : rule}`,
+        borderTop: `1px solid ${rule}`,
+        borderBottom: last ? `2px solid ${strong ? teal : rule}` : 'none',
+        borderBottomLeftRadius: last ? 14 : 0,
+        borderBottomRightRadius: last ? 14 : 0,
+      }}
+    >
+      {children}
+    </div>
+  );
+
+  const RowLabel = ({ children }: { children: ReactNode }) => (
+    <div style={{ padding: '14px 0', fontSize: 25, color: muted, fontWeight: 700, alignSelf: 'center' }}>{children}</div>
+  );
+
   const Where: Page = () => (
-    <Content eyebrow={t('Ways to give Claude a memory')} heading={t('Three ways. Today: Claude Code’s own files.')} headingSize={64}>
-      <div style={{ display: 'flex', gap: 30, marginTop: 52, alignItems: 'stretch' }}>
-        <Card title={t('Built into claude.ai')} sub={t('Claude chat and Projects')}>
-          <div>{t('Instructions, memory and skills in your account.')}</div>
-          <div style={{ color: muted, marginTop: 10 }}>{t('Kept by Anthropic; you view and edit them in Settings.')}</div>
-        </Card>
-        <Card title={t('Notes you build yourself')} sub={t('like the talk you just heard')}>
-          <div>{t('Your own Markdown files and Git, set up so Claude can read them.')}</div>
-          <div style={{ color: muted, marginTop: 10 }}>{t('An external memory: you design the rules and the folders.')}</div>
-        </Card>
-        <Card title={t('Built into Claude Code')} sub={t('in a terminal, or the Code tab of the Claude desktop app')} strong>
-          <div>
-            <b>CLAUDE.md · {t('auto memory')} · {t('skills')}</b>
-          </div>
-          <div style={{ color: muted, marginTop: 10 }}>{t('Plain text files on your computer that Claude Code reads, and rewrites by itself.')}</div>
-        </Card>
+    <Content eyebrow={t('The big picture')} heading={t('Where Claude keeps its instructions and notes')} headingSize={60}>
+      <div style={{ display: 'grid', gridTemplateColumns: '230px 1fr 1fr 1fr', columnGap: 20, marginTop: 40, width: 1640 }}>
+        <div />
+        <GridHead {...PLACE_APP} />
+        <GridHead {...PLACE_MINE} strong />
+        <GridHead {...PLACE_PROJECT} />
+
+        <RowLabel>{t('Instructions')}</RowLabel>
+        <GridCell>{t('Your instructions (profile, project)')}</GridCell>
+        <GridCell strong>CLAUDE.md</GridCell>
+        <GridCell>{t('CLAUDE.md or AGENTS.md')}</GridCell>
+
+        <RowLabel>{t('Notes')}</RowLabel>
+        <GridCell>{t('Memory: Claude keeps it; you can view and edit it in Settings')}</GridCell>
+        <GridCell strong>{t('Auto memory, one folder per project')}</GridCell>
+        <GridCell dim>—</GridCell>
+
+        <RowLabel>{t('How-to guides')}</RowLabel>
+        <GridCell>{t('Skills you upload')}</GridCell>
+        <GridCell strong>{t('Skills')}</GridCell>
+        <GridCell>{t('Skills')}</GridCell>
+
+        <RowLabel>{t('History')}</RowLabel>
+        <GridCell last>{t('Kept by Anthropic')}</GridCell>
+        <GridCell last strong accent>{t('None. Today’s topic.')}</GridCell>
+        <GridCell last>{t('Git, together with the code')}</GridCell>
       </div>
-      <p style={{ fontSize: 24, color: muted, margin: '30px 0 0' }}>
-        <PageLink to={Surfaces}>{t('Which Claude reads which files (appendix)')}</PageLink>
+      <p style={{ fontSize: 25, color: muted, margin: '26px 0 0', lineHeight: 1.45 }}>
+        {t('You can also build notes of your own outside these, like the talk you just heard: an external memory Claude reads.')}{' '}
+        <PageLink to={Surfaces}>{t('Which Claude reads which place (appendix)')}</PageLink>
       </p>
     </Content>
   );
@@ -497,30 +547,32 @@ export function buildDeck(lang: Lang) {
   );
 
   const Surfaces: Page = () => (
-    <Content eyebrow={t('Appendix · Which Claude reads which files')} heading={t('Three places these files can live')} headingSize={56}>
-      <div style={{ display: 'grid', gridTemplateColumns: '430px 400px 400px 400px', fontSize: 24, border: `1px solid ${rule}`, borderRadius: 'var(--osd-radius)', overflow: 'hidden', width: 1630, marginTop: 30 }}>
+    <Content eyebrow={t('Appendix · The big picture, in detail')} heading={t('Which Claude reads which place')} headingSize={56}>
+      <div style={{ display: 'grid', gridTemplateColumns: '400px 410px 410px 410px', fontSize: 24, border: `1px solid ${rule}`, borderRadius: 'var(--osd-radius)', overflow: 'hidden', width: 1630, marginTop: 30 }}>
         <Cell head>{t('Where you use Claude')}</Cell>
-        <Cell head>{t('Your claude.ai account (kept by Anthropic)')}</Cell>
-        <Cell head>{t('A project’s repository (shared with a team)')}</Cell>
-        <Cell head>{t('~/.claude on your computer (just you)')}</Cell>
+        <Cell head>{PLACE_APP.title}<div style={{ fontWeight: 400, fontSize: 21 }}>{PLACE_APP.sub}</div></Cell>
+        <Cell head>{PLACE_MINE.title}<div style={{ fontWeight: 400, fontSize: 21 }}>{PLACE_MINE.sub}</div></Cell>
+        <Cell head>{PLACE_PROJECT.title}<div style={{ fontWeight: 400, fontSize: 21 }}>{PLACE_PROJECT.sub}</div></Cell>
 
-        <Cell>{t('Claude app: chat and Cowork (together since 10 Nov), Projects')}</Cell>
-        <Cell><Mark kind="yes">{t('instructions, memory, skills (yours, or shared in your organisation)')}</Mark></Cell>
+        <Cell>{t('Claude app: chat and Projects')}</Cell>
+        <Cell><Mark kind="yes">{t('your instructions, memory and skills (yours, or shared in your organisation)')}</Mark></Cell>
         <Cell><Mark kind="no">{t('not read')}</Mark></Cell>
         <Cell><Mark kind="no">{t('not read')}</Mark></Cell>
 
         <Cell>{t('Scheduled tasks in the cloud')}</Cell>
         <Cell><Mark kind="yes">{t('skills')}</Mark></Cell>
-        <Cell><Mark kind="yes">{t('a fresh copy each run, with its skills')}</Mark></Cell>
-        <Cell><Mark kind="no">{t('not read; no auto memory')}</Mark></Cell>
+        <Cell><Mark kind="no">{t('not read, so no auto memory')}</Mark></Cell>
+        <Cell><Mark kind="yes">{t('a fresh copy of the project each run, with its skills')}</Mark></Cell>
 
         <Cell strong>{t('Claude Code: terminal, or the desktop app’s Code tab')}</Cell>
-        <Cell strong><Mark kind="copy">{t('skills, copied in at the start of each session')}</Mark></Cell>
-        <Cell strong><Mark kind="yes">{t('the project’s CLAUDE.md (or AGENTS.md) and skills')}</Mark></Cell>
+        <Cell strong><Mark kind="copy">{t('a downloaded copy of the skills you added in the Claude app (one way)')}</Mark></Cell>
         <Cell strong><Mark kind="yes"><b>{t('CLAUDE.md, auto memory, skills: what memsaga keeps')}</b></Mark></Cell>
+        <Cell strong><Mark kind="yes">{t('CLAUDE.md (or AGENTS.md) and skills')}</Mark></Cell>
       </div>
       <p style={{ fontSize: 23, color: muted, margin: '18px 0 0', lineHeight: 1.45 }}>
-        {t('● reads it · ○ reads a copy · — does not. From Anthropic’s docs, 28 Nov 2026. That the desktop Code tab also reads CLAUDE.md and auto memory when a folder is chosen is my own test; the docs list skills.')}
+        {t('● reads it · ○ reads a copy: at the start of each session, Claude Code downloads the skills you added in the Claude app into ~/.claude/skills/synced/, and never uploads · — does not.')}
+        <br />
+        {t('Cowork, part of the Claude app since 10 Nov 2026, uses the app’s skills and does not read ~/.claude. From Anthropic’s docs, 28 Nov 2026; that the desktop Code tab also reads CLAUDE.md and auto memory when a folder is chosen is my own test.')}
       </p>
     </Content>
   );
@@ -583,6 +635,35 @@ export function buildDeck(lang: Lang) {
     </Content>
   );
 
+  // The two kinds of Claude Code files from page 3, as folders. Project files travel with the code in
+  // Git; the personal ones, including each project's auto memory, stay in ~/.claude.
+  const ProjectFiles: Page = () => (
+    <Content eyebrow={t('Appendix · Two kinds of Claude Code files')} heading={t('Project files travel with the code; yours stay on your computer')} headingSize={52}>
+      <div style={{ display: 'flex', gap: 40, marginTop: 36 }}>
+        <TreeBox title="~/code/webapp/" sub={t('a project folder, in Git, shared with the team')}>
+          <T line="CLAUDE.md" keep note={t('instructions for everyone on the project')} />
+          <T line="AGENTS.md" note={t('read instead, if there is no CLAUDE.md')} />
+          <T line=".claude/" />
+          <T line="  skills/release-notes/" />
+          <T line="    SKILL.md" keep note={t('a skill for this project')} />
+          <T line="  settings.json" note={t('shared settings')} />
+          <T line="src/  tests/  …" dim note={t('the code')} />
+        </TreeBox>
+        <TreeBox title="~/.claude/" sub={t('your files, on your computer only')} strong>
+          <T line="CLAUDE.md" keep note={t('your instructions, every project')} />
+          <T line="skills/" keep note={t('your skills, every project')} />
+          <T line="projects/" />
+          <T line="  -Users-you-code-webapp/" />
+          <T line="    memory/" keep note={t('auto memory for this project')} />
+          <T line="      MEMORY.md" keep />
+        </TreeBox>
+      </div>
+      <p style={{ fontSize: 27, color: muted, margin: '30px 0 0', lineHeight: 1.45 }}>
+        {t('Project files get Git history when you commit them with the code. Your files in ~/.claude, including each project’s auto memory, get none: that is the gap memsaga fills.')}
+      </p>
+    </Content>
+  );
+
   const Item = ({ mark, children, color }: { mark: string; children: ReactNode; color: string }) => (
     <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 14 }}>
       <Num n={mark} color={color} />
@@ -598,7 +679,7 @@ export function buildDeck(lang: Lang) {
             {t(<>One account on one computer: put <Code>~/.claude</Code> in Git yourself, keep only the files you want, and commit at the end of each session.</>)}
           </Item>
           <Item mark="2" color={muted}>
-            {t('You already keep your notes in a system you built (the middle column on page 3).')}
+            {t('You already keep your notes in a system you built yourself, outside Claude Code’s files.')}
           </Item>
           <Item mark="3" color={muted}>
             {t(<>You are on Windows: <A href={URL_ENGRAM}>Engram</A> is a similar tool.</>)}
@@ -643,7 +724,8 @@ export function buildDeck(lang: Lang) {
           <div style={{ marginTop: 6 }}>
             <Item mark="1" color={teal}>{t('Claude Code edits memory and skills, then tells me. CLAUDE.md waits for my OK.')}</Item>
             <Item mark="2" color={teal}>{t('When something looks off, the history shows what changed, in which session, and lets me undo it.')}</Item>
-            <Item mark="3" color={teal}>{t('Now and then, a tidy-up session: merge duplicates, delete stale notes.')}</Item>
+            <Item mark="3" color={teal}>{t('For the why, Claude Code reads that session’s saved conversation (kept 30 days by default), so it can explain any change.')}</Item>
+            <Item mark="4" color={teal}>{t('Now and then, a tidy-up session: merge duplicates, delete stale notes.')}</Item>
           </div>
         </Card>
       </div>
@@ -653,21 +735,39 @@ export function buildDeck(lang: Lang) {
   // Panel question 9 (second half): sharing skills and settings across a team or several machines.
   // Team options per Anthropic's docs, 2026-11-28 (code.claude.com skills, memory, managed-settings;
   // claude.com/docs plugins and skills).
+  // A bullet with a bold lead-in, so each point can be found at a glance.
+  const Pt = ({ lead, children }: { lead: ReactNode; children: ReactNode }) => (
+    <div style={{ display: 'flex', gap: 12, marginTop: 14, fontSize: 27, lineHeight: 1.4 }}>
+      <span style={{ color: teal, fontWeight: 800 }}>•</span>
+      <div>
+        <b>{lead}</b> <span style={{ color: muted }}>{children}</span>
+      </div>
+    </div>
+  );
+
+  const NumTitle = ({ n, children }: { n: string; children: ReactNode }) => (
+    <span style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
+      <Num n={n} color={teal} />
+      {children}
+    </span>
+  );
+
   const PanelSharing: Page = () => (
     <Content eyebrow={t('Appendix · For the panel')} heading={t('Sharing skills and settings')}>
       <div style={{ display: 'flex', gap: 30, marginTop: 40, alignItems: 'stretch' }}>
-        <Card title={<span style={{ display: 'flex', gap: 14, alignItems: 'center' }}><Num n="1" color={teal} />{t('My computers')}</span>}>
-          <div>{t('One private repository on GitHub.')}</div>
-          <div style={{ marginTop: 10 }}>{t('On another Mac: copy it once and run one restore command; CLAUDE.md, skills and memory are back.')}</div>
-          <div style={{ marginTop: 10, color: muted }}>{t('An edit on GitHub, even from a phone, comes back to the file Claude Code reads.')}</div>
+        <Card title={<NumTitle n="1">{t('My computers')}</NumTitle>}>
+          <Pt lead={t('One private repository')}>{t('on GitHub holds the history.')}</Pt>
+          <Pt lead={t('Another Mac:')}>{t('copy it once, run one restore command, and CLAUDE.md, skills and memory are back.')}</Pt>
+          <Pt lead={t('From a phone:')}>{t('an edit on GitHub comes back to the file Claude Code reads.')}</Pt>
         </Card>
-        <Card title={<span style={{ display: 'flex', gap: 14, alignItems: 'center' }}><Num n="2" color={teal} />{t('My two accounts')}</span>}>
-          <div>{t('Two Claude Code accounts on one Mac share one CLAUDE.md, skills and memory.')}</div>
-          <div style={{ marginTop: 10, color: muted }}>{t(<>My Mac app <A href={URL_CODEV}>CodeV</A> links them; memsaga records both and labels each change with its account.</>)}</div>
+        <Card title={<NumTitle n="2">{t('My two accounts')}</NumTitle>}>
+          <Pt lead={t('Shared files:')}>{t(<>two Claude Code accounts on one Mac use one CLAUDE.md, skills and memory; my Mac app <A href={URL_CODEV}>CodeV</A> links them.</>)}</Pt>
+          <Pt lead={t('One history:')}>{t('memsaga records both and labels each change with its account.')}</Pt>
         </Card>
-        <Card title={<span style={{ display: 'flex', gap: 14, alignItems: 'center' }}><Num n="3" color={teal} />{t('A team')}</span>}>
-          <div>{t('Put CLAUDE.md (or AGENTS.md) and skills in the project’s repository: everyone’s Claude Code reads them.')}</div>
-          <div style={{ marginTop: 10, color: muted }}>{t('Team and Enterprise plans: publish a skill to the organisation, or install a plugin for everyone.')}</div>
+        <Card title={<NumTitle n="3">{t('A team')}</NumTitle>}>
+          <Pt lead={t('In the project:')}>{t('CLAUDE.md (or AGENTS.md) and skills in the repository; everyone’s Claude Code reads them.')}</Pt>
+          <Pt lead={t('Claude app (Team, Enterprise):')}>{t('publish a skill to the organisation.')}</Pt>
+          <Pt lead={t('Plugins:')}>{t('an owner can install one for everyone.')}</Pt>
         </Card>
       </div>
     </Content>
@@ -746,6 +846,7 @@ export function buildDeck(lang: Lang) {
     Changed,
     Close,
     Surfaces,
+    ProjectFiles,
     WhatGoesIn,
     NeedIt,
     PanelWhatGoesWhere,
@@ -779,12 +880,14 @@ There are three kinds of files.
 CLAUDE.md: standing instructions, read at the start of every session.
 Auto memory: notes Claude Code writes on its own.
 Skills: how-to guides for one kind of task.`,
-    `~25s. (Short on time: say only the first and last sentences.)
-There are three ways to give Claude a memory.
-Claude chat keeps one in your claude.ai account.
-You can build your own, like the talk you just heard.
-And Claude Code has its own files on your computer.
-Today is about these files. Claude Code reads them, and rewrites them by itself.`,
+    `~30s. (Short on time: say only the lines marked *.)
+* Where does Claude keep its instructions and notes?
+The Claude app keeps them with your account.
+Claude Code keeps them as plain files.
+Project files sit in the project folder. They are usually saved in Git, together with the code.
+* Your own files sit in a hidden folder on your computer. Nothing keeps their history.
+* That is today's topic.
+You can also build notes of your own, like the talk you just heard.`,
     `~40s.
 Here is the problem.
 Claude Code changes these files every day. But nothing keeps a history.
@@ -831,7 +934,8 @@ Mine is free and open source.
 Thank you.
 ありがとうございました。
 (Arigatou gozaimashita.)`,
-    `Appendix, for the panel and questions. Which Claude reads which files.`,
+    `Appendix, for the panel and questions. Which Claude reads which place.`,
+    `Appendix, for questions only. Project files versus your own files, as folders.`,
     `Appendix, for questions only. What memsaga keeps, next to ~/.claude.`,
     `Appendix, for questions only.`,
     `Appendix, for panel question 2: reviewing memory and CLAUDE.md; what goes where.`,
