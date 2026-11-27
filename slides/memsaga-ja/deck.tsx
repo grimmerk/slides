@@ -288,7 +288,7 @@ export function buildDeck(lang: Lang) {
   // can be kept. The appendix page Surfaces uses the same three column names.
   const PLACE_APP = { title: t('Claude app'), sub: t('web, desktop, phone · kept with your account') };
   const PLACE_MINE = { title: t('Claude Code · your files'), sub: t('~/.claude on your computer · just you') };
-  const PLACE_PROJECT = { title: t('Claude Code · project files'), sub: t('in the project folder · shared with the team') };
+  const PLACE_PROJECT = { title: t('Claude Code · project files'), sub: t('in the project’s Git repository · shared with the team') };
 
   const GridHead = ({ title, sub, strong }: { title: ReactNode; sub: ReactNode; strong?: boolean }) => (
     <div style={{ padding: '16px 20px', background: strong ? '#e6f1ee' : panel, borderTopLeftRadius: 14, borderTopRightRadius: 14, border: `2px solid ${strong ? teal : rule}`, borderBottom: 'none' }}>
@@ -640,7 +640,7 @@ export function buildDeck(lang: Lang) {
   const ProjectFiles: Page = () => (
     <Content eyebrow={t('Appendix · Two kinds of Claude Code files')} heading={t('Project files travel with the code; yours stay on your computer')} headingSize={52}>
       <div style={{ display: 'flex', gap: 40, marginTop: 36 }}>
-        <TreeBox title="~/code/webapp/" sub={t('a project folder, in Git, shared with the team')}>
+        <TreeBox title="~/code/webapp/" sub={t('the project’s Git repository (repo), shared with the team, for example on GitHub')}>
           <T line="CLAUDE.md" keep note={t('instructions for everyone on the project')} />
           <T line="AGENTS.md" note={t('read instead, if there is no CLAUDE.md')} />
           <T line=".claude/" />
@@ -856,7 +856,7 @@ export function buildDeck(lang: Lang) {
   ];
 
   // The talk script, in simple English (the venue plans an app for live machine interpretation:
-  // short sentences, one idea each). About 500 words for the eight main pages, roughly four minutes.
+  // short sentences, one idea each). About 500 words for the eight main pages: 4 to 4.5 minutes at 110-120 words a minute; page 3 is the first cut.
   const notes: (string | undefined)[] = [
     `~15s. Say the first lines in Japanese, slowly:
 はじめまして。台湾から来た Grimmer です。
@@ -866,71 +866,65 @@ export function buildDeck(lang: Lang) {
 よろしくお願いします。
 (Yoroshiku onegaishimasu.)
 Then in English: Today I will share how I learned to let Claude Code clean up its own memory.`,
-    `~40s.
-First, how does Claude Code remember things?
-Claude Code is Claude working on your computer, in a terminal or in the desktop app.
-A session is one conversation with Claude Code.
-Every new session starts fresh. It does not remember yesterday.
-So Claude Code keeps notes in plain text files.
-Here is an example of auto memory.
-On Monday I say: "Remember, start the database before the tests."
-Claude Code writes that into a memory file.
-On Tuesday, a new session reads that note first.
+    `~35s.
+First, how does Claude Code remember?
+Claude Code is Claude working on your computer.
+A session is one conversation with it.
+Each session starts fresh. So Claude Code keeps notes in files.
+For example, on Monday I say: "Remember, start the database before the tests."
+Claude Code writes that into its auto memory.
+On Tuesday, a new session reads it first.
 There are three kinds of files.
-CLAUDE.md: standing instructions, read at the start of every session.
+CLAUDE.md: standing instructions.
 Auto memory: notes Claude Code writes on its own.
 Skills: how-to guides for one kind of task.`,
-    `~30s. (Short on time: say only the lines marked *.)
-* Where does Claude keep its instructions and notes?
-The Claude app keeps them with your account.
-Claude Code keeps them as plain files.
-Project files sit in the project folder. They are usually saved in Git, together with the code.
-* Your own files sit in a hidden folder on your computer. Nothing keeps their history.
-* That is today's topic.
-You can also build notes of your own, like the talk you just heard.`,
-    `~40s.
-Here is the problem.
-Claude Code changes these files every day. But nothing keeps a history.
-It is like a shared document with no version history.
-So three things happen.
-One: you forget what was tried. An idea was dropped last week, and it comes back again.
-Two: a bad edit cannot be undone. The old version is gone.
-Three: you cannot tell why. A new rule appears, and you do not know when it was added, or why.
-Because of this, I rarely let Claude Code touch a skill. And I never asked it to clean up its memory.`,
+    `~25s. (Short on time: say only the lines marked *.)
+* Where are these files kept?
+The Claude app keeps its own, with your account.
+Claude Code keeps two kinds of files.
+Project files live in the project's repository, so Git keeps their history.
+* Your own files live in a hidden folder. Nothing keeps their history.
+* That is today's topic.`,
     `~35s.
-So now, every change becomes a record.
-Git is a tool that keeps the history of files. One saved change is called a commit. Each commit has a short message.
-I wrote a small tool, memsaga. When Claude Code changes one of these files, memsaga saves a commit.
-The message carries the name of the session that made the change.
-There is also a quiet benefit.
-These files used to hide in a folder full of logs.
-Now they are in one place I can browse, even on my phone.
-Claude Code works as before. The files stay where they are.`,
+Here is the problem.
+Claude Code changes these files every day, with no history.
+It is like a shared document with no version history.
+Three things happen.
+You forget what was tried, and try it again.
+A bad edit cannot be undone.
+And when a new rule appears, you cannot tell when, or why.
+So I rarely let Claude Code touch a skill.
+And I never asked it to clean up its memory.`,
+    `~35s.
+So I wrote a small tool, memsaga.
+Git keeps the history of files. Each saved change is a commit, with a short message.
+When Claude Code changes one of these files, memsaga makes a commit.
+The message is the name of the session.
+A bonus: these files leave a hidden folder full of logs.
+Now I can browse them, even on my phone.
+Claude Code works as before.`,
     `~40s.
-Here is a real case.
+A real case.
 I found a rule in my CLAUDE.md: "Run the tests before every push."
 I did not remember writing it.
-So I asked Claude Code: did you add this rule yourself?
-Claude Code looked it up in the history. The record showed the time and the session.
-Then I read that session's saved conversation.
-Yes, Claude Code added it, and it said so in its reply. I had missed that line.
-Since then, I have a simple rule.
-Memory and skills: Claude Code can edit them, and tells me.
-CLAUDE.md: Claude Code waits for my OK.`,
-    `~40s.
-What changed for me?
+So I asked Claude Code: did you add this yourself?
+It checked the history: the time, and the session.
+It read that session's saved conversation.
+Yes, it added the rule, and it told me in its reply. I had missed it.
+Now my rule is simple.
+Memory and skills: Claude Code edits them and tells me.
+CLAUDE.md: it waits for my OK.`,
+    `~35s.
+What changed?
 Undo took away the fear.
-Now I let Claude Code clean up its memory.
-About 90 files were removed in these cleanups. Every one can come back.
-One of my skills changed 70 times in two months. I can see each change, and the session behind it.
-And the tool itself made mistakes. Twice, a sync bug broke some files. Both times, the history undid it.
-I think of it as a seatbelt.
-I rarely need it. But I drive differently because it is there.`,
+Now Claude Code cleans up its memory. About 90 files are gone, and every one can come back.
+One skill changed 70 times in two months, each change with its session.
+Even my tool broke files, twice. The history undid both.
+It is a seatbelt. I rarely need it, but I drive differently because it is there.`,
     `~20s.
-So this is my answer to today's theme: systems that don't break when you hand work to Claude.
-I can see every change. I can undo any change. So I can hand the work over.
-You do not need my tool for this. Any Git history of these files helps.
-Mine is free and open source.
+Today's theme is systems that don't break when you hand work to Claude.
+Mine is simple. I can see every change, and undo any change. So I can hand the work over.
+You don't need my tool for this. Any Git history of these files helps.
 Thank you.
 ありがとうございました。
 (Arigatou gozaimashita.)`,
