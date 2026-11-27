@@ -13,7 +13,7 @@ import slidesQrJa from './assets/slides-qr-ja.svg';
 //   slides/memsaga-ja/index.tsx      -> buildDeck('ja')  (what is shown on stage)
 // Every visible string goes through t(en, ja); a missing ja falls back to the English.
 // The speaker notes are the English talk script and are shared by both decks.
-// Numbers come from the author's own data repository (measured 2026-11-24, commits since
+// Numbers come from the author's own data repository (measured 2026-11-24 to 26, commits since
 // 2026-09-20); facts about other Claude surfaces were checked against Anthropic's docs on 2026-11-28.
 
 export type Lang = 'en' | 'ja';
@@ -38,6 +38,9 @@ const URL_CODEV = 'https://github.com/grimmerk/codev';
 // Anthropic's skill guide, section "Evaluation and iteration" (評価と反復 in the Japanese edition).
 const URL_SKILL_GUIDE_EN = 'https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices';
 const URL_SKILL_GUIDE_JA = 'https://platform.claude.com/docs/ja/agents-and-tools/agent-skills/best-practices';
+// Claude Code checkpoints: "Not a replacement for version control" (バージョン管理の代替ではありません).
+const URL_CHECKPOINT_EN = 'https://code.claude.com/docs/en/checkpointing';
+const URL_CHECKPOINT_JA = 'https://code.claude.com/docs/ja/checkpointing';
 
 const fill: CSSProperties = {
   width: '100%',
@@ -59,6 +62,9 @@ export function buildDeck(lang: Lang) {
     lang === 'ja'
       ? '"Hiragino Sans", "Hiragino Kaku Gothic ProN", -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif'
       : '-apple-system, BlinkMacSystemFont, "Helvetica Neue", "Hiragino Sans", system-ui, sans-serif';
+
+  // Japanese: break lines at phrase boundaries (Chromium 119+; other browsers ignore it).
+  const jaBreak = (lang === 'ja' ? { wordBreak: 'auto-phrase' } : {}) as CSSProperties;
 
   const design: DesignSystem = {
     palette: { bg: '#fbfaf7', text: '#1a1814', accent: '#b0641c' },
@@ -109,7 +115,7 @@ export function buildDeck(lang: Lang) {
   };
 
   const Eyebrow = ({ children }: { children: ReactNode }) => (
-    <div style={{ fontSize: 26, letterSpacing: '0.14em', color: 'var(--osd-accent)', fontWeight: 600, textTransform: 'uppercase' }}>{children}</div>
+    <div style={{ fontSize: 26, letterSpacing: lang === 'ja' ? '0.08em' : '0.14em', color: 'var(--osd-accent)', fontWeight: 600, textTransform: lang === 'ja' ? 'none' : 'uppercase' }}>{children}</div>
   );
 
   const Heading = ({ children, size = 68 }: { children: ReactNode; size?: number }) => (
@@ -119,7 +125,7 @@ export function buildDeck(lang: Lang) {
   );
 
   const Content = ({ children, eyebrow, heading, headingSize }: { children?: ReactNode; eyebrow: ReactNode; heading: ReactNode; headingSize?: number }) => (
-    <div style={{ ...fill, padding: `110px ${PAD}px 0` }}>
+    <div lang={lang} style={{ ...fill, ...jaBreak, padding: `110px ${PAD}px 0` }}>
       <Eyebrow>{eyebrow}</Eyebrow>
       <Heading size={headingSize}>{heading}</Heading>
       {children}
@@ -176,7 +182,7 @@ export function buildDeck(lang: Lang) {
   // ---------- 1. cover ----------
 
   const Cover: Page = () => (
-    <div style={{ ...fill, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: `0 ${PAD}px` }}>
+    <div lang={lang} style={{ ...fill, ...jaBreak, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: `0 ${PAD}px` }}>
       <Eyebrow>Fukuoka | Claude Meetup · 2026-11-29</Eyebrow>
       <h1
         style={{
@@ -191,7 +197,7 @@ export function buildDeck(lang: Lang) {
       >
         {t(
           <>Letting Claude clean up its memory, <span style={{ color: 'var(--osd-accent)' }}>without fear</span></>,
-          <>Claude に記憶の整理を、<span style={{ color: 'var(--osd-accent)' }}>安心して</span>任せる</>,
+          <>Claude に記憶の整理を、<br /><span style={{ color: 'var(--osd-accent)' }}>安心して</span>任せる</>,
         )}
       </h1>
       <p style={{ fontSize: 44, color: muted, margin: 0, lineHeight: 1.4 }}>{t('Git history for Claude Code’s CLAUDE.md, memory and skills', 'Claude Code の CLAUDE.md・メモリ・スキルに Git の履歴を')}</p>
@@ -239,15 +245,15 @@ export function buildDeck(lang: Lang) {
   );
 
   const Remembers: Page = () => (
-    <Content eyebrow={t('How Claude Code remembers', 'Claude Code はどう覚えているか')} heading={t('Each session starts fresh, so Claude Code keeps notes in files', 'セッションは毎回ゼロから。だから Claude Code はファイルにメモを残す')} headingSize={54}>
+    <Content eyebrow={t('How Claude Code remembers', 'Claude Code はどう覚えているか')} heading={t<ReactNode>('Each session starts with no memory, so Claude Code keeps notes in files', <>セッションは毎回ゼロから。<br />だから Claude Code はファイルにメモを残す</>)} headingSize={54}>
       <div style={{ marginTop: 18 }}>
-        <Gloss term="Claude Code">{t('Claude working on your computer: in a terminal, or the desktop app', 'パソコンの中で作業する Claude（ターミナル、またはデスクトップアプリ）')}</Gloss>
+        <Gloss term="Claude Code">{t('Claude working on your computer: in a terminal, or the Code tab of the desktop app', 'パソコン上で作業する Claude')}</Gloss>
         <Gloss term={t('session', 'セッション')}>{t('one conversation with Claude Code', 'Claude Code との1回の会話')}</Gloss>
       </div>
       <div style={{ fontSize: 24, color: teal, fontWeight: 700, margin: '26px 0 10px', letterSpacing: '0.06em' }}>{t('EXAMPLE: AUTO MEMORY', '例：自動メモリ（auto memory）')}</div>
       <div style={{ display: 'flex', gap: 22, alignItems: 'flex-end' }}>
-        <Step n="1" label={t('Monday: you say', '月曜：あなたが言う')}>
-          <Bubble who="">{t('“Remember: start the database before the tests.”', '「覚えておいて：テストの前にデータベースを起動すること」')}</Bubble>
+        <Step n="1" label={t('Monday: I say', '月曜：こう頼む')}>
+          <Bubble who="">{t<ReactNode>('“Remember: start the database before the tests.”', <>「覚えておいて。<br />テスト前にデータベースを起動」</>)}</Bubble>
         </Step>
         <div style={{ fontSize: 40, color: muted, paddingBottom: 18 }}>→</div>
         <Step n="2" label={t('Claude Code writes a note', 'Claude Code がメモを書く')}>
@@ -259,24 +265,26 @@ export function buildDeck(lang: Lang) {
         <div style={{ fontSize: 40, color: muted, paddingBottom: 18 }}>→</div>
         <Step n="3" label={t('Tuesday: a new session reads it first', '火曜：新しいセッションが最初に読む')}>
           <Bubble who="" claude>
-            {t('“Starting the database, then the tests.”', '「データベースを起動してから、テストを実行します」')}
+            {t('“Starting the database first.”', '「先にデータベースを起動します」')}
           </Bubble>
         </Step>
       </div>
-      <div style={{ display: 'flex', gap: 28, marginTop: 34 }}>
-        <Card title="CLAUDE.md" sub={t('Standing instructions', '基本の指示書')}>
+      <div style={{ display: 'flex', gap: 28, marginTop: 26 }}>
+        <Card title="CLAUDE.md" sub={t('Instructions it reads every time', '毎回読む指示書')}>
           {t('Read at the start of every session.', 'セッションの最初に毎回読まれる。')}
         </Card>
         <Card title={t('Auto memory', '自動メモリ')} sub={t('Notes', 'メモ')}>
-          {t('Claude Code writes them on its own as it works (on by default), or when you say “remember”.', '作業しながら Claude Code が自分で書く（初期設定でオン）。「覚えておいて」と言ったときも。')}
+          {t('Claude Code writes them on its own as it works (on by default), or when you say “remember”.', 'Claude Code が作業中に自分で書く（デフォルトで有効）。頼んだときも。')}
         </Card>
         <Card title={t('Skills', 'スキル')} sub={t('How-to guides', '手順書')}>
-          {t('Steps for one kind of task, loaded when the task needs them.', 'ある種類の作業の手順。その作業のときだけ読み込まれる。')}
+          {t('Steps for one kind of task, loaded when the task needs them.', '特定の作業の手順。必要なときだけ読み込まれる。')}
         </Card>
       </div>
-      <p style={{ fontSize: 25, color: muted, margin: '18px 0 0' }}>
-        {t('CLAUDE.md and skills: you write them, ask Claude Code to update them, or tell it when it may update them on its own.', 'CLAUDE.md とスキルは、自分で書く・Claude Code に更新を頼む・自分で更新してよい場面を伝える、のいずれでも。')}
+      {lang === 'en' && (
+        <p style={{ fontSize: 25, color: muted, margin: '18px 0 0' }}>
+        {t('CLAUDE.md and skills: you write them, ask Claude Code to update them, or tell it when it may update them on its own.', 'CLAUDE.md とスキルは、自分で書いても、Claude Code に頼んでもよい。')}
       </p>
+      )}
     </Content>
   );
 
@@ -291,9 +299,9 @@ export function buildDeck(lang: Lang) {
 
   // The same three kinds as page 2 (instructions, notes, how-to guides), in the three places they
   // can be kept. The appendix page Surfaces uses the same three column names.
-  const PLACE_APP = { title: t('Claude app', 'Claude アプリ'), sub: t('web, desktop, phone · kept with your account', 'Web・デスクトップ・スマホ · アカウントに保存') };
-  const PLACE_MINE = { title: t('Claude Code · your files', 'Claude Code · 自分のファイル'), sub: t('~/.claude on your computer · just you', 'パソコンの ~/.claude · 自分だけ') };
-  const PLACE_PROJECT = { title: t('Claude Code · project files', 'Claude Code · プロジェクトのファイル'), sub: t('in the project’s Git repository · shared with the team', 'プロジェクトの Git リポジトリ · チームで共有') };
+  const PLACE_APP = { title: t('Claude app', 'Claude アプリ'), sub: t('web, desktop, phone · kept with your account', 'Web・デスクトップ・スマホ／アカウントに保存') };
+  const PLACE_MINE = { title: t<ReactNode>(<>Claude Code<br />your files</>, <>Claude Code<br />自分用のファイル</>), sub: t('~/.claude on your computer · just you', 'パソコンの ~/.claude／自分だけ') };
+  const PLACE_PROJECT = { title: t<ReactNode>(<>Claude Code<br />project files</>, <>Claude Code<br />プロジェクトのファイル</>), sub: t('in the project’s Git repository · shared with the team', 'Git で管理するプロジェクト／チームで共有') };
 
   const GridHead = ({ title, sub, strong }: { title: ReactNode; sub: ReactNode; strong?: boolean }) => (
     <div style={{ padding: '16px 20px', background: strong ? '#e6f1ee' : panel, borderTopLeftRadius: 14, borderTopRightRadius: 14, border: `2px solid ${strong ? teal : rule}`, borderBottom: 'none' }}>
@@ -329,7 +337,11 @@ export function buildDeck(lang: Lang) {
 
   const Where: Page = () => (
     <Content eyebrow={t('The big picture', '全体像')} heading={t('Where Claude keeps its instructions and notes', 'Claude は指示とメモをどこに置いているか')} headingSize={60}>
-      <div style={{ display: 'grid', gridTemplateColumns: '230px 1fr 1fr 1fr', columnGap: 20, marginTop: 40, width: 1640 }}>
+      <div style={{ marginTop: 16 }}>
+        <Gloss term="Git">{t('a tool that keeps the history of files', 'ファイルの変更履歴を残す仕組み')}</Gloss>
+        <Gloss term={t('repository (repo)', 'リポジトリ')}>{t('a project’s files together with their history', 'ファイルとその履歴をまとめて保存する場所')}</Gloss>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '230px 1fr 1fr 1fr', columnGap: 20, marginTop: 24, width: 1640 }}>
         <div />
         <GridHead {...PLACE_APP} />
         <GridHead {...PLACE_MINE} strong />
@@ -341,7 +353,7 @@ export function buildDeck(lang: Lang) {
         <GridCell>{t('CLAUDE.md or AGENTS.md', 'CLAUDE.md または AGENTS.md')}</GridCell>
 
         <RowLabel>{t('Notes', 'メモ')}</RowLabel>
-        <GridCell>{t('Memory: Claude keeps it; you can view and edit it in Settings', 'メモリ：Claude が管理。設定から見る・直すこともできる')}</GridCell>
+        <GridCell>{t('Memory: Claude keeps it; you can view and edit it in Settings', 'メモリ：Claude が管理（設定画面で確認・編集できる）')}</GridCell>
         <GridCell strong>{t('Auto memory, one folder per project', '自動メモリ（プロジェクトごとに1フォルダ）')}</GridCell>
         <GridCell dim>—</GridCell>
 
@@ -351,12 +363,12 @@ export function buildDeck(lang: Lang) {
         <GridCell>{t('Skills', 'スキル')}</GridCell>
 
         <RowLabel>{t('History', '履歴')}</RowLabel>
-        <GridCell last>{t('Kept by Anthropic', 'Anthropic 側で管理')}</GridCell>
+        <GridCell last>{t('— (not covered today)', '—（今日は対象外）')}</GridCell>
         <GridCell last strong accent>{t('None. Today’s topic.', 'なし。今日のテーマ')}</GridCell>
         <GridCell last>{t('Git, together with the code', 'Git（コードと一緒に）')}</GridCell>
       </div>
       <p style={{ fontSize: 25, color: muted, margin: '26px 0 0', lineHeight: 1.45 }}>
-        {t('You can also build notes of your own outside these, like the talk you just heard: an external memory Claude reads.', 'このほか、前の発表のように、メモの仕組みを自分で作ることもできます（Claude が読む外部の記憶）。')}{' '}
+        {t('Like the talk before mine, you can also build your own notes system that Claude reads.', '前の発表のように、Claude が読むメモの仕組みを自分で作る方法もあります。')}{' '}
         <PageLink to={Surfaces}>{t('Which Claude reads which place (appendix)', 'どの Claude がどこを読むか（付録）')}</PageLink>
       </p>
     </Content>
@@ -375,17 +387,21 @@ export function buildDeck(lang: Lang) {
   );
 
   const Problem: Page = () => (
-    <Content eyebrow={t('The problem', '課題')} heading={t('Claude Code edits these files every day, and keeps no history', 'Claude Code は毎日これらのファイルを書き換える。でも履歴は残らない')} headingSize={60}>
+    <Content eyebrow={t('The problem', '課題')} heading={t<ReactNode>('Claude Code edits these files every day, with no history to look back on', <>Claude Code は毎日これらのファイルを書き換える。<br />でも、見返せる履歴は残らない</>)} headingSize={60}>
       <p style={{ fontSize: 34, lineHeight: 1.45, margin: '28px 0 0', maxWidth: 1600 }}>
-        {t('It is like a shared document with no version history: it keeps changing, and you cannot see what changed.', '変更履歴のない共有ドキュメントのようなもの。どんどん変わるのに、何が変わったのか見えません。')}
+        {t('It is like a document you and Claude Code both edit, with no version history: it keeps changing, and you cannot see what changed.', '自分と Claude Code が一緒に編集する、変更履歴のない文書のようなもの。どんどん変わるのに、何が変わったのかわからない。')}
       </p>
       <div style={{ display: 'flex', gap: 26, marginTop: 40 }}>
-        <Pain n="1" head={t('You forget what was tried', '何を試したか忘れる')} body={t('An idea was tried last week and dropped. Nobody remembers, so it is tried again.', '先週試してやめた案を、誰も覚えていないので、また試してしまう。')} />
-        <Pain n="2" head={t('A bad edit cannot be undone', 'まずい変更を元に戻せない')} body={t('The old version is simply gone.', '前のバージョンはもう残っていない。')} />
-        <Pain n="3" head={t('You cannot tell why', '理由がわからない')} body={t('A new rule appears. When was it added, in which session, and why?', '新しいルールが増えている。いつ、どのセッションで、なぜ？')} />
+        <Pain n="1" head={t('You forget what was tried', '何を試したか忘れる')} body={t('An idea was tried last week and dropped. Neither you nor Claude Code remembers, so it is tried again.', '先週試してやめた案を、自分も Claude も覚えていない。だからまた試してしまう。')} />
+        <Pain n="2" head={t('Last week’s bad edit cannot be undone', '先週のまずい変更は戻せない')} body={t('Rewind only undoes the current session’s edits.', '巻き戻し（rewind）で戻せるのは、今のセッションの変更だけ。')} />
+        <Pain n="3" head={t('You cannot tell why', '理由がわからない')} body={t('A rule you don’t remember appears. When, in which session, and why?', '知らないルールが増えている。いつ・どのセッションで・なぜ？')} />
       </div>
       <p style={{ fontSize: 38, fontWeight: 700, margin: '50px 0 0', color: 'var(--osd-accent)' }}>
         {t('So I rarely let Claude Code touch a skill, and never asked it to clean up its memory.', 'だから、スキルはほとんど触らせず、メモリの整理は一度も頼みませんでした。')}
+      </p>
+      <p style={{ fontSize: 23, color: muted, margin: '36px 0 0' }}>
+        {t('Anthropic’s docs on rewind (checkpoints):', 'Anthropic のドキュメントも、巻き戻し（チェックポイント）について：')}{' '}
+        <A href={t(URL_CHECKPOINT_EN, URL_CHECKPOINT_JA)}>{t('“Not a replacement for version control”', '「バージョン管理の代替ではありません」')}</A>
       </p>
     </Content>
   );
@@ -403,10 +419,10 @@ export function buildDeck(lang: Lang) {
   );
 
   const WhatIDo: Page = () => (
-    <Content eyebrow={t('What I do now', '今のやり方')} heading={t('Every change becomes a record, named after its session', '変更はすべて記録に。名前はそのセッションから')} headingSize={62}>
+    <Content eyebrow={t('What I do now', '今のやり方')} heading={t('Every change becomes a record, named after its session', 'すべての変更を、セッション名つきで記録')} headingSize={62}>
       <div style={{ marginTop: 18 }}>
         <Gloss term="Git">{t('a tool that keeps the history of files', 'ファイルの変更履歴を残す仕組み')}</Gloss>
-        <Gloss term={t('commit', 'コミット（commit）')}>{t('one saved change, with a short message', '変更を1件の記録として保存したもの（短いメッセージ付き）')}</Gloss>
+        <Gloss term={t('commit', 'コミット（commit）')}>{t('one saved record of a change, with a short message', '変更1件分の記録（短い説明付き）')}</Gloss>
       </div>
       <div style={{ display: 'flex', gap: 40, marginTop: 28, alignItems: 'flex-start' }}>
         <div style={{ width: 900, background: '#fff', border: `2px solid ${rule}`, borderRadius: 'var(--osd-radius)', padding: '18px 30px' }}>
@@ -416,9 +432,9 @@ export function buildDeck(lang: Lang) {
           <HistoryRow when={t('Mon 18:15', '月 18:15')} title={t('session “write release notes”', 'セッション「リリースノートを書く」')} what={t('skills/release-notes: 3 lines changed', 'skills/release-notes：3行を変更')} />
         </div>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <Card title={<Code>~/.claude</Code>} sub={t('A hidden folder: about 60 items, mostly logs and caches.', '隠しフォルダ。約60項目、ほとんどがログやキャッシュ。')} />
+          <Card title={<Code>~/.claude</Code>} sub={t('A hidden folder: about 60 items, mostly logs and caches.', '隠しフォルダ。約60項目の大半はログやキャッシュ。')} />
           <div style={{ fontSize: 34, color: muted, textAlign: 'center' }}>↓</div>
-          <Card title={t('A folder you can browse', '見て回れるフォルダに')} sub={t('Only CLAUDE.md, memory and skills, with readable names. On GitHub, even from a phone.', 'CLAUDE.md・メモリ・スキルだけを、わかりやすい名前で。GitHub 上で、スマホからでも。')} strong />
+          <Card title={t('A private folder you can browse', '見やすいフォルダに（非公開）')} sub={t('Only CLAUDE.md, memory and skills, with readable names. Private on GitHub, even from a phone.', 'CLAUDE.md・メモリ・スキルだけを、わかりやすい名前で。GitHub（非公開）で、スマホからも見られる。')} strong />
           <div style={{ fontSize: 22, color: muted, textAlign: 'right' }}>
             <PageLink to={WhatGoesIn}>{t('The two folders side by side (appendix)', '2つのフォルダの比較（付録）')}</PageLink>
           </div>
@@ -432,7 +448,7 @@ export function buildDeck(lang: Lang) {
       </p>
       {/* Not spoken: for engineers in the room. */}
       <p style={{ fontSize: 23, color: soft, margin: '10px 0 0' }}>
-        {t('How: Claude Code hooks run it at the end of each turn · one small program · about 5 ms for most tool calls ·', '仕組み：各ターンの終わりに Claude Code のフック（hooks）が実行 · 小さなプログラム1つ · ほとんどのツール呼び出しで約 5 ms ·')}{' '}
+        {t('How: Claude Code hooks run it at the end of each turn · one small program · about 5 ms for most tool calls ·', '仕組み：Claude Code のフック（hooks）から各ターンの終わりに実行／小さなプログラム1つ／ツール呼び出し1回あたり約 5 ms（ほとんどの場合）／')}{' '}
         <PageLink to={OneRecord}>{t('one record, in full (appendix)', '記録1件の全体（付録）')}</PageLink>
       </p>
     </Content>
@@ -460,24 +476,24 @@ export function buildDeck(lang: Lang) {
   const Arrow = () => <div style={{ fontSize: 44, color: muted, alignSelf: 'center' }}>→</div>;
 
   const Story: Page = () => (
-    <Content eyebrow={t('A real case: what I asked Claude Code', '実例：Claude Code に聞いたこと')} heading={t('“Did you add this rule yourself?”', '「このルール、自分で追加した？」')} headingSize={66}>
+    <Content eyebrow={t('A real case, details simplified: what I asked Claude Code', '実例（表示は簡略化）：Claude Code に聞いたこと')} heading={t('“Did you add this rule yourself?”', '「このルール、自分で追加した？」')} headingSize={66}>
       <div style={{ display: 'flex', gap: 20, marginTop: 40 }}>
-        <FlowBox label={t('A rule in my CLAUDE.md', '私の CLAUDE.md にあるルール')} body={t('“Run the tests before every push.”', '「push の前に必ずテストを実行する」')} />
+        <FlowBox label={t('A rule in my CLAUDE.md', '私の CLAUDE.md にあるルール')} body={t('“Always run the tests first.”', '「必ず先にテストを実行する」')} />
         <Arrow />
         <FlowBox label={t('The record that added it', 'それを追加した記録')} body={<>{t('Tue 14:02', '火 14:02')}<br />{t('session “fix flaky login test”', 'セッション「不安定なログインテストを直す」')}</>} />
         <Arrow />
-        <FlowBox label={t('That session’s saved conversation', 'そのセッションの保存された会話')} body={t('Why the rule was added', 'ルールを追加した理由')} accent />
+        <FlowBox label={t('That session’s saved conversation', 'そのセッションの保存された会話')} body={t('The conversation that led to it', '追加に至った会話')} accent />
       </div>
       <p style={{ fontSize: 33, lineHeight: 1.5, margin: '40px 0 0', maxWidth: 1620 }}>
-        {t('I did not search myself. Claude Code looked it up in the history. Yes, it had added the rule, and it said so in its reply. I had missed that line.', '自分では調べていません。Claude Code が履歴を調べてくれました。追加したのはやはり Claude Code で、返信の中でもそう伝えていました。私が見落としていたのです。')}
+        {t('I did not search myself. Claude Code looked it up in the history. Yes, it had added the rule, and its reply back then said so. I had missed that line.', '自分では調べていません。Claude Code が履歴をたどってくれました。追加したのは、やはり Claude Code。追加したときの返信でも、そう伝えてくれていました。私が見落としていたのです。')}
       </p>
       <p style={{ fontSize: 33, lineHeight: 1.5, margin: '22px 0 0', fontWeight: 700 }}>
-        {t('My rule since: memory and skills, Claude Code edits and tells me. CLAUDE.md waits for my OK.', 'それ以来のルール：メモリとスキルは Claude Code が編集して報告。CLAUDE.md は私の OK を待つ。')}
+        {t('My rule since: memory and skills, Claude Code edits and tells me. CLAUDE.md waits for my OK. If I miss a line again, the history still has it.', 'それ以来のルール：メモリとスキルは Claude Code が編集して報告。CLAUDE.md は私が OK してから。また見落としても、履歴に残っている。')}
       </p>
       {/* Not spoken: more questions the history answered (from the Taipei deck). */}
       <p style={{ fontSize: 24, color: muted, margin: '34px 0 0', lineHeight: 1.5 }}>
-        {t('The history also answered, for me and for other sessions:', '履歴が答えてくれたほかの質問（私にも、ほかのセッションにも）：')}{' '}
-        {t('“Which version of the skill did you load?” · “What did the other session just change?” · “Where did this file go?”', '「どのバージョンのスキルを読み込んだ？」·「別のセッションがさっき何を変えた？」·「このファイルはどこへ行った？」')}
+        {t('The history also answered, for me and for other sessions:', '履歴で答えられたほかの質問（私からも、別のセッションからも）：')}{' '}
+        {t('“Which version of the skill did you load?” · “What did the other session just change?” · “Where did this file go?”', '「どのバージョンのスキルを読み込んだ？」「別のセッションがさっき何を変えた？」「このファイルはどこへ行った？」')}
       </p>
     </Content>
   );
@@ -493,17 +509,17 @@ export function buildDeck(lang: Lang) {
   );
 
   const Changed: Page = () => (
-    <Content eyebrow={t('What changed for me', '私にとって変わったこと')} heading={t('Undo took away the fear. Now I hand over the cleanup.', '元に戻せるから、怖くない。整理を任せられるようになった')} headingSize={62}>
+    <Content eyebrow={t('What changed for me', '私にとって変わったこと')} heading={t<ReactNode>('Undo took away the fear. Now I hand over the cleanup.', <>元に戻せるから、怖くない。<br />整理を任せられるようになった</>)} headingSize={62}>
       <div style={{ display: 'flex', gap: 60, marginTop: 56 }}>
-        <Big n="~90" head={t('files removed in Claude Code’s cleanups', 'Claude Code の整理で削除したファイル')} body={t('Duplicate and stale notes. Every one can come back.', '重複や古いメモ。どれも元に戻せる。')} />
-        <Big n="70" head={t('changes to one skill in two months', '1つのスキルへの変更（2か月間）')} body={t('Each with the session that made it. A skill gets better one small change at a time.', 'どれも、変更したセッションがわかる。スキルは小さな変更の積み重ねで良くなる。')} />
-        <Big n="2" head={t('times the tool itself broke files', 'ツール自体がファイルを壊した回数')} body={t('A sync bug, twice. Each time, the history undid it.', '同期のバグで2回。どちらも履歴で元に戻せた。')} />
+        <Big n={t('~90', '約90')} head={t('files deleted so far', 'これまでに削除したファイル')} body={t('As Claude Code reorganized its memory. Every one can come back.', 'Claude Code がメモリを整理する中で。どれも元に戻せる。')} />
+        <Big n="70" head={t('recorded changes to one skill (two months)', '1つのスキルの変更記録（2か月間）')} body={t('Small steps, each with its session. That is how a skill gets better.', '小さな変更を、それぞれセッション名つきで。スキルはこうして良くなる。')} />
+        <Big n="2" head={t('times my own tool, memsaga, broke files', '自作ツール memsaga のバグでファイルが壊れた回数')} body={t('A sync bug, twice. The history undid both, and both are fixed.', '同期のバグで2回。どちらも履歴で元に戻し、修正済み。')} />
       </div>
       <p style={{ fontSize: 38, lineHeight: 1.45, margin: '64px 0 0', fontWeight: 700 }}>
         {t('Like a seatbelt: I rarely need it, but I drive differently because it is there.', 'シートベルトのようなもの。めったに出番はないけれど、あるから安心して運転できる。')}
       </p>
       <p style={{ fontSize: 24, color: muted, margin: '40px 0 0' }}>
-        {t('Anthropic’s guide also says to improve a skill step by step:', 'Anthropic のガイドも、スキルは少しずつ改善していくものとしています：')}{' '}
+        {t('Anthropic’s guide also says to improve a skill step by step:', 'Anthropic のガイドでも、スキルは少しずつ改善していくものとされています：')}{' '}
         <A href={t(URL_SKILL_GUIDE_EN, URL_SKILL_GUIDE_JA)}>{t('“Skill authoring best practices”, Evaluation and iteration', '「スキル作成のベストプラクティス」の「評価と反復」')}</A>
       </p>
     </Content>
@@ -512,7 +528,7 @@ export function buildDeck(lang: Lang) {
   // ---------- 8. close ----------
 
   const Close: Page = () => (
-    <div style={{ ...fill, padding: `110px ${PAD}px 0`, display: 'flex', gap: 70 }}>
+    <div lang={lang} style={{ ...fill, ...jaBreak, padding: `110px ${PAD}px 0`, display: 'flex', gap: 70 }}>
       <div style={{ flex: 1 }}>
         <Eyebrow>{t('Systems that don’t break when you hand work to Claude', 'Claude に任せても壊れない仕組み')}</Eyebrow>
         <div style={{ fontSize: 96, fontWeight: 800, lineHeight: 1.15, margin: '40px 0 0', letterSpacing: '-0.02em' }}>
@@ -525,7 +541,7 @@ export function buildDeck(lang: Lang) {
           {t('The idea needs no special tool: any Git history of these files helps.', '特別なツールは要りません。これらのファイルを Git で履歴に残すだけでも役に立ちます。')}
         </p>
         <p style={{ fontSize: 28, color: muted, margin: '20px 0 0', lineHeight: 1.6 }}>
-          {t('Mine:', '私のツール：')} <A href={URL_SITE}>memsaga.grimmer.io</A> · {t('free and open source (MIT) · macOS and Linux', '無料・オープンソース（MIT）· macOS と Linux')}
+          {t('Mine:', '私のツール：')} <A href={URL_SITE}>memsaga.grimmer.io</A> · {t('free and open source (MIT) · macOS and Linux', '無料・オープンソース（MIT）／macOS・Linux 対応')}
           <br />
           {t('These slides:', 'このスライド：')} <A href={slidesUrl}>{slidesUrl.replace('https://', '')}</A>
         </p>
@@ -586,12 +602,12 @@ export function buildDeck(lang: Lang) {
         <Cell><Mark kind="yes">{t('a fresh copy of the project each run, with its skills', '実行のたびにプロジェクトを新しく取得（そのスキルも）')}</Mark></Cell>
 
         <Cell strong>{t('Claude Code: terminal, or the desktop app’s Code tab', 'Claude Code：ターミナル、またはデスクトップアプリの Code タブ')}</Cell>
-        <Cell strong><Mark kind="copy">{t('a downloaded copy of the skills you added in the Claude app (one way)', 'Claude アプリに追加したスキルを、ダウンロードしたコピー（一方向）')}</Mark></Cell>
+        <Cell strong><Mark kind="copy">{t('a downloaded copy of the skills you added in the Claude app (one way)', 'Claude アプリに追加したスキルのコピー（ダウンロードのみ）')}</Mark></Cell>
         <Cell strong><Mark kind="yes"><b>{t('CLAUDE.md, auto memory, skills: what memsaga keeps', 'CLAUDE.md・自動メモリ・スキル：memsaga が記録するもの')}</b></Mark></Cell>
         <Cell strong><Mark kind="yes">{t('CLAUDE.md (or AGENTS.md) and skills', 'CLAUDE.md（または AGENTS.md）とスキル')}</Mark></Cell>
       </div>
       <p style={{ fontSize: 23, color: muted, margin: '18px 0 0', lineHeight: 1.45 }}>
-        {t('● reads it · ○ reads a copy: at the start of each session, Claude Code downloads the skills you added in the Claude app into ~/.claude/skills/synced/, and never uploads · — does not.', '● 読む · ○ コピーを読む：セッション開始時に、Claude アプリに追加したスキルを Claude Code が ~/.claude/skills/synced/ にダウンロード（アップロードはしない）· — 読まない')}
+        {t<ReactNode>(<>● reads it<br />○ reads a copy: at the start of each session, Claude Code downloads the skills you added in the Claude app into ~/.claude/skills/synced/, and never uploads<br />— does not</>, <>● 読む<br />○ コピーを読む（セッション開始時に、Claude アプリのスキルを ~/.claude/skills/synced/ にダウンロード。アップロードはしない）<br />— 読まない</>)}
         <br />
         {t('Cowork, part of the Claude app since 10 Nov 2026, uses the app’s skills and does not read ~/.claude. From Anthropic’s docs, 28 Nov 2026; that the desktop Code tab also reads CLAUDE.md and auto memory when a folder is chosen is my own test.', 'Cowork（2026年11月10日から Claude アプリに統合）はアプリのスキルを使い、~/.claude は読みません。Anthropic の公式ドキュメント（2026年11月28日時点）より。デスクトップの Code タブがフォルダを選んだときに CLAUDE.md と自動メモリも読むことは、私自身の検証です。')}
       </p>
@@ -626,7 +642,7 @@ export function buildDeck(lang: Lang) {
   // ~/.claude as it is on disk, next to what memsaga keeps of it (from the Taipei deck). Folder names
   // are Claude Code's own; the project is a placeholder.
   const WhatGoesIn: Page = () => (
-    <Content eyebrow={t('Appendix · What goes in', '付録 · 何が記録されるか')} heading={t('A hidden, noisy folder becomes a folder you can browse', '雑多な隠しフォルダが、見て回れるフォルダに')} headingSize={54}>
+    <Content eyebrow={t('Appendix · What goes in', '付録 · 何が記録されるか')} heading={t('A hidden, noisy folder becomes a folder you can browse', '雑多な隠しフォルダを、見やすいフォルダに')} headingSize={54}>
       <div style={{ display: 'flex', gap: 40, marginTop: 36 }}>
         <TreeBox title="~/.claude" sub={t('hidden; about 60 items, mostly caches and logs', '隠しフォルダ。約60項目、ほとんどがキャッシュやログ')}>
           <T line="CLAUDE.md" keep note={t('kept', '記録')} />
@@ -659,7 +675,7 @@ export function buildDeck(lang: Lang) {
   // The two kinds of Claude Code files from page 3, as folders. Project files travel with the code in
   // Git; the personal ones, including each project's auto memory, stay in ~/.claude.
   const ProjectFiles: Page = () => (
-    <Content eyebrow={t('Appendix · Two kinds of Claude Code files', '付録 · Claude Code の2種類のファイル')} heading={t('Project files travel with the code; yours stay on your computer', 'プロジェクトのファイルはコードと一緒に、自分のファイルはパソコンの中に')} headingSize={52}>
+    <Content eyebrow={t('Appendix · Two kinds of Claude Code files', '付録 · Claude Code の2種類のファイル')} heading={t<ReactNode>('Project files travel with the code; yours stay on your computer', <>プロジェクトのファイルはコードと一緒に、<br />自分のファイルはパソコンの中に</>)} headingSize={52}>
       <div style={{ display: 'flex', gap: 40, marginTop: 36 }}>
         <TreeBox title="~/code/webapp/" sub={t('the project’s Git repository (repo), shared with the team, for example on GitHub', 'プロジェクトの Git リポジトリ（repo）。GitHub などでチームと共有')}>
           <T line="CLAUDE.md" keep note={t('instructions for everyone on the project', 'プロジェクトの全員への指示')} />
@@ -699,7 +715,7 @@ export function buildDeck(lang: Lang) {
   // One commit as memsaga writes it (from the Taipei deck): the subject names the session and the
   // folder; the trailers say which session, account and agent. Placeholder project and session.
   const OneRecord: Page = () => (
-    <Content eyebrow={t('Appendix · How it works', '付録 · 仕組み')} heading={t('One record, in full', '記録1件の全体')}>
+    <Content eyebrow={t('Appendix · How it works', '付録 · 仕組み')} heading={t('One record, in full', '記録1件の中身')}>
       <div style={{ display: 'flex', gap: 40, marginTop: 36, alignItems: 'flex-start' }}>
         <div style={{ background: panel, border: `1px solid ${rule}`, borderRadius: 'var(--osd-radius)', padding: '26px 36px', fontFamily: mono, fontSize: 25, lineHeight: 1.45, width: 1000, boxSizing: 'border-box' }}>
           <Line color="var(--osd-accent)" bold>{'[weekly memory tidy-up] claude:memory:HOME-code-webapp'}</Line>
@@ -717,7 +733,7 @@ export function buildDeck(lang: Lang) {
         <div style={{ flex: 1, fontSize: 26, lineHeight: 1.45 }}>
           <Pt lead={t('First line:', '1行目：')}>{t('the session’s title, and which folder changed.', 'セッションのタイトルと、変更されたフォルダ。')}</Pt>
           <Pt lead="Session:">{t('the ID to reopen that session, or to read its saved conversation.', 'そのセッションを再開したり、保存された会話を読んだりするための ID。')}</Pt>
-          <Pt lead="Account:">{t('which Claude Code account, when you use more than one.', '複数のアカウントを使うときの、どの Claude Code アカウントか。')}</Pt>
+          <Pt lead="Account:">{t('which Claude Code account, when you use more than one.', 'どの Claude Code アカウントか（複数使う場合）。')}</Pt>
           <Pt lead="Agent:">{t('main, or the name of the subagent that made the edit.', 'main、または編集したサブエージェントの名前。')}</Pt>
           <Pt lead={t('When:', 'いつ：')}>{t('one record per turn that changed something; Git adds the time.', '何かが変わったターンごとに1件。時刻は Git が付ける。')}</Pt>
         </div>
@@ -754,7 +770,7 @@ export function buildDeck(lang: Lang) {
           <Item mark="C" color={teal}>{t('Several accounts and computers; edits from GitHub or a phone come back', '複数のアカウントとパソコンに対応。GitHub やスマホでの編集も反映')}</Item>
           <Item mark="D" color={teal}>{t(<>Any file you choose, even outside <Code>~/.claude</Code></>, <>好きなファイルを追加できる（<Code>~/.claude</Code> の外も）</>)}</Item>
           <Item mark="E" color={teal}>{t('History from before you installed it, rebuilt from saved conversations', '導入前の履歴も、保存された会話から再構築')}</Item>
-          <Item mark="F" color={teal}>{t('Companion docs: your notes and translations beside a repository you must not commit to', 'コンパニオン文書：コミットできないリポジトリについてのメモや翻訳を、別の場所に保存')}</Item>
+          <Item mark="F" color={teal}>{t('Companion docs: your notes and translations beside a repository you must not commit to', 'コミットできないリポジトリ用のメモや翻訳を、別の場所に保存（コンパニオン文書）')}</Item>
         </Card>
       </div>
       <p style={{ fontSize: 25, color: muted, margin: '22px 0 0' }}>
@@ -788,7 +804,7 @@ export function buildDeck(lang: Lang) {
           <div style={{ marginTop: 6 }}>
             <Item mark="1" color={teal}>{t('Claude Code edits memory and skills, then tells me. CLAUDE.md waits for my OK.', 'メモリとスキルは Claude Code が編集して報告。CLAUDE.md は私の OK を待つ。')}</Item>
             <Item mark="2" color={teal}>{t('When something looks off, the history shows what changed, in which session, and lets me undo it.', 'おかしいと思ったら、何が、どのセッションで変わったかを履歴で確認し、元に戻せる。')}</Item>
-            <Item mark="3" color={teal}>{t('For the why, Claude Code reads that session’s saved conversation (kept 30 days by default), so it can explain any change.', '理由は、Claude Code がそのセッションの保存された会話（初期設定で30日保存）を読んで説明してくれる。')}</Item>
+            <Item mark="3" color={teal}>{t('For the why, Claude Code reads that session’s saved conversation (kept 30 days by default in the terminal), so it can explain any change.', '理由は、Claude Code がそのセッションの保存された会話（ターミナルではデフォルトで30日保存）を読んで説明してくれる。')}</Item>
             <Item mark="4" color={teal}>{t('Now and then, a tidy-up session: merge duplicates, delete stale notes.', 'ときどき整理用のセッション：重複をまとめ、古いメモを消す。')}</Item>
           </div>
         </Card>
@@ -850,13 +866,13 @@ export function buildDeck(lang: Lang) {
   const Numbers: Page = () => (
     <Content eyebrow={t('Appendix · Two months of my own data', '付録 · 2か月分の自分のデータ')} heading={t('Too many changes to follow from memory', '記憶だけでは追えない量の変更')}>
       <div style={{ display: 'flex', gap: 60, marginTop: 64 }}>
-        <Stat n="25" label={t('sessions changed CLAUDE.md', 'セッションが CLAUDE.md を変更')} />
-        <Stat n="57" label={t('sessions changed skills', 'セッションがスキルを変更')} />
-        <Stat n="136" label={t('sessions changed memory', 'セッションがメモリを変更')} />
+        <Stat n="25" label={t('sessions changed CLAUDE.md', 'CLAUDE.md を変更したセッション')} />
+        <Stat n="57" label={t('sessions changed skills', 'スキルを変更したセッション')} />
+        <Stat n="136" label={t('sessions changed memory', 'メモリを変更したセッション')} />
       </div>
       <div style={{ marginTop: 64 }}>
-        <div style={{ fontSize: 104, fontWeight: 800, lineHeight: 1, color: 'var(--osd-accent)' }}>~12</div>
-        <div style={{ fontSize: 30, color: muted, marginTop: 14 }}>{t('times “when and why did this change?” was answered from the history', '回、「いつ、なぜ変わった？」に履歴で答えられた')}</div>
+        <div style={{ fontSize: 104, fontWeight: 800, lineHeight: 1, color: 'var(--osd-accent)' }}>{t('~12', '約12回')}</div>
+        <div style={{ fontSize: 30, color: muted, marginTop: 14 }}>{t('times “when and why did this change?” was answered from the history', '「いつ、なぜ変わった？」に履歴で答えられた')}</div>
       </div>
       <p style={{ fontSize: 25, color: muted, margin: '40px 0 0' }}>
         {t('Since 20 Sep 2026. On the first day, 502 earlier records (July to September) were rebuilt from Claude Code’s saved conversations.', '2026年9月20日以降。初日に、それ以前（7〜9月）の記録502件を Claude Code の保存された会話から再構築。')}
@@ -924,7 +940,7 @@ export function buildDeck(lang: Lang) {
   ];
 
   // The talk script, in simple English (the venue plans an app for live machine interpretation:
-  // short sentences, one idea each). About 500 words for the eight main pages: 4 to 4.5 minutes at 110-120 words a minute; page 3 is the first cut.
+  // short sentences, one idea each). About 440 words for the eight main pages: about 4 minutes at 110-120 words a minute, plus the Japanese greeting and page turns; page 3's unstarred line is the first cut.
   const notes: (string | undefined)[] = [
     `~15s. Say the first lines in Japanese, slowly:
 はじめまして。台湾から来た Grimmer です。
@@ -935,63 +951,49 @@ export function buildDeck(lang: Lang) {
 (Yoroshiku onegaishimasu.)
 Then in English: Today I will share how I learned to let Claude Code clean up its own memory.`,
     `~35s.
-First, how does Claude Code remember?
+How does Claude Code remember?
 Claude Code is Claude working on your computer.
 A session is one conversation with it.
-Each session starts fresh. So Claude Code keeps notes in files.
-For example, on Monday I say: "Remember, start the database before the tests."
-Claude Code writes that into its auto memory.
-On Tuesday, a new session reads it first.
-There are three kinds of files.
-CLAUDE.md: standing instructions.
-Auto memory: notes Claude Code writes on its own.
+Each session starts with no memory. So Claude Code keeps notes in files.
+On Monday I say: "Remember, start the database before the tests."
+Claude Code writes that into its auto memory. On Tuesday, a new session reads it first.
+Three kinds of files. CLAUDE.md: instructions it reads every time.
+Auto memory: its own notes.
 Skills: how-to guides for one kind of task.`,
-    `~25s. (Short on time: say only the lines marked *.)
-* Where are these files kept?
-The Claude app keeps its own, with your account.
-Claude Code keeps two kinds of files.
+    `~20s. (Short on time: say only the lines marked *.)
+* The last talk built its own memory system, with Markdown and Git.
+* Mine is about the files Claude Code already has, and changes on its own.
 Project files live in the project's repository, so Git keeps their history.
-* Your own files live in a hidden folder. Nothing keeps their history.
-* That is today's topic.`,
+* My own files live in a hidden folder. Nothing keeps their history. That is today's topic.`,
     `~35s.
-Here is the problem.
-Claude Code changes these files every day, with no history.
-It is like a shared document with no version history.
-Three things happen.
+Claude Code changes these files every day, with no history to look back on.
+It is like a document we both edit, with no version history.
 You forget what was tried, and try it again.
-A bad edit cannot be undone.
-And when a new rule appears, you cannot tell when, or why.
-So I rarely let Claude Code touch a skill.
-And I never asked it to clean up its memory.`,
-    `~35s.
+Rewind only undoes the current session.
+And a rule you don't remember appears: when, and why?
+So I rarely let Claude Code touch a skill, and never asked it to clean up its memory.`,
+    `~30s.
 So I wrote a small tool, memsaga.
-Git keeps the history of files. Each saved change is a commit, with a short message.
-When Claude Code changes one of these files, memsaga makes a commit.
-The message is the name of the session.
-A bonus: these files leave a hidden folder full of logs.
-Now I can browse them, even on my phone.
+Git keeps the history of files. Each saved change is a commit.
+When Claude Code changes one of these files, memsaga makes a commit, named after the session.
+It also keeps them in a private folder I can browse, even on my phone.
 Claude Code works as before.`,
-    `~40s.
-A real case.
-I found a rule in my CLAUDE.md: "Run the tests before every push."
-I did not remember writing it.
-So I asked Claude Code: did you add this yourself?
-It checked the history: the time, and the session.
-It read that session's saved conversation.
-Yes, it added the rule, and it told me in its reply. I had missed it.
-Now my rule is simple.
-Memory and skills: Claude Code edits them and tells me.
-CLAUDE.md: it waits for my OK.`,
     `~35s.
-What changed?
+A real case, simplified.
+I found a rule in my CLAUDE.md I didn't remember writing.
+I asked Claude Code: did you add this yourself?
+It checked the history, and read that session's saved conversation.
+Yes, it had. Its reply back then said so. I just missed that line.
+Now: memory and skills, Claude Code edits and tells me. CLAUDE.md waits for my OK.`,
+    `~35s.
 Undo took away the fear.
-Now Claude Code cleans up its memory. About 90 files are gone, and every one can come back.
-One skill changed 70 times in two months, each change with its session.
-Even my tool broke files, twice. The history undid both.
+Now Claude Code reorganizes its memory: about 90 files deleted so far, all recoverable.
+One skill changed 70 times in two months, each step recorded.
+Even my own tool broke files twice. The history undid both, and both are fixed.
 It is a seatbelt. I rarely need it, but I drive differently because it is there.`,
     `~20s.
 Today's theme is systems that don't break when you hand work to Claude.
-Mine is simple. I can see every change, and undo any change. So I can hand the work over.
+My system is simple. I can see every change, and undo any change. So I can hand the work over.
 You don't need my tool for this. Any Git history of these files helps.
 Thank you.
 ありがとうございました。
