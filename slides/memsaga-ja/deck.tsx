@@ -29,6 +29,8 @@ const PAD = 140;
 const URL_SITE = 'https://memsaga.grimmer.io';
 const URL_REPO = 'https://github.com/grimmerk/memsaga';
 const URL_NEED = `${URL_REPO}#do-you-need-memsaga`;
+// The Taipei talk's deck (English slides), through the alias shared on Discord.
+const URL_TAIPEI = 'https://slides.grimmer.io/s/memsaga-taipei-2026-11';
 const URL_ENGRAM = 'https://github.com/Sen-CaPoo/engram';
 const URL_ME = 'https://github.com/grimmerk';
 const URL_MATCHAPACK = 'https://github.com/grimmerk/matchapack';
@@ -187,11 +189,14 @@ export function buildDeck(lang: Lang) {
           maxWidth: 1500,
         }}
       >
-        {t(<>Letting Claude clean up its memory, <span style={{ color: 'var(--osd-accent)' }}>without fear</span></>)}
+        {t(
+          <>Letting Claude clean up its memory, <span style={{ color: 'var(--osd-accent)' }}>without fear</span></>,
+          <>Claude に記憶の整理を、<span style={{ color: 'var(--osd-accent)' }}>安心して</span>任せる</>,
+        )}
       </h1>
-      <p style={{ fontSize: 44, color: muted, margin: 0, lineHeight: 1.4 }}>{t('Git history for Claude Code’s CLAUDE.md, memory and skills')}</p>
+      <p style={{ fontSize: 44, color: muted, margin: 0, lineHeight: 1.4 }}>{t('Git history for Claude Code’s CLAUDE.md, memory and skills', 'Claude Code の CLAUDE.md・メモリ・スキルに Git の履歴を')}</p>
       <p style={{ fontSize: 30, color: muted, margin: '72px 0 0', fontFamily: mono }}>
-        Grimmer · Tech Lead, <A href="https://fireflies.ai">Fireflies.ai</A> · {t('from Taiwan')} · <A href={URL_ME}>github.com/grimmerk</A>
+        Grimmer · Tech Lead, <A href="https://fireflies.ai">Fireflies.ai</A> · {t('from Taiwan', '台湾から')} · <A href={URL_ME}>github.com/grimmerk</A>
       </p>
       {/* Bottom right, flush with the right margin: the QR and its URL share one right edge. */}
       <div style={{ position: 'absolute', right: PAD, bottom: 96, textAlign: 'right' }}>
@@ -234,43 +239,43 @@ export function buildDeck(lang: Lang) {
   );
 
   const Remembers: Page = () => (
-    <Content eyebrow={t('How Claude Code remembers')} heading={t('Each session starts fresh, so Claude Code keeps notes in files')} headingSize={54}>
+    <Content eyebrow={t('How Claude Code remembers', 'Claude Code はどう覚えているか')} heading={t('Each session starts fresh, so Claude Code keeps notes in files', 'セッションは毎回ゼロから。だから Claude Code はファイルにメモを残す')} headingSize={54}>
       <div style={{ marginTop: 18 }}>
-        <Gloss term="Claude Code">{t('Claude working on your computer: in a terminal, or the desktop app')}</Gloss>
-        <Gloss term={t('session')}>{t('one conversation with Claude Code')}</Gloss>
+        <Gloss term="Claude Code">{t('Claude working on your computer: in a terminal, or the desktop app', 'パソコンの中で作業する Claude（ターミナル、またはデスクトップアプリ）')}</Gloss>
+        <Gloss term={t('session', 'セッション')}>{t('one conversation with Claude Code', 'Claude Code との1回の会話')}</Gloss>
       </div>
-      <div style={{ fontSize: 24, color: teal, fontWeight: 700, margin: '26px 0 10px', letterSpacing: '0.06em' }}>{t('EXAMPLE: AUTO MEMORY')}</div>
+      <div style={{ fontSize: 24, color: teal, fontWeight: 700, margin: '26px 0 10px', letterSpacing: '0.06em' }}>{t('EXAMPLE: AUTO MEMORY', '例：自動メモリ（auto memory）')}</div>
       <div style={{ display: 'flex', gap: 22, alignItems: 'flex-end' }}>
-        <Step n="1" label={t('Monday: you say')}>
-          <Bubble who="">{t('“Remember: start the database before the tests.”')}</Bubble>
+        <Step n="1" label={t('Monday: you say', '月曜：あなたが言う')}>
+          <Bubble who="">{t('“Remember: start the database before the tests.”', '「覚えておいて：テストの前にデータベースを起動すること」')}</Bubble>
         </Step>
         <div style={{ fontSize: 40, color: muted, paddingBottom: 18 }}>→</div>
-        <Step n="2" label={t('Claude Code writes a note')}>
+        <Step n="2" label={t('Claude Code writes a note', 'Claude Code がメモを書く')}>
           <div style={{ background: '#fff', border: `2px solid ${teal}`, borderRadius: 14, padding: '14px 20px' }}>
             <div style={{ fontFamily: mono, fontSize: 22, color: teal, fontWeight: 700 }}>memory/testing.md</div>
-            <div style={{ fontSize: 25, marginTop: 6, lineHeight: 1.35 }}>{t('Start the database before the tests.')}</div>
+            <div style={{ fontSize: 25, marginTop: 6, lineHeight: 1.35 }}>{t('Start the database before the tests.', 'テストの前にデータベースを起動する。')}</div>
           </div>
         </Step>
         <div style={{ fontSize: 40, color: muted, paddingBottom: 18 }}>→</div>
-        <Step n="3" label={t('Tuesday: a new session reads it first')}>
+        <Step n="3" label={t('Tuesday: a new session reads it first', '火曜：新しいセッションが最初に読む')}>
           <Bubble who="" claude>
-            {t('“Starting the database, then the tests.”')}
+            {t('“Starting the database, then the tests.”', '「データベースを起動してから、テストを実行します」')}
           </Bubble>
         </Step>
       </div>
       <div style={{ display: 'flex', gap: 28, marginTop: 34 }}>
-        <Card title="CLAUDE.md" sub={t('Standing instructions')}>
-          {t('Read at the start of every session.')}
+        <Card title="CLAUDE.md" sub={t('Standing instructions', '基本の指示書')}>
+          {t('Read at the start of every session.', 'セッションの最初に毎回読まれる。')}
         </Card>
-        <Card title={t('Auto memory')} sub={t('Notes')}>
-          {t('Claude Code writes them on its own as it works (on by default), or when you say “remember”.')}
+        <Card title={t('Auto memory', '自動メモリ')} sub={t('Notes', 'メモ')}>
+          {t('Claude Code writes them on its own as it works (on by default), or when you say “remember”.', '作業しながら Claude Code が自分で書く（初期設定でオン）。「覚えておいて」と言ったときも。')}
         </Card>
-        <Card title={t('Skills')} sub={t('How-to guides')}>
-          {t('Steps for one kind of task, loaded when the task needs them.')}
+        <Card title={t('Skills', 'スキル')} sub={t('How-to guides', '手順書')}>
+          {t('Steps for one kind of task, loaded when the task needs them.', 'ある種類の作業の手順。その作業のときだけ読み込まれる。')}
         </Card>
       </div>
       <p style={{ fontSize: 25, color: muted, margin: '18px 0 0' }}>
-        {t('CLAUDE.md and skills: you write them, ask Claude Code to update them, or tell it when it may update them on its own.')}
+        {t('CLAUDE.md and skills: you write them, ask Claude Code to update them, or tell it when it may update them on its own.', 'CLAUDE.md とスキルは、自分で書く・Claude Code に更新を頼む・自分で更新してよい場面を伝える、のいずれでも。')}
       </p>
     </Content>
   );
@@ -286,9 +291,9 @@ export function buildDeck(lang: Lang) {
 
   // The same three kinds as page 2 (instructions, notes, how-to guides), in the three places they
   // can be kept. The appendix page Surfaces uses the same three column names.
-  const PLACE_APP = { title: t('Claude app'), sub: t('web, desktop, phone · kept with your account') };
-  const PLACE_MINE = { title: t('Claude Code · your files'), sub: t('~/.claude on your computer · just you') };
-  const PLACE_PROJECT = { title: t('Claude Code · project files'), sub: t('in the project’s Git repository · shared with the team') };
+  const PLACE_APP = { title: t('Claude app', 'Claude アプリ'), sub: t('web, desktop, phone · kept with your account', 'Web・デスクトップ・スマホ · アカウントに保存') };
+  const PLACE_MINE = { title: t('Claude Code · your files', 'Claude Code · 自分のファイル'), sub: t('~/.claude on your computer · just you', 'パソコンの ~/.claude · 自分だけ') };
+  const PLACE_PROJECT = { title: t('Claude Code · project files', 'Claude Code · プロジェクトのファイル'), sub: t('in the project’s Git repository · shared with the team', 'プロジェクトの Git リポジトリ · チームで共有') };
 
   const GridHead = ({ title, sub, strong }: { title: ReactNode; sub: ReactNode; strong?: boolean }) => (
     <div style={{ padding: '16px 20px', background: strong ? '#e6f1ee' : panel, borderTopLeftRadius: 14, borderTopRightRadius: 14, border: `2px solid ${strong ? teal : rule}`, borderBottom: 'none' }}>
@@ -323,36 +328,36 @@ export function buildDeck(lang: Lang) {
   );
 
   const Where: Page = () => (
-    <Content eyebrow={t('The big picture')} heading={t('Where Claude keeps its instructions and notes')} headingSize={60}>
+    <Content eyebrow={t('The big picture', '全体像')} heading={t('Where Claude keeps its instructions and notes', 'Claude は指示とメモをどこに置いているか')} headingSize={60}>
       <div style={{ display: 'grid', gridTemplateColumns: '230px 1fr 1fr 1fr', columnGap: 20, marginTop: 40, width: 1640 }}>
         <div />
         <GridHead {...PLACE_APP} />
         <GridHead {...PLACE_MINE} strong />
         <GridHead {...PLACE_PROJECT} />
 
-        <RowLabel>{t('Instructions')}</RowLabel>
-        <GridCell>{t('Your instructions (profile, project)')}</GridCell>
+        <RowLabel>{t('Instructions', '指示')}</RowLabel>
+        <GridCell>{t('Your instructions (profile, project)', '自分で書く指示（プロフィール、プロジェクト）')}</GridCell>
         <GridCell strong>CLAUDE.md</GridCell>
-        <GridCell>{t('CLAUDE.md or AGENTS.md')}</GridCell>
+        <GridCell>{t('CLAUDE.md or AGENTS.md', 'CLAUDE.md または AGENTS.md')}</GridCell>
 
-        <RowLabel>{t('Notes')}</RowLabel>
-        <GridCell>{t('Memory: Claude keeps it; you can view and edit it in Settings')}</GridCell>
-        <GridCell strong>{t('Auto memory, one folder per project')}</GridCell>
+        <RowLabel>{t('Notes', 'メモ')}</RowLabel>
+        <GridCell>{t('Memory: Claude keeps it; you can view and edit it in Settings', 'メモリ：Claude が管理。設定から見る・直すこともできる')}</GridCell>
+        <GridCell strong>{t('Auto memory, one folder per project', '自動メモリ（プロジェクトごとに1フォルダ）')}</GridCell>
         <GridCell dim>—</GridCell>
 
-        <RowLabel>{t('How-to guides')}</RowLabel>
-        <GridCell>{t('Skills you upload')}</GridCell>
-        <GridCell strong>{t('Skills')}</GridCell>
-        <GridCell>{t('Skills')}</GridCell>
+        <RowLabel>{t('How-to guides', '手順書')}</RowLabel>
+        <GridCell>{t('Skills you upload', 'アップロードしたスキル')}</GridCell>
+        <GridCell strong>{t('Skills', 'スキル')}</GridCell>
+        <GridCell>{t('Skills', 'スキル')}</GridCell>
 
-        <RowLabel>{t('History')}</RowLabel>
-        <GridCell last>{t('Kept by Anthropic')}</GridCell>
-        <GridCell last strong accent>{t('None. Today’s topic.')}</GridCell>
-        <GridCell last>{t('Git, together with the code')}</GridCell>
+        <RowLabel>{t('History', '履歴')}</RowLabel>
+        <GridCell last>{t('Kept by Anthropic', 'Anthropic 側で管理')}</GridCell>
+        <GridCell last strong accent>{t('None. Today’s topic.', 'なし。今日のテーマ')}</GridCell>
+        <GridCell last>{t('Git, together with the code', 'Git（コードと一緒に）')}</GridCell>
       </div>
       <p style={{ fontSize: 25, color: muted, margin: '26px 0 0', lineHeight: 1.45 }}>
-        {t('You can also build notes of your own outside these, like the talk you just heard: an external memory Claude reads.')}{' '}
-        <PageLink to={Surfaces}>{t('Which Claude reads which place (appendix)')}</PageLink>
+        {t('You can also build notes of your own outside these, like the talk you just heard: an external memory Claude reads.', 'このほか、前の発表のように、メモの仕組みを自分で作ることもできます（Claude が読む外部の記憶）。')}{' '}
+        <PageLink to={Surfaces}>{t('Which Claude reads which place (appendix)', 'どの Claude がどこを読むか（付録）')}</PageLink>
       </p>
     </Content>
   );
@@ -370,17 +375,17 @@ export function buildDeck(lang: Lang) {
   );
 
   const Problem: Page = () => (
-    <Content eyebrow={t('The problem')} heading={t('Claude Code edits these files every day, and keeps no history')} headingSize={60}>
+    <Content eyebrow={t('The problem', '課題')} heading={t('Claude Code edits these files every day, and keeps no history', 'Claude Code は毎日これらのファイルを書き換える。でも履歴は残らない')} headingSize={60}>
       <p style={{ fontSize: 34, lineHeight: 1.45, margin: '28px 0 0', maxWidth: 1600 }}>
-        {t('It is like a shared document with no version history: it keeps changing, and you cannot see what changed.')}
+        {t('It is like a shared document with no version history: it keeps changing, and you cannot see what changed.', '変更履歴のない共有ドキュメントのようなもの。どんどん変わるのに、何が変わったのか見えません。')}
       </p>
       <div style={{ display: 'flex', gap: 26, marginTop: 40 }}>
-        <Pain n="1" head={t('You forget what was tried')} body={t('An idea was tried last week and dropped. Nobody remembers, so it is tried again.')} />
-        <Pain n="2" head={t('A bad edit cannot be undone')} body={t('The old version is simply gone.')} />
-        <Pain n="3" head={t('You cannot tell why')} body={t('A new rule appears. When was it added, in which session, and why?')} />
+        <Pain n="1" head={t('You forget what was tried', '何を試したか忘れる')} body={t('An idea was tried last week and dropped. Nobody remembers, so it is tried again.', '先週試してやめた案を、誰も覚えていないので、また試してしまう。')} />
+        <Pain n="2" head={t('A bad edit cannot be undone', 'まずい変更を元に戻せない')} body={t('The old version is simply gone.', '前のバージョンはもう残っていない。')} />
+        <Pain n="3" head={t('You cannot tell why', '理由がわからない')} body={t('A new rule appears. When was it added, in which session, and why?', '新しいルールが増えている。いつ、どのセッションで、なぜ？')} />
       </div>
       <p style={{ fontSize: 38, fontWeight: 700, margin: '50px 0 0', color: 'var(--osd-accent)' }}>
-        {t('So I rarely let Claude Code touch a skill, and never asked it to clean up its memory.')}
+        {t('So I rarely let Claude Code touch a skill, and never asked it to clean up its memory.', 'だから、スキルはほとんど触らせず、メモリの整理は一度も頼みませんでした。')}
       </p>
     </Content>
   );
@@ -398,34 +403,37 @@ export function buildDeck(lang: Lang) {
   );
 
   const WhatIDo: Page = () => (
-    <Content eyebrow={t('What I do now')} heading={t('Every change becomes a record, named after its session')} headingSize={62}>
+    <Content eyebrow={t('What I do now', '今のやり方')} heading={t('Every change becomes a record, named after its session', '変更はすべて記録に。名前はそのセッションから')} headingSize={62}>
       <div style={{ marginTop: 18 }}>
-        <Gloss term="Git">{t('a tool that keeps the history of files')}</Gloss>
-        <Gloss term={t('commit')}>{t('one saved change, with a short message')}</Gloss>
+        <Gloss term="Git">{t('a tool that keeps the history of files', 'ファイルの変更履歴を残す仕組み')}</Gloss>
+        <Gloss term={t('commit', 'コミット（commit）')}>{t('one saved change, with a short message', '変更を1件の記録として保存したもの（短いメッセージ付き）')}</Gloss>
       </div>
       <div style={{ display: 'flex', gap: 40, marginTop: 28, alignItems: 'flex-start' }}>
         <div style={{ width: 900, background: '#fff', border: `2px solid ${rule}`, borderRadius: 'var(--osd-radius)', padding: '18px 30px' }}>
-          <div style={{ fontSize: 22, color: muted, fontWeight: 700, letterSpacing: '0.08em' }}>{t('HISTORY (newest first)')}</div>
-          <HistoryRow first when={t('Tue 14:02')} title={t('session “fix flaky login test”')} what={t('CLAUDE.md: 1 rule added')} />
-          <HistoryRow when={t('Tue 11:40')} title={t('session “weekly memory tidy-up”')} what={t('memory: 2 notes merged, 1 deleted')} />
-          <HistoryRow when={t('Mon 18:15')} title={t('session “write release notes”')} what={t('skills/release-notes: 3 lines changed')} />
+          <div style={{ fontSize: 22, color: muted, fontWeight: 700, letterSpacing: '0.08em' }}>{t('HISTORY (newest first)', '履歴（新しい順）')}</div>
+          <HistoryRow first when={t('Tue 14:02', '火 14:02')} title={t('session “fix flaky login test”', 'セッション「不安定なログインテストを直す」')} what={t('CLAUDE.md: 1 rule added', 'CLAUDE.md：ルールを1つ追加')} />
+          <HistoryRow when={t('Tue 11:40', '火 11:40')} title={t('session “weekly memory tidy-up”', 'セッション「毎週のメモリ整理」')} what={t('memory: 2 notes merged, 1 deleted', 'メモリ：2件を統合、1件を削除')} />
+          <HistoryRow when={t('Mon 18:15', '月 18:15')} title={t('session “write release notes”', 'セッション「リリースノートを書く」')} what={t('skills/release-notes: 3 lines changed', 'skills/release-notes：3行を変更')} />
         </div>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <Card title={<Code>~/.claude</Code>} sub={t('A hidden folder: about 60 items, mostly logs and caches.')} />
+          <Card title={<Code>~/.claude</Code>} sub={t('A hidden folder: about 60 items, mostly logs and caches.', '隠しフォルダ。約60項目、ほとんどがログやキャッシュ。')} />
           <div style={{ fontSize: 34, color: muted, textAlign: 'center' }}>↓</div>
-          <Card title={t('A folder you can browse')} sub={t('Only CLAUDE.md, memory and skills, with readable names. On GitHub, even from a phone.')} strong />
+          <Card title={t('A folder you can browse', '見て回れるフォルダに')} sub={t('Only CLAUDE.md, memory and skills, with readable names. On GitHub, even from a phone.', 'CLAUDE.md・メモリ・スキルだけを、わかりやすい名前で。GitHub 上で、スマホからでも。')} strong />
           <div style={{ fontSize: 22, color: muted, textAlign: 'right' }}>
-            <PageLink to={WhatGoesIn}>{t('The two folders side by side (appendix)')}</PageLink>
+            <PageLink to={WhatGoesIn}>{t('The two folders side by side (appendix)', '2つのフォルダの比較（付録）')}</PageLink>
           </div>
         </div>
       </div>
       <p style={{ fontSize: 27, color: muted, margin: '22px 0 0' }}>
-        {t(<>The tool is <b style={{ color: 'var(--osd-text)' }}>memsaga</b>, free and open source. Claude Code works as before; the files stay where they are.</>)}
+        {t(
+          <>The tool is <b style={{ color: 'var(--osd-text)' }}>memsaga</b>, free and open source. Claude Code works as before; the files stay where they are.</>,
+          <>ツールは <b style={{ color: 'var(--osd-text)' }}>memsaga</b>（無料・オープンソース）。Claude Code の使い方は変わらず、ファイルも元の場所のまま。</>,
+        )}
       </p>
       {/* Not spoken: for engineers in the room. */}
       <p style={{ fontSize: 23, color: soft, margin: '10px 0 0' }}>
-        {t('How: Claude Code hooks run it at the end of each turn · one small program · about 5 ms for most tool calls ·')}{' '}
-        <PageLink to={OneRecord}>{t('one record, in full (appendix)')}</PageLink>
+        {t('How: Claude Code hooks run it at the end of each turn · one small program · about 5 ms for most tool calls ·', '仕組み：各ターンの終わりに Claude Code のフック（hooks）が実行 · 小さなプログラム1つ · ほとんどのツール呼び出しで約 5 ms ·')}{' '}
+        <PageLink to={OneRecord}>{t('one record, in full (appendix)', '記録1件の全体（付録）')}</PageLink>
       </p>
     </Content>
   );
@@ -452,24 +460,24 @@ export function buildDeck(lang: Lang) {
   const Arrow = () => <div style={{ fontSize: 44, color: muted, alignSelf: 'center' }}>→</div>;
 
   const Story: Page = () => (
-    <Content eyebrow={t('A real case: what I asked Claude Code')} heading={t('“Did you add this rule yourself?”')} headingSize={66}>
+    <Content eyebrow={t('A real case: what I asked Claude Code', '実例：Claude Code に聞いたこと')} heading={t('“Did you add this rule yourself?”', '「このルール、自分で追加した？」')} headingSize={66}>
       <div style={{ display: 'flex', gap: 20, marginTop: 40 }}>
-        <FlowBox label={t('A rule in my CLAUDE.md')} body={t('“Run the tests before every push.”')} />
+        <FlowBox label={t('A rule in my CLAUDE.md', '私の CLAUDE.md にあるルール')} body={t('“Run the tests before every push.”', '「push の前に必ずテストを実行する」')} />
         <Arrow />
-        <FlowBox label={t('The record that added it')} body={<>{t('Tue 14:02')}<br />{t('session “fix flaky login test”')}</>} />
+        <FlowBox label={t('The record that added it', 'それを追加した記録')} body={<>{t('Tue 14:02', '火 14:02')}<br />{t('session “fix flaky login test”', 'セッション「不安定なログインテストを直す」')}</>} />
         <Arrow />
-        <FlowBox label={t('That session’s saved conversation')} body={t('Why the rule was added')} accent />
+        <FlowBox label={t('That session’s saved conversation', 'そのセッションの保存された会話')} body={t('Why the rule was added', 'ルールを追加した理由')} accent />
       </div>
       <p style={{ fontSize: 33, lineHeight: 1.5, margin: '40px 0 0', maxWidth: 1620 }}>
-        {t('I did not search myself. Claude Code looked it up in the history. Yes, it had added the rule, and it said so in its reply. I had missed that line.')}
+        {t('I did not search myself. Claude Code looked it up in the history. Yes, it had added the rule, and it said so in its reply. I had missed that line.', '自分では調べていません。Claude Code が履歴を調べてくれました。追加したのはやはり Claude Code で、返信の中でもそう伝えていました。私が見落としていたのです。')}
       </p>
       <p style={{ fontSize: 33, lineHeight: 1.5, margin: '22px 0 0', fontWeight: 700 }}>
-        {t('My rule since: memory and skills, Claude Code edits and tells me. CLAUDE.md waits for my OK.')}
+        {t('My rule since: memory and skills, Claude Code edits and tells me. CLAUDE.md waits for my OK.', 'それ以来のルール：メモリとスキルは Claude Code が編集して報告。CLAUDE.md は私の OK を待つ。')}
       </p>
       {/* Not spoken: more questions the history answered (from the Taipei deck). */}
       <p style={{ fontSize: 24, color: muted, margin: '34px 0 0', lineHeight: 1.5 }}>
-        {t('The history also answered, for me and for other sessions:')}{' '}
-        {t('“Which version of the skill did you load?” · “What did the other session just change?” · “Where did this file go?”')}
+        {t('The history also answered, for me and for other sessions:', '履歴が答えてくれたほかの質問（私にも、ほかのセッションにも）：')}{' '}
+        {t('“Which version of the skill did you load?” · “What did the other session just change?” · “Where did this file go?”', '「どのバージョンのスキルを読み込んだ？」·「別のセッションがさっき何を変えた？」·「このファイルはどこへ行った？」')}
       </p>
     </Content>
   );
@@ -485,18 +493,18 @@ export function buildDeck(lang: Lang) {
   );
 
   const Changed: Page = () => (
-    <Content eyebrow={t('What changed for me')} heading={t('Undo took away the fear. Now I hand over the cleanup.')} headingSize={62}>
+    <Content eyebrow={t('What changed for me', '私にとって変わったこと')} heading={t('Undo took away the fear. Now I hand over the cleanup.', '元に戻せるから、怖くない。整理を任せられるようになった')} headingSize={62}>
       <div style={{ display: 'flex', gap: 60, marginTop: 56 }}>
-        <Big n="~90" head={t('files removed in Claude Code’s cleanups')} body={t('Duplicate and stale notes. Every one can come back.')} />
-        <Big n="70" head={t('changes to one skill in two months')} body={t('Each with the session that made it. A skill gets better one small change at a time.')} />
-        <Big n="2" head={t('times the tool itself broke files')} body={t('A sync bug, twice. Each time, the history undid it.')} />
+        <Big n="~90" head={t('files removed in Claude Code’s cleanups', 'Claude Code の整理で削除したファイル')} body={t('Duplicate and stale notes. Every one can come back.', '重複や古いメモ。どれも元に戻せる。')} />
+        <Big n="70" head={t('changes to one skill in two months', '1つのスキルへの変更（2か月間）')} body={t('Each with the session that made it. A skill gets better one small change at a time.', 'どれも、変更したセッションがわかる。スキルは小さな変更の積み重ねで良くなる。')} />
+        <Big n="2" head={t('times the tool itself broke files', 'ツール自体がファイルを壊した回数')} body={t('A sync bug, twice. Each time, the history undid it.', '同期のバグで2回。どちらも履歴で元に戻せた。')} />
       </div>
       <p style={{ fontSize: 38, lineHeight: 1.45, margin: '64px 0 0', fontWeight: 700 }}>
-        {t('Like a seatbelt: I rarely need it, but I drive differently because it is there.')}
+        {t('Like a seatbelt: I rarely need it, but I drive differently because it is there.', 'シートベルトのようなもの。めったに出番はないけれど、あるから安心して運転できる。')}
       </p>
       <p style={{ fontSize: 24, color: muted, margin: '40px 0 0' }}>
-        {t('Anthropic’s guide also says to improve a skill step by step:')}{' '}
-        <A href={t(URL_SKILL_GUIDE_EN, URL_SKILL_GUIDE_JA)}>{t('“Skill authoring best practices”, Evaluation and iteration')}</A>
+        {t('Anthropic’s guide also says to improve a skill step by step:', 'Anthropic のガイドも、スキルは少しずつ改善していくものとしています：')}{' '}
+        <A href={t(URL_SKILL_GUIDE_EN, URL_SKILL_GUIDE_JA)}>{t('“Skill authoring best practices”, Evaluation and iteration', '「スキル作成のベストプラクティス」の「評価と反復」')}</A>
       </p>
     </Content>
   );
@@ -506,17 +514,20 @@ export function buildDeck(lang: Lang) {
   const Close: Page = () => (
     <div style={{ ...fill, padding: `110px ${PAD}px 0`, display: 'flex', gap: 70 }}>
       <div style={{ flex: 1 }}>
-        <Eyebrow>{t('Systems that don’t break when you hand work to Claude')}</Eyebrow>
+        <Eyebrow>{t('Systems that don’t break when you hand work to Claude', 'Claude に任せても壊れない仕組み')}</Eyebrow>
         <div style={{ fontSize: 96, fontWeight: 800, lineHeight: 1.15, margin: '40px 0 0', letterSpacing: '-0.02em' }}>
-          {t(<>See every change.<br />Undo any change.<br /><span style={{ color: 'var(--osd-accent)' }}>Then hand it over.</span></>)}
+          {t(
+            <>See every change.<br />Undo any change.<br /><span style={{ color: 'var(--osd-accent)' }}>Then hand it over.</span></>,
+            <>すべての変更が見える。<br />どの変更も戻せる。<br /><span style={{ color: 'var(--osd-accent)' }}>だから任せられる。</span></>,
+          )}
         </div>
         <p style={{ fontSize: 32, color: muted, margin: '48px 0 0', lineHeight: 1.5 }}>
-          {t('The idea needs no special tool: any Git history of these files helps.')}
+          {t('The idea needs no special tool: any Git history of these files helps.', '特別なツールは要りません。これらのファイルを Git で履歴に残すだけでも役に立ちます。')}
         </p>
         <p style={{ fontSize: 28, color: muted, margin: '20px 0 0', lineHeight: 1.6 }}>
-          {t('Mine:')} <A href={URL_SITE}>memsaga.grimmer.io</A> · {t('free and open source (MIT) · macOS and Linux')}
+          {t('Mine:', '私のツール：')} <A href={URL_SITE}>memsaga.grimmer.io</A> · {t('free and open source (MIT) · macOS and Linux', '無料・オープンソース（MIT）· macOS と Linux')}
           <br />
-          {t('These slides:')} <A href={slidesUrl}>{slidesUrl.replace('https://', '')}</A>
+          {t('These slides:', 'このスライド：')} <A href={slidesUrl}>{slidesUrl.replace('https://', '')}</A>
         </p>
       </div>
       <div style={{ width: 340, paddingTop: 150, textAlign: 'center' }}>
@@ -557,32 +568,32 @@ export function buildDeck(lang: Lang) {
   );
 
   const Surfaces: Page = () => (
-    <Content eyebrow={t('Appendix · The big picture, in detail')} heading={t('Which Claude reads which place')} headingSize={56}>
+    <Content eyebrow={t('Appendix · The big picture, in detail', '付録 · 全体像の詳細')} heading={t('Which Claude reads which place', 'どの Claude がどこを読むか')} headingSize={56}>
       <div style={{ display: 'grid', gridTemplateColumns: '400px 410px 410px 410px', fontSize: 24, border: `1px solid ${rule}`, borderRadius: 'var(--osd-radius)', overflow: 'hidden', width: 1630, marginTop: 30 }}>
-        <Cell head>{t('Where you use Claude')}</Cell>
+        <Cell head>{t('Where you use Claude', 'Claude を使う場所')}</Cell>
         <Cell head>{PLACE_APP.title}<div style={{ fontWeight: 400, fontSize: 21 }}>{PLACE_APP.sub}</div></Cell>
         <Cell head>{PLACE_MINE.title}<div style={{ fontWeight: 400, fontSize: 21 }}>{PLACE_MINE.sub}</div></Cell>
         <Cell head>{PLACE_PROJECT.title}<div style={{ fontWeight: 400, fontSize: 21 }}>{PLACE_PROJECT.sub}</div></Cell>
 
-        <Cell>{t('Claude app: chat and Projects')}</Cell>
-        <Cell><Mark kind="yes">{t('your instructions, memory and skills (yours, or shared in your organisation)')}</Mark></Cell>
-        <Cell><Mark kind="no">{t('not read')}</Mark></Cell>
-        <Cell><Mark kind="no">{t('not read')}</Mark></Cell>
+        <Cell>{t('Claude app: chat and Projects', 'Claude アプリ：チャットとプロジェクト')}</Cell>
+        <Cell><Mark kind="yes">{t('your instructions, memory and skills (yours, or shared in your organisation)', '指示・メモリ・スキル（自分のもの、または組織で共有されたもの）')}</Mark></Cell>
+        <Cell><Mark kind="no">{t('not read', '読まない')}</Mark></Cell>
+        <Cell><Mark kind="no">{t('not read', '読まない')}</Mark></Cell>
 
-        <Cell>{t('Scheduled tasks in the cloud')}</Cell>
-        <Cell><Mark kind="yes">{t('skills')}</Mark></Cell>
-        <Cell><Mark kind="no">{t('not read, so no auto memory')}</Mark></Cell>
-        <Cell><Mark kind="yes">{t('a fresh copy of the project each run, with its skills')}</Mark></Cell>
+        <Cell>{t('Scheduled tasks in the cloud', 'クラウドのスケジュールタスク')}</Cell>
+        <Cell><Mark kind="yes">{t('skills', 'スキル')}</Mark></Cell>
+        <Cell><Mark kind="no">{t('not read, so no auto memory', '読まない（自動メモリもなし）')}</Mark></Cell>
+        <Cell><Mark kind="yes">{t('a fresh copy of the project each run, with its skills', '実行のたびにプロジェクトを新しく取得（そのスキルも）')}</Mark></Cell>
 
-        <Cell strong>{t('Claude Code: terminal, or the desktop app’s Code tab')}</Cell>
-        <Cell strong><Mark kind="copy">{t('a downloaded copy of the skills you added in the Claude app (one way)')}</Mark></Cell>
-        <Cell strong><Mark kind="yes"><b>{t('CLAUDE.md, auto memory, skills: what memsaga keeps')}</b></Mark></Cell>
-        <Cell strong><Mark kind="yes">{t('CLAUDE.md (or AGENTS.md) and skills')}</Mark></Cell>
+        <Cell strong>{t('Claude Code: terminal, or the desktop app’s Code tab', 'Claude Code：ターミナル、またはデスクトップアプリの Code タブ')}</Cell>
+        <Cell strong><Mark kind="copy">{t('a downloaded copy of the skills you added in the Claude app (one way)', 'Claude アプリに追加したスキルを、ダウンロードしたコピー（一方向）')}</Mark></Cell>
+        <Cell strong><Mark kind="yes"><b>{t('CLAUDE.md, auto memory, skills: what memsaga keeps', 'CLAUDE.md・自動メモリ・スキル：memsaga が記録するもの')}</b></Mark></Cell>
+        <Cell strong><Mark kind="yes">{t('CLAUDE.md (or AGENTS.md) and skills', 'CLAUDE.md（または AGENTS.md）とスキル')}</Mark></Cell>
       </div>
       <p style={{ fontSize: 23, color: muted, margin: '18px 0 0', lineHeight: 1.45 }}>
-        {t('● reads it · ○ reads a copy: at the start of each session, Claude Code downloads the skills you added in the Claude app into ~/.claude/skills/synced/, and never uploads · — does not.')}
+        {t('● reads it · ○ reads a copy: at the start of each session, Claude Code downloads the skills you added in the Claude app into ~/.claude/skills/synced/, and never uploads · — does not.', '● 読む · ○ コピーを読む：セッション開始時に、Claude アプリに追加したスキルを Claude Code が ~/.claude/skills/synced/ にダウンロード（アップロードはしない）· — 読まない')}
         <br />
-        {t('Cowork, part of the Claude app since 10 Nov 2026, uses the app’s skills and does not read ~/.claude. From Anthropic’s docs, 28 Nov 2026; that the desktop Code tab also reads CLAUDE.md and auto memory when a folder is chosen is my own test.')}
+        {t('Cowork, part of the Claude app since 10 Nov 2026, uses the app’s skills and does not read ~/.claude. From Anthropic’s docs, 28 Nov 2026; that the desktop Code tab also reads CLAUDE.md and auto memory when a folder is chosen is my own test.', 'Cowork（2026年11月10日から Claude アプリに統合）はアプリのスキルを使い、~/.claude は読みません。Anthropic の公式ドキュメント（2026年11月28日時点）より。デスクトップの Code タブがフォルダを選んだときに CLAUDE.md と自動メモリも読むことは、私自身の検証です。')}
       </p>
     </Content>
   );
@@ -615,31 +626,31 @@ export function buildDeck(lang: Lang) {
   // ~/.claude as it is on disk, next to what memsaga keeps of it (from the Taipei deck). Folder names
   // are Claude Code's own; the project is a placeholder.
   const WhatGoesIn: Page = () => (
-    <Content eyebrow={t('Appendix · What goes in')} heading={t('A hidden, noisy folder becomes a folder you can browse')} headingSize={54}>
+    <Content eyebrow={t('Appendix · What goes in', '付録 · 何が記録されるか')} heading={t('A hidden, noisy folder becomes a folder you can browse', '雑多な隠しフォルダが、見て回れるフォルダに')} headingSize={54}>
       <div style={{ display: 'flex', gap: 40, marginTop: 36 }}>
-        <TreeBox title="~/.claude" sub={t('hidden; about 60 items, mostly caches and logs')}>
-          <T line="CLAUDE.md" keep note={t('kept')} />
-          <T line="skills/  hooks/  scripts/" keep note={t('kept')} />
+        <TreeBox title="~/.claude" sub={t('hidden; about 60 items, mostly caches and logs', '隠しフォルダ。約60項目、ほとんどがキャッシュやログ')}>
+          <T line="CLAUDE.md" keep note={t('kept', '記録')} />
+          <T line="skills/  hooks/  scripts/" keep note={t('kept', '記録')} />
           <T line="projects/" />
           <T line="  -Users-you-code-webapp/" />
-          <T line="    memory/" keep note={t('kept')} />
+          <T line="    memory/" keep note={t('kept', '記録')} />
           <T line="      MEMORY.md  project-notes.md" keep />
-          <T line="    3f46…e21.jsonl" note={t('saved conversation, not kept')} />
+          <T line="    3f46…e21.jsonl" note={t('saved conversation, not kept', '保存された会話（記録しない）')} />
           <T line="cache/  telemetry/  paste-cache/" dim />
           <T line="shell-snapshots/  session-env/" dim />
-          <T line="file-history/  history.jsonl  …" dim note={t('not kept')} />
+          <T line="file-history/  history.jsonl  …" dim note={t('not kept', '記録しない')} />
         </TreeBox>
-        <TreeBox title="memories/" sub={t('your history folder, private on GitHub')} strong>
-          <T line="index.md" keep note={t('~/code/webapp → HOME-code-webapp')} />
+        <TreeBox title="memories/" sub={t('your history folder, private on GitHub', '履歴用のフォルダ（GitHub に非公開で保存）')} strong>
+          <T line="index.md" keep note={t('~/code/webapp → HOME-code-webapp', '~/code/webapp → HOME-code-webapp')} />
           <T line="claude/" />
           <T line="  CLAUDE.md" keep />
           <T line="  skills/  hooks/  scripts/" keep />
           <T line="  memory/HOME-code-webapp/" keep />
           <T line="    MEMORY.md  project-notes.md" keep />
-          <T line="  drafts/" keep note={t('any folder you add')} />
-          <T line="claude-alt/" keep note={t('a second account')} />
-          <T line="extra/home/" keep note={t('files outside ~/.claude')} />
-          <T line="companion/" keep note={t('your notes on other repositories')} />
+          <T line="  drafts/" keep note={t('any folder you add', '追加した任意のフォルダ')} />
+          <T line="claude-alt/" keep note={t('a second account', '2つ目のアカウント')} />
+          <T line="extra/home/" keep note={t('files outside ~/.claude', '~/.claude の外のファイル')} />
+          <T line="companion/" keep note={t('your notes on other repositories', 'ほかのリポジトリについてのメモ')} />
         </TreeBox>
       </div>
     </Content>
@@ -648,28 +659,28 @@ export function buildDeck(lang: Lang) {
   // The two kinds of Claude Code files from page 3, as folders. Project files travel with the code in
   // Git; the personal ones, including each project's auto memory, stay in ~/.claude.
   const ProjectFiles: Page = () => (
-    <Content eyebrow={t('Appendix · Two kinds of Claude Code files')} heading={t('Project files travel with the code; yours stay on your computer')} headingSize={52}>
+    <Content eyebrow={t('Appendix · Two kinds of Claude Code files', '付録 · Claude Code の2種類のファイル')} heading={t('Project files travel with the code; yours stay on your computer', 'プロジェクトのファイルはコードと一緒に、自分のファイルはパソコンの中に')} headingSize={52}>
       <div style={{ display: 'flex', gap: 40, marginTop: 36 }}>
-        <TreeBox title="~/code/webapp/" sub={t('the project’s Git repository (repo), shared with the team, for example on GitHub')}>
-          <T line="CLAUDE.md" keep note={t('instructions for everyone on the project')} />
-          <T line="AGENTS.md" note={t('read instead, if there is no CLAUDE.md')} />
+        <TreeBox title="~/code/webapp/" sub={t('the project’s Git repository (repo), shared with the team, for example on GitHub', 'プロジェクトの Git リポジトリ（repo）。GitHub などでチームと共有')}>
+          <T line="CLAUDE.md" keep note={t('instructions for everyone on the project', 'プロジェクトの全員への指示')} />
+          <T line="AGENTS.md" note={t('read instead, if there is no CLAUDE.md', 'CLAUDE.md がなければ代わりに読む')} />
           <T line=".claude/" />
           <T line="  skills/release-notes/" />
-          <T line="    SKILL.md" keep note={t('a skill for this project')} />
-          <T line="  settings.json" note={t('shared settings')} />
-          <T line="src/  tests/  …" dim note={t('the code')} />
+          <T line="    SKILL.md" keep note={t('a skill for this project', 'このプロジェクト用のスキル')} />
+          <T line="  settings.json" note={t('shared settings', '共有の設定')} />
+          <T line="src/  tests/  …" dim note={t('the code', 'コード')} />
         </TreeBox>
-        <TreeBox title="~/.claude/" sub={t('your files, on your computer only')} strong>
-          <T line="CLAUDE.md" keep note={t('your instructions, every project')} />
-          <T line="skills/" keep note={t('your skills, every project')} />
+        <TreeBox title="~/.claude/" sub={t('your files, on your computer only', '自分のファイル（このパソコンだけ）')} strong>
+          <T line="CLAUDE.md" keep note={t('your instructions, every project', '自分の指示（全プロジェクト共通）')} />
+          <T line="skills/" keep note={t('your skills, every project', '自分のスキル（全プロジェクト共通）')} />
           <T line="projects/" />
           <T line="  -Users-you-code-webapp/" />
-          <T line="    memory/" keep note={t('auto memory for this project')} />
+          <T line="    memory/" keep note={t('auto memory for this project', 'このプロジェクトの自動メモリ')} />
           <T line="      MEMORY.md" keep />
         </TreeBox>
       </div>
       <p style={{ fontSize: 27, color: muted, margin: '30px 0 0', lineHeight: 1.45 }}>
-        {t('Project files get Git history when you commit them with the code. Your files in ~/.claude, including each project’s auto memory, get none: that is the gap memsaga fills.')}
+        {t('Project files get Git history when you commit them with the code. Your files in ~/.claude, including each project’s auto memory, get none: that is the gap memsaga fills.', 'プロジェクトのファイルは、コードと一緒にコミットすれば Git の履歴が残ります。~/.claude の自分のファイル（各プロジェクトの自動メモリも含む）には残りません。そこを埋めるのが memsaga です。')}
       </p>
     </Content>
   );
@@ -688,7 +699,7 @@ export function buildDeck(lang: Lang) {
   // One commit as memsaga writes it (from the Taipei deck): the subject names the session and the
   // folder; the trailers say which session, account and agent. Placeholder project and session.
   const OneRecord: Page = () => (
-    <Content eyebrow={t('Appendix · How it works')} heading={t('One record, in full')}>
+    <Content eyebrow={t('Appendix · How it works', '付録 · 仕組み')} heading={t('One record, in full', '記録1件の全体')}>
       <div style={{ display: 'flex', gap: 40, marginTop: 36, alignItems: 'flex-start' }}>
         <div style={{ background: panel, border: `1px solid ${rule}`, borderRadius: 'var(--osd-radius)', padding: '26px 36px', fontFamily: mono, fontSize: 25, lineHeight: 1.45, width: 1000, boxSizing: 'border-box' }}>
           <Line color="var(--osd-accent)" bold>{'[weekly memory tidy-up] claude:memory:HOME-code-webapp'}</Line>
@@ -704,44 +715,51 @@ export function buildDeck(lang: Lang) {
           <Line color="var(--osd-text)" bold>{'Session-Title: weekly memory tidy-up'}</Line>
         </div>
         <div style={{ flex: 1, fontSize: 26, lineHeight: 1.45 }}>
-          <Pt lead={t('First line:')}>{t('the session’s title, and which folder changed.')}</Pt>
-          <Pt lead="Session:">{t('the ID to reopen that session, or to read its saved conversation.')}</Pt>
-          <Pt lead="Account:">{t('which Claude Code account, when you use more than one.')}</Pt>
-          <Pt lead="Agent:">{t('main, or the name of the subagent that made the edit.')}</Pt>
-          <Pt lead={t('When:')}>{t('one record per turn that changed something; Git adds the time.')}</Pt>
+          <Pt lead={t('First line:', '1行目：')}>{t('the session’s title, and which folder changed.', 'セッションのタイトルと、変更されたフォルダ。')}</Pt>
+          <Pt lead="Session:">{t('the ID to reopen that session, or to read its saved conversation.', 'そのセッションを再開したり、保存された会話を読んだりするための ID。')}</Pt>
+          <Pt lead="Account:">{t('which Claude Code account, when you use more than one.', '複数のアカウントを使うときの、どの Claude Code アカウントか。')}</Pt>
+          <Pt lead="Agent:">{t('main, or the name of the subagent that made the edit.', 'main、または編集したサブエージェントの名前。')}</Pt>
+          <Pt lead={t('When:', 'いつ：')}>{t('one record per turn that changed something; Git adds the time.', '何かが変わったターンごとに1件。時刻は Git が付ける。')}</Pt>
         </div>
       </div>
       <p style={{ fontSize: 24, color: muted, margin: '26px 0 0' }}>
-        {t('A record holds every change since the last one, including your own edits; it is named after the session whose turn just ended.')}
+        {t('A record holds every change since the last one, including your own edits; it is named after the session whose turn just ended.', '1件の記録には前回からのすべての変更（自分の手での編集も）が入り、ちょうどターンを終えたセッションの名前が付きます。')}
       </p>
     </Content>
   );
 
   const NeedIt: Page = () => (
-    <Content eyebrow={t('Appendix · Do you need memsaga?')} heading={t('Maybe not')}>
+    <Content eyebrow={t('Appendix · Do you need memsaga?', '付録 · memsaga は必要？')} heading={t('Maybe not', '必要ないかも')}>
       <div style={{ display: 'flex', gap: 40, marginTop: 34, alignItems: 'stretch' }}>
-        <Card title={t('You may not need it, if…')}>
+        <Card title={t('You may not need it, if…', '必要ないかもしれない場合')}>
           <Item mark="1" color={muted}>
-            {t(<>One account on one computer: put <Code>~/.claude</Code> in Git yourself, keep only the files you want, and commit at the end of each session.</>)}
+            {t(
+              <>One account on one computer: put <Code>~/.claude</Code> in Git yourself, keep only the files you want, and commit at the end of each session.</>,
+              <>アカウント1つ・パソコン1台なら：<Code>~/.claude</Code> を自分で Git 管理し、必要なファイルだけ残して、セッションの終わりにコミットする。</>,
+            )}
           </Item>
           <Item mark="2" color={muted}>
-            {t('You already keep your notes in a system you built yourself, outside Claude Code’s files.')}
+            {t('You already keep your notes in a system you built yourself, outside Claude Code’s files.', 'Claude Code のファイルとは別に、自分で作った仕組みでメモを管理している。')}
           </Item>
           <Item mark="3" color={muted}>
-            {t(<>You are on Windows: <A href={URL_ENGRAM}>Engram</A> is a similar tool.</>)}
+            {t(
+              <>You are on Windows: <A href={URL_ENGRAM}>Engram</A> is a similar tool.</>,
+              <>Windows を使っている：似たツールに <A href={URL_ENGRAM}>Engram</A> があります。</>,
+            )}
           </Item>
         </Card>
-        <Card title={t('What memsaga adds')} strong>
-          <Item mark="A" color={teal}>{t('Which session made each change')}</Item>
-          <Item mark="B" color={teal}>{t('History kept apart from the live files')}</Item>
-          <Item mark="C" color={teal}>{t('Several accounts and computers; edits from GitHub or a phone come back')}</Item>
-          <Item mark="D" color={teal}>{t(<>Any file you choose, even outside <Code>~/.claude</Code></>)}</Item>
-          <Item mark="E" color={teal}>{t('History from before you installed it, rebuilt from saved conversations')}</Item>
-          <Item mark="F" color={teal}>{t('Companion docs: your notes and translations beside a repository you must not commit to')}</Item>
+        <Card title={t('What memsaga adds', 'memsaga が加えるもの')} strong>
+          <Item mark="A" color={teal}>{t('Which session made each change', 'どのセッションが変更したか')}</Item>
+          <Item mark="B" color={teal}>{t('History kept apart from the live files', '実際のファイルとは別の場所に履歴を保存')}</Item>
+          <Item mark="C" color={teal}>{t('Several accounts and computers; edits from GitHub or a phone come back', '複数のアカウントとパソコンに対応。GitHub やスマホでの編集も反映')}</Item>
+          <Item mark="D" color={teal}>{t(<>Any file you choose, even outside <Code>~/.claude</Code></>, <>好きなファイルを追加できる（<Code>~/.claude</Code> の外も）</>)}</Item>
+          <Item mark="E" color={teal}>{t('History from before you installed it, rebuilt from saved conversations', '導入前の履歴も、保存された会話から再構築')}</Item>
+          <Item mark="F" color={teal}>{t('Companion docs: your notes and translations beside a repository you must not commit to', 'コンパニオン文書：コミットできないリポジトリについてのメモや翻訳を、別の場所に保存')}</Item>
         </Card>
       </div>
       <p style={{ fontSize: 25, color: muted, margin: '22px 0 0' }}>
-        {t('The full comparison:')} <A href={URL_NEED}>{t('README, “Do you need memsaga?”')}</A>
+        {t('The full comparison:', '詳しい比較：')} <A href={URL_NEED}>{t('README, “Do you need memsaga?”', 'README「Do you need memsaga?」')}</A> ·{' '}
+        {t('A longer English version (Taipei, 26 Nov):', 'より詳しい英語版（台北、11月26日）：')} <A href={URL_TAIPEI}>slides.grimmer.io/s/memsaga-taipei-2026-11</A>
       </p>
     </Content>
   );
@@ -756,22 +774,22 @@ export function buildDeck(lang: Lang) {
   // Panel question 2 (second half): how do you review the memory and CLAUDE.md Claude rewrites,
   // and what goes into CLAUDE.md, memory and skills? The author's own rules of thumb.
   const PanelWhatGoesWhere: Page = () => (
-    <Content eyebrow={t('Appendix · For the panel')} heading={t('What goes where, and how I review it')}>
+    <Content eyebrow={t('Appendix · For the panel', '付録 · 座談会用')} heading={t('What goes where, and how I review it', '何をどこに書くか、どうレビューするか')}>
       <div style={{ display: 'flex', gap: 40, marginTop: 40, alignItems: 'stretch' }}>
-        <Card title={t('What goes where (my rule of thumb)')}>
+        <Card title={t('What goes where (my rule of thumb)', '何をどこに（私の目安）')}>
           <div style={{ marginTop: 6 }}>
-            <Rule name="CLAUDE.md">{t('Rules that must hold in every session. Keep it short: it is read every time.')}</Rule>
-            <Rule name={t('Skills')}>{t('Steps for one kind of task, loaded only when needed.')}</Rule>
-            <Rule name={t('Memory')}>{t('Facts about one project, and anything that changes or expires.')}</Rule>
-            <Rule name={t('A hook (an automatic check)')}>{t('A rule a script can check. Do not add more text for it.')}</Rule>
+            <Rule name="CLAUDE.md">{t('Rules that must hold in every session. Keep it short: it is read every time.', 'すべてのセッションで守るべきルール。毎回読まれるので短く。')}</Rule>
+            <Rule name={t('Skills', 'スキル')}>{t('Steps for one kind of task, loaded only when needed.', 'ある種類の作業の手順。必要なときだけ読み込まれる。')}</Rule>
+            <Rule name={t('Memory', 'メモリ')}>{t('Facts about one project, and anything that changes or expires.', '1つのプロジェクトについての事実や、変わるもの・期限があるもの。')}</Rule>
+            <Rule name={t('A hook (an automatic check)', 'フック（自動チェック）')}>{t('A rule a script can check. Do not add more text for it.', 'スクリプトで確認できるルール。文章を増やさず、チェックにする。')}</Rule>
           </div>
         </Card>
-        <Card title={t('How I review it')} strong>
+        <Card title={t('How I review it', 'どうレビューするか')} strong>
           <div style={{ marginTop: 6 }}>
-            <Item mark="1" color={teal}>{t('Claude Code edits memory and skills, then tells me. CLAUDE.md waits for my OK.')}</Item>
-            <Item mark="2" color={teal}>{t('When something looks off, the history shows what changed, in which session, and lets me undo it.')}</Item>
-            <Item mark="3" color={teal}>{t('For the why, Claude Code reads that session’s saved conversation (kept 30 days by default), so it can explain any change.')}</Item>
-            <Item mark="4" color={teal}>{t('Now and then, a tidy-up session: merge duplicates, delete stale notes.')}</Item>
+            <Item mark="1" color={teal}>{t('Claude Code edits memory and skills, then tells me. CLAUDE.md waits for my OK.', 'メモリとスキルは Claude Code が編集して報告。CLAUDE.md は私の OK を待つ。')}</Item>
+            <Item mark="2" color={teal}>{t('When something looks off, the history shows what changed, in which session, and lets me undo it.', 'おかしいと思ったら、何が、どのセッションで変わったかを履歴で確認し、元に戻せる。')}</Item>
+            <Item mark="3" color={teal}>{t('For the why, Claude Code reads that session’s saved conversation (kept 30 days by default), so it can explain any change.', '理由は、Claude Code がそのセッションの保存された会話（初期設定で30日保存）を読んで説明してくれる。')}</Item>
+            <Item mark="4" color={teal}>{t('Now and then, a tidy-up session: merge duplicates, delete stale notes.', 'ときどき整理用のセッション：重複をまとめ、古いメモを消す。')}</Item>
           </div>
         </Card>
       </div>
@@ -799,21 +817,24 @@ export function buildDeck(lang: Lang) {
   );
 
   const PanelSharing: Page = () => (
-    <Content eyebrow={t('Appendix · For the panel')} heading={t('Sharing skills and settings')}>
+    <Content eyebrow={t('Appendix · For the panel', '付録 · 座談会用')} heading={t('Sharing skills and settings', 'スキルと設定の共有')}>
       <div style={{ display: 'flex', gap: 30, marginTop: 40, alignItems: 'stretch' }}>
-        <Card title={<NumTitle n="1">{t('My computers')}</NumTitle>}>
-          <Pt lead={t('One private repository')}>{t('on GitHub holds the history.')}</Pt>
-          <Pt lead={t('Another Mac:')}>{t('copy it once, run one restore command, and CLAUDE.md, skills and memory are back.')}</Pt>
-          <Pt lead={t('From a phone:')}>{t('an edit on GitHub comes back to the file Claude Code reads.')}</Pt>
+        <Card title={<NumTitle n="1">{t('My computers', '自分のパソコン')}</NumTitle>}>
+          <Pt lead={t('One private repository', '非公開のリポジトリ1つ：')}>{t('on GitHub holds the history.', 'GitHub 上で履歴を保存。')}</Pt>
+          <Pt lead={t('Another Mac:', '別の Mac：')}>{t('copy it once, run one restore command, and CLAUDE.md, skills and memory are back.', '一度コピーして復元コマンドを1回実行すれば、CLAUDE.md・スキル・メモリが戻る。')}</Pt>
+          <Pt lead={t('From a phone:', 'スマホから：')}>{t('an edit on GitHub comes back to the file Claude Code reads.', 'GitHub での編集が、Claude Code の読むファイルに反映される。')}</Pt>
         </Card>
-        <Card title={<NumTitle n="2">{t('My two accounts')}</NumTitle>}>
-          <Pt lead={t('Shared files:')}>{t(<>two Claude Code accounts on one Mac use one CLAUDE.md, skills and memory; my Mac app <A href={URL_CODEV}>CodeV</A> links them.</>)}</Pt>
-          <Pt lead={t('One history:')}>{t('memsaga records both and labels each change with its account.')}</Pt>
+        <Card title={<NumTitle n="2">{t('My two accounts', '自分の2つのアカウント')}</NumTitle>}>
+          <Pt lead={t('Shared files:', '共有ファイル：')}>{t(
+            <>two Claude Code accounts on one Mac use one CLAUDE.md, skills and memory; my Mac app <A href={URL_CODEV}>CodeV</A> links them.</>,
+            <>1台の Mac で2つの Claude Code アカウントが、同じ CLAUDE.md・スキル・メモリを使う。自作の Mac アプリ <A href={URL_CODEV}>CodeV</A> でリンク。</>,
+          )}</Pt>
+          <Pt lead={t('One history:', '履歴は1つ：')}>{t('memsaga records both and labels each change with its account.', 'memsaga が両方を記録し、変更ごとにアカウント名を付ける。')}</Pt>
         </Card>
-        <Card title={<NumTitle n="3">{t('A team')}</NumTitle>}>
-          <Pt lead={t('In the project:')}>{t('CLAUDE.md (or AGENTS.md) and skills in the repository; everyone’s Claude Code reads them.')}</Pt>
-          <Pt lead={t('Claude app (Team, Enterprise):')}>{t('publish a skill to the organisation.')}</Pt>
-          <Pt lead={t('Plugins:')}>{t('an owner can install one for everyone.')}</Pt>
+        <Card title={<NumTitle n="3">{t('A team', 'チーム')}</NumTitle>}>
+          <Pt lead={t('In the project:', 'プロジェクトに：')}>{t('CLAUDE.md (or AGENTS.md) and skills in the repository; everyone’s Claude Code reads them.', 'リポジトリに CLAUDE.md（または AGENTS.md）とスキルを置けば、全員の Claude Code が読む。')}</Pt>
+          <Pt lead={t('Claude app (Team, Enterprise):', 'Claude アプリ（Team・Enterprise）：')}>{t('publish a skill to the organisation.', 'スキルを組織に公開できる。')}</Pt>
+          <Pt lead={t('Plugins:', 'プラグイン：')}>{t('an owner can install one for everyone.', 'オーナーが全員にインストールできる。')}</Pt>
         </Card>
       </div>
     </Content>
@@ -827,18 +848,18 @@ export function buildDeck(lang: Lang) {
   );
 
   const Numbers: Page = () => (
-    <Content eyebrow={t('Appendix · Two months of my own data')} heading={t('Too many changes to follow from memory')}>
+    <Content eyebrow={t('Appendix · Two months of my own data', '付録 · 2か月分の自分のデータ')} heading={t('Too many changes to follow from memory', '記憶だけでは追えない量の変更')}>
       <div style={{ display: 'flex', gap: 60, marginTop: 64 }}>
-        <Stat n="25" label={t('sessions changed CLAUDE.md')} />
-        <Stat n="57" label={t('sessions changed skills')} />
-        <Stat n="136" label={t('sessions changed memory')} />
+        <Stat n="25" label={t('sessions changed CLAUDE.md', 'セッションが CLAUDE.md を変更')} />
+        <Stat n="57" label={t('sessions changed skills', 'セッションがスキルを変更')} />
+        <Stat n="136" label={t('sessions changed memory', 'セッションがメモリを変更')} />
       </div>
       <div style={{ marginTop: 64 }}>
         <div style={{ fontSize: 104, fontWeight: 800, lineHeight: 1, color: 'var(--osd-accent)' }}>~12</div>
-        <div style={{ fontSize: 30, color: muted, marginTop: 14 }}>{t('times “when and why did this change?” was answered from the history')}</div>
+        <div style={{ fontSize: 30, color: muted, marginTop: 14 }}>{t('times “when and why did this change?” was answered from the history', '回、「いつ、なぜ変わった？」に履歴で答えられた')}</div>
       </div>
       <p style={{ fontSize: 25, color: muted, margin: '40px 0 0' }}>
-        {t('Since 20 Sep 2026. On the first day, 502 earlier records (July to September) were rebuilt from Claude Code’s saved conversations.')}
+        {t('Since 20 Sep 2026. On the first day, 502 earlier records (July to September) were rebuilt from Claude Code’s saved conversations.', '2026年9月20日以降。初日に、それ以前（7〜9月）の記録502件を Claude Code の保存された会話から再構築。')}
       </p>
     </Content>
   );
@@ -858,17 +879,17 @@ export function buildDeck(lang: Lang) {
   );
 
   const OneMoreThing: Page = () => (
-    <Content eyebrow={t('Appendix · Two more side projects')} heading={t('Also free and open source')}>
+    <Content eyebrow={t('Appendix · Two more side projects', '付録 · ほかの個人プロジェクト')} heading={t('Also free and open source', 'こちらも無料・オープンソース')}>
       <Extra
         icon={matchapackIcon}
         qr={matchapackQr}
         name="matchapack"
         href={URL_MATCHAPACK}
-        status={t('first released 2026-11-24')}
-        line={t('Each extra git worktree’s node_modules costs almost no disk: savings like pnpm’s, but the exact tree plain npm or Yarn 1 builds.')}
+        status={t('first released 2026-11-24', '2026-11-24 初公開')}
+        line={t('Each extra git worktree’s node_modules costs almost no disk: savings like pnpm’s, but the exact tree plain npm or Yarn 1 builds.', 'git worktree を増やしても、node_modules がほとんどディスクを使わない。pnpm 並みの節約で、npm や Yarn 1 とまったく同じツリー。')}
       >
         <div style={{ fontSize: 25, color: muted, marginTop: 8 }}>
-          {t('Measured, 10 worktrees: 20.68 GiB with plain npm → 61 MiB + one 1.82 GiB store')} · <Code>brew install grimmerk/tap/matchapack</Code>
+          {t('Measured, 10 worktrees: 20.68 GiB with plain npm → 61 MiB + one 1.82 GiB store', '実測（worktree 10個）：npm のみで 20.68 GiB → 61 MiB ＋ 共有ストア 1.82 GiB')} · <Code>brew install grimmerk/tap/matchapack</Code>
         </div>
       </Extra>
       <Extra
@@ -877,7 +898,7 @@ export function buildDeck(lang: Lang) {
         name="CodeV"
         href={URL_CODEV}
         status="macOS"
-        line={t('A Mac app for Claude Code: session switcher, project launcher, built-in terminal, and several accounts sharing one CLAUDE.md, skills and memory.')}
+        line={t('A Mac app for Claude Code: session switcher, project launcher, built-in terminal, and several accounts sharing one CLAUDE.md, skills and memory.', 'Claude Code 用の Mac アプリ：セッション切り替え、プロジェクトランチャー、内蔵ターミナル、複数アカウントでの CLAUDE.md・スキル・メモリの共有。')}
       />
     </Content>
   );
