@@ -33,6 +33,9 @@ const URL_ENGRAM = 'https://github.com/Sen-CaPoo/engram';
 const URL_ME = 'https://github.com/grimmerk';
 const URL_MATCHAPACK = 'https://github.com/grimmerk/matchapack';
 const URL_CODEV = 'https://github.com/grimmerk/codev';
+// Anthropic's skill guide, section "Evaluation and iteration" (評価と反復 in the Japanese edition).
+const URL_SKILL_GUIDE_EN = 'https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices';
+const URL_SKILL_GUIDE_JA = 'https://platform.claude.com/docs/ja/agents-and-tools/agent-skills/best-practices';
 
 const fill: CSSProperties = {
   width: '100%',
@@ -431,6 +434,10 @@ export function buildDeck(lang: Lang) {
       <p style={{ fontSize: 38, lineHeight: 1.45, margin: '64px 0 0', fontWeight: 700 }}>
         {t('Like a seatbelt: I rarely need it, but I drive differently because it is there.')}
       </p>
+      <p style={{ fontSize: 24, color: muted, margin: '40px 0 0' }}>
+        {t('Anthropic’s guide also says to improve a skill step by step:')}{' '}
+        <A href={t(URL_SKILL_GUIDE_EN, URL_SKILL_GUIDE_JA)}>{t('“Skill authoring best practices”, Evaluation and iteration')}</A>
+      </p>
     </Content>
   );
 
@@ -750,10 +757,14 @@ export function buildDeck(lang: Lang) {
   // The talk script, in simple English (the venue plans an app for live machine interpretation:
   // short sentences, one idea each). About 500 words for the eight main pages, roughly four minutes.
   const notes: (string | undefined)[] = [
-    `~15s.
-はじめまして。台湾から来た Grimmer です。よろしくお願いします。
-I will speak in English. The slides are in Japanese.
-Today I will share how I learned to let Claude Code clean up its own memory.`,
+    `~15s. Say the first lines in Japanese, slowly:
+はじめまして。台湾から来た Grimmer です。
+(Hajimemashite. Taiwan kara kita Grimmer desu.)
+英語で話しますが、スライドは日本語です。
+(Eigo de hanashimasu ga, suraido wa nihongo desu.)
+よろしくお願いします。
+(Yoroshiku onegaishimasu.)
+Then in English: Today I will share how I learned to let Claude Code clean up its own memory.`,
     `~40s.
 First, how does Claude Code remember things?
 Claude Code is Claude working on your computer, in a terminal or in the desktop app.
@@ -817,7 +828,9 @@ So this is my answer to today's theme: systems that don't break when you hand wo
 I can see every change. I can undo any change. So I can hand the work over.
 You do not need my tool for this. Any Git history of these files helps.
 Mine is free and open source.
-Thank you. ありがとうございました。`,
+Thank you.
+ありがとうございました。
+(Arigatou gozaimashita.)`,
     `Appendix, for the panel and questions. Which Claude reads which files.`,
     `Appendix, for questions only. What memsaga keeps, next to ~/.claude.`,
     `Appendix, for questions only.`,
