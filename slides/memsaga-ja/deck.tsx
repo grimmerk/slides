@@ -1,5 +1,5 @@
 import { type DesignSystem, type Page, useSlidePageNumber } from '@open-slide/core';
-import type { CSSProperties, ReactNode } from 'react';
+import { type CSSProperties, type ReactNode, useSyncExternalStore } from 'react';
 import codevIcon from './assets/codev-icon.png';
 import codevQr from './assets/codev-qr.svg';
 import matchapackIcon from './assets/matchapack-icon.png';
@@ -12,6 +12,9 @@ import slidesQrJa from './assets/slides-qr-ja.svg';
 //   slides/memsaga-fukuoka/index.tsx -> buildDeck('en')  (draft language; the speaker talks in English)
 //   slides/memsaga-ja/index.tsx      -> buildDeck('ja')  (what is shown on stage)
 // Every visible string goes through t(en, ja); a missing ja falls back to the English.
+// Each deck opens in its own language (or ?lang=en|ja) and switches in place with the EN / 日本語
+// button in the footer: no reload, same page. The button is a <button>, which open-slide exempts
+// from click-to-navigate. The choice lives in this window only (the presenter window keeps its own).
 // The speaker notes are the English talk script and are shared by both decks.
 // Numbers come from the author's own data repository (measured 2026-11-24 to 26, commits since
 // 2026-09-20); facts about other Claude surfaces were checked against Anthropic's docs on 2026-11-28.
@@ -52,19 +55,36 @@ const fill: CSSProperties = {
   position: 'relative',
 };
 
-export function buildDeck(lang: Lang) {
-  const t = <T extends ReactNode>(en: T, ja?: T): T => (lang === 'ja' && ja !== undefined ? ja : en);
-  const deckPath = lang === 'ja' ? 'memsaga-ja' : 'memsaga-fukuoka';
-  const slidesUrl = `https://slides.grimmer.io/s/${deckPath}`;
-  const slidesQr = lang === 'ja' ? slidesQrJa : slidesQrEn;
+export function buildDeck(defaultLang: Lang) {
+  // The current language: one small store per deck, so the two decks never share a choice.
+  const fromUrl = typeof window === 'undefined' ? null : new URLSearchParams(window.location.search).get('lang');
+  let lang: Lang = fromUrl === 'en' || fromUrl === 'ja' ? fromUrl : defaultLang;
+  const listeners = new Set<() => void>();
+  const setLang = (next: Lang) => {
+    if (next === lang) return;
+    lang = next;
+    for (const l of listeners) l();
+  };
+  const subscribe = (l: () => void) => {
+    listeners.add(l);
+    return () => listeners.delete(l);
+  };
+  const useLang = () => useSyncExternalStore(subscribe, () => lang, () => lang);
 
+  const t = <T extends ReactNode>(en: T, ja?: T): T => (lang === 'ja' && ja !== undefined ? ja : en);
+  // The QR and URL always name this deck; the button changes only the language shown.
+  const deckPath = defaultLang === 'ja' ? 'memsaga-ja' : 'memsaga-fukuoka';
+  const slidesUrl = `https://slides.grimmer.io/s/${deckPath}`;
+  const slidesQr = defaultLang === 'ja' ? slidesQrJa : slidesQrEn;
+
+  // Both stacks list Hiragino Sans before any Chinese font, so kanji get Japanese shapes either way.
   const font =
-    lang === 'ja'
+    defaultLang === 'ja'
       ? '"Hiragino Sans", "Hiragino Kaku Gothic ProN", -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif'
       : '-apple-system, BlinkMacSystemFont, "Helvetica Neue", "Hiragino Sans", system-ui, sans-serif';
 
   // Japanese: break lines at phrase boundaries (Chromium 119+; other browsers ignore it).
-  const jaBreak = (lang === 'ja' ? { wordBreak: 'auto-phrase' } : {}) as CSSProperties;
+  const jaBreak = () => (lang === 'ja' ? { wordBreak: 'auto-phrase' } : {}) as CSSProperties;
 
   const design: DesignSystem = {
     palette: { bg: '#fbfaf7', text: '#1a1814', accent: '#b0641c' },
@@ -90,6 +110,39 @@ export function buildDeck(lang: Lang) {
     <span style={{ fontFamily: mono, fontSize: '0.92em', whiteSpace: 'nowrap' }}>{children}</span>
   );
 
+  const LangSwitch = () => {
+    const now = useLang();
+    const opt = (value: Lang, label: string) => (
+      <button
+        type="button"
+        onClick={(e) => {
+          setLang(value);
+          // Give the keyboard back to the deck, so the arrow keys keep turning pages.
+          e.currentTarget.blur();
+        }}
+        aria-pressed={now === value}
+        style={{
+          font: 'inherit',
+          fontSize: 22,
+          padding: '2px 12px',
+          border: `1px solid ${now === value ? muted : rule}`,
+          borderRadius: 8,
+          background: now === value ? panel : 'transparent',
+          color: now === value ? 'var(--osd-text)' : soft,
+          cursor: 'pointer',
+        }}
+      >
+        {label}
+      </button>
+    );
+    return (
+      <span style={{ display: 'inline-flex', gap: 8 }}>
+        {opt('en', 'EN')}
+        {opt('ja', '日本語')}
+      </span>
+    );
+  };
+
   const Footer = () => {
     const { current, total } = useSlidePageNumber();
     return (
@@ -107,7 +160,8 @@ export function buildDeck(lang: Lang) {
         }}
       >
         <span>memsaga · Grimmer · Fukuoka Claude Meetup</span>
-        <span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+          <LangSwitch />
           {String(current).padStart(2, '0')} / {String(total).padStart(2, '0')}
         </span>
       </div>
@@ -125,7 +179,7 @@ export function buildDeck(lang: Lang) {
   );
 
   const Content = ({ children, eyebrow, heading, headingSize }: { children?: ReactNode; eyebrow: ReactNode; heading: ReactNode; headingSize?: number }) => (
-    <div lang={lang} style={{ ...fill, ...jaBreak, padding: `110px ${PAD}px 0` }}>
+    <div lang={lang} style={{ ...fill, ...jaBreak(), padding: `110px ${PAD}px 0` }}>
       <Eyebrow>{eyebrow}</Eyebrow>
       <Heading size={headingSize}>{heading}</Heading>
       {children}
@@ -182,7 +236,7 @@ export function buildDeck(lang: Lang) {
   // ---------- 1. cover ----------
 
   const Cover: Page = () => (
-    <div lang={lang} style={{ ...fill, ...jaBreak, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: `0 ${PAD}px` }}>
+    <div lang={lang} style={{ ...fill, ...jaBreak(), display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: `0 ${PAD}px` }}>
       <Eyebrow>Fukuoka | Claude Meetup · 2026-11-29</Eyebrow>
       <h1
         style={{
@@ -208,6 +262,9 @@ export function buildDeck(lang: Lang) {
       <div style={{ position: 'absolute', right: PAD, bottom: 96, textAlign: 'right' }}>
         <img src={slidesQr} alt={`QR code for ${slidesUrl}`} style={{ display: 'block', marginLeft: 'auto', width: 190, height: 190, imageRendering: 'pixelated' }} />
         <div style={{ fontSize: 22, color: muted, fontFamily: mono, marginTop: 10 }}>{slidesUrl.replace('https://', '')}</div>
+      </div>
+      <div style={{ position: 'absolute', left: PAD, bottom: 56, fontFamily: mono }}>
+        <LangSwitch />
       </div>
     </div>
   );
@@ -419,7 +476,7 @@ export function buildDeck(lang: Lang) {
   );
 
   const WhatIDo: Page = () => (
-    <Content eyebrow={t('What I do now', '今のやり方')} heading={t('Every change becomes a record, named after its session', 'すべての変更を、セッション名つきで記録')} headingSize={62}>
+    <Content eyebrow={t('What I do now · answers ①', '今のやり方 · ① への答え')} heading={t('Every change becomes a record, named after its session', 'すべての変更を、セッション名つきで記録')} headingSize={62}>
       <div style={{ marginTop: 18 }}>
         <Gloss term="Git">{t('a tool that keeps the history of files', 'ファイルの変更履歴を残す仕組み')}</Gloss>
         <Gloss term={t('commit', 'コミット（commit）')}>{t('one saved record of a change, with a short message', '変更1件分の記録（短い説明付き）')}</Gloss>
@@ -442,8 +499,8 @@ export function buildDeck(lang: Lang) {
       </div>
       <p style={{ fontSize: 27, color: muted, margin: '22px 0 0' }}>
         {t(
-          <>The tool is <b style={{ color: 'var(--osd-text)' }}>memsaga</b>, free and open source. Claude Code works as before; the files stay where they are.</>,
-          <>ツールは <b style={{ color: 'var(--osd-text)' }}>memsaga</b>（無料・オープンソース）。Claude Code の使い方は変わらず、ファイルも元の場所のまま。</>,
+          <>The tool is <b style={{ color: 'var(--osd-text)' }}>memsaga</b>, my personal open-source project (free). Claude Code works as before; the files stay where they are.</>,
+          <>ツールは <b style={{ color: 'var(--osd-text)' }}>memsaga</b>（個人で作った無料のオープンソース）。Claude Code の使い方は変わらず、ファイルも元の場所のまま。</>,
         )}
       </p>
       {/* Not spoken: for engineers in the room. */}
@@ -476,7 +533,7 @@ export function buildDeck(lang: Lang) {
   const Arrow = () => <div style={{ fontSize: 44, color: muted, alignSelf: 'center' }}>→</div>;
 
   const Story: Page = () => (
-    <Content eyebrow={t('A real case, details simplified: what I asked Claude Code', '実例（表示は簡略化）：Claude Code に聞いたこと')} heading={t('“Did you add this rule yourself?”', '「このルール、自分で追加した？」')} headingSize={66}>
+    <Content eyebrow={t('A real case, simplified · answers ③', '実例（表示は簡略化）· ③ への答え')} heading={t('“Did you add this rule yourself?”', '「このルール、自分で追加した？」')} headingSize={66}>
       <div style={{ display: 'flex', gap: 20, marginTop: 40 }}>
         <FlowBox label={t('A rule in my CLAUDE.md', '私の CLAUDE.md にあるルール')} body={t('“Always run the tests first.”', '「必ず先にテストを実行する」')} />
         <Arrow />
@@ -492,7 +549,7 @@ export function buildDeck(lang: Lang) {
       </p>
       {/* Not spoken: more questions the history answered (from the Taipei deck). */}
       <p style={{ fontSize: 24, color: muted, margin: '34px 0 0', lineHeight: 1.5 }}>
-        {t('The history also answered, for me and for other sessions:', '履歴で答えられたほかの質問（私からも、別のセッションからも）：')}{' '}
+        {t('Questions like this: about 12 in two months, from me and from other sessions. For example:', 'こうした質問は2か月で約12回（私からも、別のセッションからも）。たとえば：')}{' '}
         {t('“Which version of the skill did you load?” · “What did the other session just change?” · “Where did this file go?”', '「どのバージョンのスキルを読み込んだ？」「別のセッションがさっき何を変えた？」「このファイルはどこへ行った？」')}
       </p>
     </Content>
@@ -509,7 +566,7 @@ export function buildDeck(lang: Lang) {
   );
 
   const Changed: Page = () => (
-    <Content eyebrow={t('What changed for me', '私にとって変わったこと')} heading={t<ReactNode>('Undo took away the fear. Now I hand over the cleanup.', <>元に戻せるから、怖くない。<br />整理を任せられるようになった</>)} headingSize={62}>
+    <Content eyebrow={t('What changed for me · answers ②', '私にとって変わったこと · ② への答え')} heading={t<ReactNode>('Undo took away the fear. Now I hand over the cleanup.', <>元に戻せるから、怖くない。<br />整理を任せられるようになった</>)} headingSize={62}>
       <div style={{ display: 'flex', gap: 60, marginTop: 56 }}>
         <Big n={t('~90', '約90')} head={t('files deleted so far', 'これまでに削除したファイル')} body={t('As Claude Code reorganized its memory. Every one can come back.', 'Claude Code がメモリを整理する中で。どれも元に戻せる。')} />
         <Big n="70" head={t('recorded changes to one skill (two months)', '1つのスキルの変更記録（2か月間）')} body={t('Small steps, each with its session. That is how a skill gets better.', '小さな変更を、それぞれセッション名つきで。スキルはこうして良くなる。')} />
@@ -517,6 +574,9 @@ export function buildDeck(lang: Lang) {
       </div>
       <p style={{ fontSize: 38, lineHeight: 1.45, margin: '64px 0 0', fontWeight: 700 }}>
         {t('Like a seatbelt: I rarely need it, but I drive differently because it is there.', 'シートベルトのようなもの。めったに出番はないけれど、あるから安心して運転できる。')}
+      </p>
+      <p style={{ fontSize: 25, color: muted, margin: '12px 0 0' }}>
+        {t('So far, the only real undos were those two bugs in my own tool. Claude Code’s cleanups have not needed one yet.', 'これまで実際に元に戻したのは、自作ツールのバグの2回だけ。Claude Code の整理では、まだ一度も必要になっていません。')}
       </p>
       <p style={{ fontSize: 24, color: muted, margin: '40px 0 0' }}>
         {t('Anthropic’s guide also says to improve a skill step by step:', 'Anthropic のガイドでも、スキルは少しずつ改善していくものとされています：')}{' '}
@@ -528,7 +588,7 @@ export function buildDeck(lang: Lang) {
   // ---------- 8. close ----------
 
   const Close: Page = () => (
-    <div lang={lang} style={{ ...fill, ...jaBreak, padding: `110px ${PAD}px 0`, display: 'flex', gap: 70 }}>
+    <div lang={lang} style={{ ...fill, ...jaBreak(), padding: `110px ${PAD}px 0`, display: 'flex', gap: 70 }}>
       <div style={{ flex: 1 }}>
         <Eyebrow>{t('Systems that don’t break when you hand work to Claude', 'Claude に任せても壊れない仕組み')}</Eyebrow>
         <div style={{ fontSize: 96, fontWeight: 800, lineHeight: 1.15, margin: '40px 0 0', letterSpacing: '-0.02em' }}>
@@ -545,6 +605,7 @@ export function buildDeck(lang: Lang) {
           <br />
           {t('These slides:', 'このスライド：')} <A href={slidesUrl}>{slidesUrl.replace('https://', '')}</A>
         </p>
+        <p style={{ fontSize: 40, fontWeight: 700, margin: '44px 0 0' }}>{t('Thank you!', 'ありがとうございました')}</p>
       </div>
       <div style={{ width: 340, paddingTop: 150, textAlign: 'center' }}>
         <img src={memsagaQr} alt="QR code for memsaga.grimmer.io" style={{ width: 320, height: 320, imageRendering: 'pixelated' }} />
@@ -770,12 +831,13 @@ export function buildDeck(lang: Lang) {
           <Item mark="C" color={teal}>{t('Several accounts and computers; edits from GitHub or a phone come back', '複数のアカウントとパソコンに対応。GitHub やスマホでの編集も反映')}</Item>
           <Item mark="D" color={teal}>{t(<>Any file you choose, even outside <Code>~/.claude</Code></>, <>好きなファイルを追加できる（<Code>~/.claude</Code> の外も）</>)}</Item>
           <Item mark="E" color={teal}>{t('History from before you installed it, rebuilt from saved conversations', '導入前の履歴も、保存された会話から再構築')}</Item>
-          <Item mark="F" color={teal}>{t('Companion docs: your notes and translations beside a repository you must not commit to', 'コミットできないリポジトリ用のメモや翻訳を、別の場所に保存（コンパニオン文書）')}</Item>
+          <Item mark="F" color={teal}>{t('New lines that look like an API key are held back, not committed', 'API キーらしき行が増えたら、コミットせずに保留')}</Item>
+          <Item mark="G" color={teal}>{t('Companion docs: your notes and translations beside a repository you must not commit to', 'コミットできないリポジトリ用のメモや翻訳を、別の場所に保存（コンパニオン文書）')}</Item>
         </Card>
       </div>
       <p style={{ fontSize: 25, color: muted, margin: '22px 0 0' }}>
         {t('The full comparison:', '詳しい比較：')} <A href={URL_NEED}>{t('README, “Do you need memsaga?”', 'README「Do you need memsaga?」')}</A> ·{' '}
-        {t('A longer English version (Taipei, 26 Nov):', 'より詳しい英語版（台北、11月26日）：')} <A href={URL_TAIPEI}>slides.grimmer.io/s/memsaga-taipei-2026-11</A>
+        {t('A longer English version:', 'より詳しい英語版：')} <A href={URL_TAIPEI}>{t('Taipei, 26 Nov', '台北、11月26日')}</A>
       </p>
     </Content>
   );
@@ -937,6 +999,8 @@ export function buildDeck(lang: Lang) {
     PanelSharing,
     Numbers,
     OneMoreThing,
+    // Page 8 again, so skimming to the end of the appendix lands on the close, not a side project.
+    Close,
   ];
 
   // The talk script, in simple English (the venue plans an app for live machine interpretation:
@@ -990,7 +1054,8 @@ Undo took away the fear.
 Now Claude Code reorganizes its memory: about 90 files deleted so far, all recoverable.
 One skill changed 70 times in two months, each step recorded.
 Even my own tool broke files twice. The history undid both, and both are fixed.
-It is a seatbelt. I rarely need it, but I drive differently because it is there.`,
+It is a seatbelt. I rarely need it, but I drive differently because it is there.
+(Optional: Those two were my only real undos so far. Claude Code's cleanups have not needed one.)`,
     `~20s.
 Today's theme is systems that don't break when you hand work to Claude.
 My system is simple. I can see every change, and undo any change. So I can hand the work over.
@@ -1007,7 +1072,17 @@ Thank you.
     `Appendix, for panel question 9: sharing skills and settings across machines and a team.`,
     `Appendix, for questions only.`,
     `Appendix, not presented: other side projects, for people browsing the slides later.`,
+    `The closing page (same as page 8), so the deck ends here rather than on the appendix.`,
   ];
 
-  return { design, pages, notes };
+  // Each page re-renders when the language changes; PageLink keeps indexing the unwrapped pages.
+  const withLang = (P: Page): Page => {
+    const Wrapped: Page = () => {
+      useLang();
+      return <P />;
+    };
+    return Wrapped;
+  };
+
+  return { design, pages: pages.map(withLang), notes };
 }
