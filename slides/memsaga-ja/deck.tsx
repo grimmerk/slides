@@ -422,6 +422,11 @@ export function buildDeck(lang: Lang) {
       <p style={{ fontSize: 27, color: muted, margin: '22px 0 0' }}>
         {t(<>The tool is <b style={{ color: 'var(--osd-text)' }}>memsaga</b>, free and open source. Claude Code works as before; the files stay where they are.</>)}
       </p>
+      {/* Not spoken: for engineers in the room. */}
+      <p style={{ fontSize: 23, color: soft, margin: '10px 0 0' }}>
+        {t('How: Claude Code hooks run it at the end of each turn · one small program · about 5 ms for most tool calls ·')}{' '}
+        <PageLink to={OneRecord}>{t('one record, in full (appendix)')}</PageLink>
+      </p>
     </Content>
   );
 
@@ -460,6 +465,11 @@ export function buildDeck(lang: Lang) {
       </p>
       <p style={{ fontSize: 33, lineHeight: 1.5, margin: '22px 0 0', fontWeight: 700 }}>
         {t('My rule since: memory and skills, Claude Code edits and tells me. CLAUDE.md waits for my OK.')}
+      </p>
+      {/* Not spoken: more questions the history answered (from the Taipei deck). */}
+      <p style={{ fontSize: 24, color: muted, margin: '34px 0 0', lineHeight: 1.5 }}>
+        {t('The history also answered, for me and for other sessions:')}{' '}
+        {t('“Which version of the skill did you load?” · “What did the other session just change?” · “Where did this file go?”')}
       </p>
     </Content>
   );
@@ -671,6 +681,42 @@ export function buildDeck(lang: Lang) {
     </div>
   );
 
+  const Line = ({ children, color, bold }: { children: ReactNode; color?: string; bold?: boolean }) => (
+    <div style={{ color: color ?? muted, fontWeight: bold ? 700 : 400, whiteSpace: 'pre' }}>{children}</div>
+  );
+
+  // One commit as memsaga writes it (from the Taipei deck): the subject names the session and the
+  // folder; the trailers say which session, account and agent. Placeholder project and session.
+  const OneRecord: Page = () => (
+    <Content eyebrow={t('Appendix · How it works')} heading={t('One record, in full')}>
+      <div style={{ display: 'flex', gap: 40, marginTop: 36, alignItems: 'flex-start' }}>
+        <div style={{ background: panel, border: `1px solid ${rule}`, borderRadius: 'var(--osd-radius)', padding: '26px 36px', fontFamily: mono, fontSize: 25, lineHeight: 1.45, width: 1000, boxSizing: 'border-box' }}>
+          <Line color="var(--osd-accent)" bold>{'[weekly memory tidy-up] claude:memory:HOME-code-webapp'}</Line>
+          <Line>{'2 files changed, 6 insertions(+), 14 deletions(-)'}</Line>
+          <Line color={teal}>{'M   claude/memory/HOME-code-webapp/project-notes.md'}</Line>
+          <Line color={teal}>{'D   claude/memory/HOME-code-webapp/old-duplicate.md'}</Line>
+          <Line>{' '}</Line>
+          <Line>{'Event: Stop'}</Line>
+          <Line>{'Account: claude'}</Line>
+          <Line color="var(--osd-text)" bold>{'Session: 9e41f07c-2b1d-4c0e-9a57-…'}</Line>
+          <Line>{'Cwd: /Users/you/code/webapp'}</Line>
+          <Line>{'Agent: main'}</Line>
+          <Line color="var(--osd-text)" bold>{'Session-Title: weekly memory tidy-up'}</Line>
+        </div>
+        <div style={{ flex: 1, fontSize: 26, lineHeight: 1.45 }}>
+          <Pt lead={t('First line:')}>{t('the session’s title, and which folder changed.')}</Pt>
+          <Pt lead="Session:">{t('the ID to reopen that session, or to read its saved conversation.')}</Pt>
+          <Pt lead="Account:">{t('which Claude Code account, when you use more than one.')}</Pt>
+          <Pt lead="Agent:">{t('main, or the name of the subagent that made the edit.')}</Pt>
+          <Pt lead={t('When:')}>{t('one record per turn that changed something; Git adds the time.')}</Pt>
+        </div>
+      </div>
+      <p style={{ fontSize: 24, color: muted, margin: '26px 0 0' }}>
+        {t('A record holds every change since the last one, including your own edits; it is named after the session whose turn just ended.')}
+      </p>
+    </Content>
+  );
+
   const NeedIt: Page = () => (
     <Content eyebrow={t('Appendix · Do you need memsaga?')} heading={t('Maybe not')}>
       <div style={{ display: 'flex', gap: 40, marginTop: 34, alignItems: 'stretch' }}>
@@ -848,6 +894,7 @@ export function buildDeck(lang: Lang) {
     Surfaces,
     ProjectFiles,
     WhatGoesIn,
+    OneRecord,
     NeedIt,
     PanelWhatGoesWhere,
     PanelSharing,
@@ -931,6 +978,7 @@ Thank you.
     `Appendix, for the panel and questions. Which Claude reads which place.`,
     `Appendix, for questions only. Project files versus your own files, as folders.`,
     `Appendix, for questions only. What memsaga keeps, next to ~/.claude.`,
+    `Appendix, for questions only. One commit, with its trailers.`,
     `Appendix, for questions only.`,
     `Appendix, for panel question 2: reviewing memory and CLAUDE.md; what goes where.`,
     `Appendix, for panel question 9: sharing skills and settings across machines and a team.`,
