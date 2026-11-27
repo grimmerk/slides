@@ -1,5 +1,9 @@
 import { type DesignSystem, type Page, useSlidePageNumber } from '@open-slide/core';
 import type { CSSProperties, ReactNode } from 'react';
+import codevIcon from './assets/codev-icon.png';
+import codevQr from './assets/codev-qr.svg';
+import matchapackIcon from './assets/matchapack-icon.png';
+import matchapackQr from './assets/matchapack-qr.svg';
 import memsagaQr from './assets/memsaga-qr.svg';
 import slidesQrEn from './assets/slides-qr-en.svg';
 import slidesQrJa from './assets/slides-qr-ja.svg';
@@ -27,6 +31,8 @@ const URL_REPO = 'https://github.com/grimmerk/memsaga';
 const URL_NEED = `${URL_REPO}#do-you-need-memsaga`;
 const URL_ENGRAM = 'https://github.com/Sen-CaPoo/engram';
 const URL_ME = 'https://github.com/grimmerk';
+const URL_MATCHAPACK = 'https://github.com/grimmerk/matchapack';
+const URL_CODEV = 'https://github.com/grimmerk/codev';
 
 const fill: CSSProperties = {
   width: '100%',
@@ -180,7 +186,7 @@ export function buildDeck(lang: Lang) {
       >
         {t(<>Letting Claude clean up its memory, <span style={{ color: 'var(--osd-accent)' }}>without fear</span></>)}
       </h1>
-      <p style={{ fontSize: 44, color: muted, margin: 0, lineHeight: 1.4 }}>{t('Git history for CLAUDE.md, memory and skills')}</p>
+      <p style={{ fontSize: 44, color: muted, margin: 0, lineHeight: 1.4 }}>{t('Git history for Claude Code’s CLAUDE.md, memory and skills')}</p>
       <p style={{ fontSize: 30, color: muted, margin: '72px 0 0', fontFamily: mono }}>
         Grimmer · Tech Lead, <A href="https://fireflies.ai">Fireflies.ai</A> · {t('from Taiwan')} · <A href={URL_ME}>github.com/grimmerk</A>
       </p>
@@ -194,8 +200,8 @@ export function buildDeck(lang: Lang) {
   // ---------- 2. how Claude Code remembers ----------
 
   const Bubble = ({ who, children, claude }: { who: ReactNode; children: ReactNode; claude?: boolean }) => (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: claude ? 'flex-start' : 'flex-end' }}>
-      <div style={{ fontSize: 21, color: soft, marginBottom: 4 }}>{who}</div>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+      {who && <div style={{ fontSize: 21, color: soft, marginBottom: 4 }}>{who}</div>}
       <div
         style={{
           fontSize: 27,
@@ -212,67 +218,89 @@ export function buildDeck(lang: Lang) {
     </div>
   );
 
+  // One step of the auto-memory example: a small label, then a bubble or a file card.
+  const Step = ({ n, label, children }: { n: string; label: ReactNode; children: ReactNode }) => (
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 23, color: muted, fontWeight: 700 }}>
+        <span style={{ width: 34, height: 34, borderRadius: 17, background: teal, color: '#fff', fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{n}</span>
+        {label}
+      </div>
+      {children}
+    </div>
+  );
+
   const Remembers: Page = () => (
-    <Content eyebrow={t('How Claude Code remembers')} heading={t('Every session starts fresh, so Claude keeps notes in files')} headingSize={62}>
+    <Content eyebrow={t('How Claude Code remembers')} heading={t('Each session starts fresh, so Claude Code keeps notes in files')} headingSize={54}>
       <div style={{ marginTop: 18 }}>
+        <Gloss term="Claude Code">{t('Claude working on your computer: in a terminal, or the desktop app')}</Gloss>
         <Gloss term={t('session')}>{t('one conversation with Claude Code')}</Gloss>
       </div>
-      <div style={{ display: 'flex', gap: 28, alignItems: 'center', marginTop: 26 }}>
-        <div style={{ width: 620, display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div style={{ fontSize: 22, color: muted, fontWeight: 700 }}>{t('Monday')}</div>
-          <Bubble who={t('You')}>{t('“Remember: the API tests need a local Redis.”')}</Bubble>
-          <Bubble who="Claude" claude>
-            {t('Saved to memory.')}
+      <div style={{ fontSize: 24, color: teal, fontWeight: 700, margin: '26px 0 10px', letterSpacing: '0.06em' }}>{t('EXAMPLE: AUTO MEMORY')}</div>
+      <div style={{ display: 'flex', gap: 22, alignItems: 'flex-end' }}>
+        <Step n="1" label={t('Monday: you say')}>
+          <Bubble who="">{t('“Remember: start the database before the tests.”')}</Bubble>
+        </Step>
+        <div style={{ fontSize: 40, color: muted, paddingBottom: 18 }}>→</div>
+        <Step n="2" label={t('Claude Code writes a note')}>
+          <div style={{ background: '#fff', border: `2px solid ${teal}`, borderRadius: 14, padding: '14px 20px' }}>
+            <div style={{ fontFamily: mono, fontSize: 22, color: teal, fontWeight: 700 }}>memory/testing.md</div>
+            <div style={{ fontSize: 25, marginTop: 6, lineHeight: 1.35 }}>{t('Start the database before the tests.')}</div>
+          </div>
+        </Step>
+        <div style={{ fontSize: 40, color: muted, paddingBottom: 18 }}>→</div>
+        <Step n="3" label={t('Tuesday: a new session reads it first')}>
+          <Bubble who="" claude>
+            {t('“Starting the database, then the tests.”')}
           </Bubble>
-        </div>
-        <div style={{ fontSize: 40, color: muted }}>→</div>
-        <div style={{ width: 330, background: '#fff', border: `2px solid ${teal}`, borderRadius: 14, padding: '18px 22px' }}>
-          <div style={{ fontFamily: mono, fontSize: 22, color: teal, fontWeight: 700 }}>memory/testing.md</div>
-          <div style={{ fontSize: 23, marginTop: 8, lineHeight: 1.4 }}>{t('API tests need a local Redis.')}</div>
-        </div>
-        <div style={{ fontSize: 40, color: muted }}>→</div>
-        <div style={{ width: 420, display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div style={{ fontSize: 22, color: muted, fontWeight: 700 }}>{t('Tuesday, a new session')}</div>
-          <Bubble who="Claude" claude>
-            {t('(reads its notes first) Starting Redis, then running the tests.')}
-          </Bubble>
-        </div>
+        </Step>
       </div>
-      <div style={{ display: 'flex', gap: 28, marginTop: 40 }}>
+      <div style={{ display: 'flex', gap: 28, marginTop: 34 }}>
         <Card title="CLAUDE.md" sub={t('Standing instructions')}>
-          {t('Read at the start of every session. You write it; Claude edits it too.')}
+          {t('Read at the start of every session.')}
         </Card>
-        <Card title={t('Memory')} sub={t('Notes')}>
-          {t('Claude writes them as it works, or when you say “remember”.')}
+        <Card title={t('Auto memory')} sub={t('Notes')}>
+          {t('Claude Code writes them on its own as it works (on by default), or when you say “remember”.')}
         </Card>
         <Card title={t('Skills')} sub={t('How-to guides')}>
-          {t('Steps for one kind of task, loaded when the task comes up.')}
+          {t('Steps for one kind of task, loaded when the task needs them.')}
         </Card>
       </div>
+      <p style={{ fontSize: 25, color: muted, margin: '18px 0 0' }}>
+        {t('CLAUDE.md and skills: you write them, ask Claude Code to update them, or tell it when it may update them on its own.')}
+      </p>
     </Content>
   );
 
   // ---------- 3. where memory can live ----------
 
+  // A link to another page of this deck (?p=N), for readers browsing the slides later.
+  const PageLink = ({ to, children }: { to: Page; children: ReactNode }) => (
+    <a href={`?p=${pages.indexOf(to) + 1}`} style={{ color: 'inherit', textDecoration: 'underline', textDecorationColor: soft, textUnderlineOffset: 6 }}>
+      {children}
+    </a>
+  );
+
   const Where: Page = () => (
-    <Content eyebrow={t('Where Claude’s memory can live')} heading={t('Three places. Today is about the files on your computer.')} headingSize={62}>
+    <Content eyebrow={t('Ways to give Claude a memory')} heading={t('Three ways. Today: Claude Code’s own files.')} headingSize={64}>
       <div style={{ display: 'flex', gap: 30, marginTop: 52, alignItems: 'stretch' }}>
-        <Card title={t('In your claude.ai account')} sub={t('Claude chat and Projects')}>
-          <div>{t('Instructions, memory and skills you add.')}</div>
-          <div style={{ color: muted, marginTop: 10 }}>{t('Kept on Anthropic’s side; you view and edit them in Settings.')}</div>
+        <Card title={t('Built into claude.ai')} sub={t('Claude chat and Projects')}>
+          <div>{t('Instructions, memory and skills in your account.')}</div>
+          <div style={{ color: muted, marginTop: 10 }}>{t('Kept by Anthropic; you view and edit them in Settings.')}</div>
         </Card>
-        <Card title={t('Your own system')} sub={t('like the talk you just heard')}>
-          <div>{t('Markdown files and Git, organised your way.')}</div>
-          <div style={{ color: muted, marginTop: 10 }}>{t('You design the rules and the folders.')}</div>
+        <Card title={t('Notes you build yourself')} sub={t('like the talk you just heard')}>
+          <div>{t('Your own Markdown files and Git, set up so Claude can read them.')}</div>
+          <div style={{ color: muted, marginTop: 10 }}>{t('An external memory: you design the rules and the folders.')}</div>
         </Card>
-        <Card title={t('Files on your computer')} sub={t('Claude Code: in a terminal, or the Code tab of the Claude desktop app')} strong>
+        <Card title={t('Built into Claude Code')} sub={t('in a terminal, or the Code tab of the Claude desktop app')} strong>
           <div>
-            <b>CLAUDE.md · {t('memory')} · {t('skills')}</b>
+            <b>CLAUDE.md · {t('auto memory')} · {t('skills')}</b>
           </div>
-          <div style={{ color: muted, marginTop: 10 }}>{t('Plain text files that Claude Code reads, and rewrites by itself.')}</div>
+          <div style={{ color: muted, marginTop: 10 }}>{t('Plain text files on your computer that Claude Code reads, and rewrites by itself.')}</div>
         </Card>
       </div>
-      <p style={{ fontSize: 24, color: soft, margin: '30px 0 0' }}>{t('Cowork and scheduled tasks: see the appendix.')}</p>
+      <p style={{ fontSize: 24, color: muted, margin: '30px 0 0' }}>
+        <PageLink to={Surfaces}>{t('Which Claude reads which files (appendix)')}</PageLink>
+      </p>
     </Content>
   );
 
@@ -289,17 +317,17 @@ export function buildDeck(lang: Lang) {
   );
 
   const Problem: Page = () => (
-    <Content eyebrow={t('The problem')} heading={t('Claude edits these files every day, and keeps no history')} headingSize={62}>
+    <Content eyebrow={t('The problem')} heading={t('Claude Code edits these files every day, and keeps no history')} headingSize={60}>
       <p style={{ fontSize: 34, lineHeight: 1.45, margin: '28px 0 0', maxWidth: 1600 }}>
         {t('It is like a shared document with no version history: it keeps changing, and you cannot see what changed.')}
       </p>
       <div style={{ display: 'flex', gap: 26, marginTop: 40 }}>
         <Pain n="1" head={t('You forget what was tried')} body={t('An idea was tried last week and dropped. Nobody remembers, so it is tried again.')} />
         <Pain n="2" head={t('A bad edit cannot be undone')} body={t('The old version is simply gone.')} />
-        <Pain n="3" head={t('You cannot tell why')} body={t('A new rule appears. Who added it, and for what?')} />
+        <Pain n="3" head={t('You cannot tell why')} body={t('A new rule appears. When was it added, in which session, and why?')} />
       </div>
       <p style={{ fontSize: 38, fontWeight: 700, margin: '50px 0 0', color: 'var(--osd-accent)' }}>
-        {t('So I rarely let Claude touch a skill, and never asked it to clean up its memory.')}
+        {t('So I rarely let Claude Code touch a skill, and never asked it to clean up its memory.')}
       </p>
     </Content>
   );
@@ -320,7 +348,7 @@ export function buildDeck(lang: Lang) {
     <Content eyebrow={t('What I do now')} heading={t('Every change becomes a record, named after its session')} headingSize={62}>
       <div style={{ marginTop: 18 }}>
         <Gloss term="Git">{t('a tool that keeps the history of files')}</Gloss>
-        <Gloss term={t('commit')}>{t('one saved change, a record in that history')}</Gloss>
+        <Gloss term={t('commit')}>{t('one saved change, with a short message')}</Gloss>
       </div>
       <div style={{ display: 'flex', gap: 40, marginTop: 28, alignItems: 'flex-start' }}>
         <div style={{ width: 900, background: '#fff', border: `2px solid ${rule}`, borderRadius: 'var(--osd-radius)', padding: '18px 30px' }}>
@@ -333,10 +361,13 @@ export function buildDeck(lang: Lang) {
           <Card title={<Code>~/.claude</Code>} sub={t('A hidden folder: about 60 items, mostly logs and caches.')} />
           <div style={{ fontSize: 34, color: muted, textAlign: 'center' }}>↓</div>
           <Card title={t('A folder you can browse')} sub={t('Only CLAUDE.md, memory and skills, with readable names. On GitHub, even from a phone.')} strong />
+          <div style={{ fontSize: 22, color: muted, textAlign: 'right' }}>
+            <PageLink to={WhatGoesIn}>{t('The two folders side by side (appendix)')}</PageLink>
+          </div>
         </div>
       </div>
-      <p style={{ fontSize: 27, color: muted, margin: '26px 0 0' }}>
-        {t(<>The tool is <b style={{ color: 'var(--osd-text)' }}>memsaga</b>, free and open source. Claude works as before; the files stay where they are.</>)}
+      <p style={{ fontSize: 27, color: muted, margin: '22px 0 0' }}>
+        {t(<>The tool is <b style={{ color: 'var(--osd-text)' }}>memsaga</b>, free and open source. Claude Code works as before; the files stay where they are.</>)}
       </p>
     </Content>
   );
@@ -363,19 +394,19 @@ export function buildDeck(lang: Lang) {
   const Arrow = () => <div style={{ fontSize: 44, color: muted, alignSelf: 'center' }}>→</div>;
 
   const Story: Page = () => (
-    <Content eyebrow={t('A real case')} heading={t('“Did you add this rule yourself?”')} headingSize={66}>
+    <Content eyebrow={t('A real case: what I asked Claude Code')} heading={t('“Did you add this rule yourself?”')} headingSize={66}>
       <div style={{ display: 'flex', gap: 20, marginTop: 40 }}>
         <FlowBox label={t('A rule in my CLAUDE.md')} body={t('“Run the tests before every push.”')} />
         <Arrow />
         <FlowBox label={t('The record that added it')} body={<>{t('Tue 14:02')}<br />{t('session “fix flaky login test”')}</>} />
         <Arrow />
-        <FlowBox label={t('Reopen that session')} body={t('Read why it was added')} accent />
+        <FlowBox label={t('That session’s saved conversation')} body={t('Why the rule was added')} accent />
       </div>
       <p style={{ fontSize: 33, lineHeight: 1.5, margin: '40px 0 0', maxWidth: 1620 }}>
-        {t('I did not search myself. I asked Claude, and it looked it up in the history. Yes, it had added the rule, and it said so in its reply. I had missed that line.')}
+        {t('I did not search myself. Claude Code looked it up in the history. Yes, it had added the rule, and it said so in its reply. I had missed that line.')}
       </p>
       <p style={{ fontSize: 33, lineHeight: 1.5, margin: '22px 0 0', fontWeight: 700 }}>
-        {t('My rule since: memory and skills, Claude edits and tells me. CLAUDE.md waits for my OK.')}
+        {t('My rule since: memory and skills, Claude Code edits and tells me. CLAUDE.md waits for my OK.')}
       </p>
     </Content>
   );
@@ -391,9 +422,9 @@ export function buildDeck(lang: Lang) {
   );
 
   const Changed: Page = () => (
-    <Content eyebrow={t('What changed for me')} heading={t('Undo is what lets me hand the work over')} headingSize={66}>
+    <Content eyebrow={t('What changed for me')} heading={t('Undo took away the fear. Now I hand over the cleanup.')} headingSize={62}>
       <div style={{ display: 'flex', gap: 60, marginTop: 56 }}>
-        <Big n="~90" head={t('files removed in Claude’s cleanups')} body={t('Duplicate and stale notes. Every one can come back.')} />
+        <Big n="~90" head={t('files removed in Claude Code’s cleanups')} body={t('Duplicate and stale notes. Every one can come back.')} />
         <Big n="70" head={t('changes to one skill in two months')} body={t('Each with the session that made it. A skill gets better one small change at a time.')} />
         <Big n="2" head={t('times the tool itself broke files')} body={t('A sync bug, twice. Each time, the history undid it.')} />
       </div>
@@ -431,10 +462,22 @@ export function buildDeck(lang: Lang) {
 
   // ---------- appendix ----------
 
+  // ● reads it · ○ reads a copy · — does not. Checked against Anthropic's docs on 2026-11-28:
+  // code.claude.com skills, memory (AGENTS.md), desktop, routines pages; claude.com/docs/cowork
+  // (changelog: Chat and Cowork merged into "Unified Claude", on for everyone from 2026-11-10);
+  // support.claude.com chat memory, skills and projects articles. The desktop Code tab reading
+  // CLAUDE.md and auto memory when a folder is chosen is the author's own test (2026-11-25).
+  const Mark = ({ kind, children }: { kind: 'yes' | 'copy' | 'no'; children?: ReactNode }) => (
+    <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+      <span style={{ fontSize: 28, lineHeight: 1.1, color: kind === 'no' ? soft : teal, width: 24, flex: 'none' }}>{kind === 'yes' ? '●' : kind === 'copy' ? '○' : '—'}</span>
+      <span style={{ color: kind === 'no' ? soft : 'var(--osd-text)' }}>{children}</span>
+    </div>
+  );
+
   const Cell = ({ children, head, strong }: { children: ReactNode; head?: boolean; strong?: boolean }) => (
     <div
       style={{
-        padding: '12px 18px',
+        padding: '14px 18px',
         borderBottom: `1px solid ${rule}`,
         fontWeight: head ? 700 : 400,
         color: head ? muted : 'var(--osd-text)',
@@ -446,50 +489,109 @@ export function buildDeck(lang: Lang) {
     </div>
   );
 
-  // Checked against Anthropic's docs on 2026-11-28 (support.claude.com chat memory, skills and
-  // projects articles; code.claude.com desktop, skills, memory, routines and scheduled-tasks pages;
-  // claude.com/docs/cowork). "Not documented" means the page is silent.
   const Surfaces: Page = () => (
-    <Content eyebrow={t('Appendix · Which Claude reads which files')} heading={t('Only Claude Code on your computer uses these files')} headingSize={54}>
-      <div style={{ display: 'grid', gridTemplateColumns: '430px 300px 900px', fontSize: 24, border: `1px solid ${rule}`, borderRadius: 'var(--osd-radius)', overflow: 'hidden', width: 1630, marginTop: 34 }}>
+    <Content eyebrow={t('Appendix · Which Claude reads which files')} heading={t('Three places these files can live')} headingSize={56}>
+      <div style={{ display: 'grid', gridTemplateColumns: '430px 400px 400px 400px', fontSize: 24, border: `1px solid ${rule}`, borderRadius: 'var(--osd-radius)', overflow: 'hidden', width: 1630, marginTop: 30 }}>
         <Cell head>{t('Where you use Claude')}</Cell>
-        <Cell head>{t('Runs on')}</Cell>
-        <Cell head>{t('Instructions, memory, skills')}</Cell>
-        <Cell>{t('Claude chat, Projects (web, desktop, phone)')}</Cell>
-        <Cell>{t('Anthropic')}</Cell>
-        <Cell>{t('Its own, kept in your account; not these files')}</Cell>
-        <Cell>{t('Cowork (desktop app)')}</Cell>
-        <Cell>{t('your computer')}</Cell>
-        <Cell>{t('Its own project instructions and memory, plus your account’s skills; it does not read ~/.claude')}</Cell>
+        <Cell head>{t('Your claude.ai account (kept by Anthropic)')}</Cell>
+        <Cell head>{t('A project’s repository (shared with a team)')}</Cell>
+        <Cell head>{t('~/.claude on your computer (just you)')}</Cell>
+
+        <Cell>{t('Claude app: chat and Cowork (together since 10 Nov), Projects')}</Cell>
+        <Cell><Mark kind="yes">{t('instructions, memory, skills (yours, or shared in your organisation)')}</Mark></Cell>
+        <Cell><Mark kind="no">{t('not read')}</Mark></Cell>
+        <Cell><Mark kind="no">{t('not read')}</Mark></Cell>
+
         <Cell>{t('Scheduled tasks in the cloud')}</Cell>
-        <Cell>{t('Anthropic')}</Cell>
-        <Cell>{t('A fresh copy of your repository, plus your account’s skills; no auto memory')}</Cell>
+        <Cell><Mark kind="yes">{t('skills')}</Mark></Cell>
+        <Cell><Mark kind="yes">{t('a fresh copy each run, with its skills')}</Mark></Cell>
+        <Cell><Mark kind="no">{t('not read; no auto memory')}</Mark></Cell>
+
         <Cell strong>{t('Claude Code: terminal, or the desktop app’s Code tab')}</Cell>
-        <Cell strong>{t('your computer')}</Cell>
-        <Cell strong>{t('CLAUDE.md, memory and skills in ~/.claude: the files memsaga keeps')}</Cell>
+        <Cell strong><Mark kind="copy">{t('skills, copied in at the start of each session')}</Mark></Cell>
+        <Cell strong><Mark kind="yes">{t('the project’s CLAUDE.md (or AGENTS.md) and skills')}</Mark></Cell>
+        <Cell strong><Mark kind="yes"><b>{t('CLAUDE.md, auto memory, skills: what memsaga keeps')}</b></Mark></Cell>
       </div>
       <p style={{ fontSize: 23, color: muted, margin: '18px 0 0', lineHeight: 1.45 }}>
-        {t('From Anthropic’s docs, 28 Nov 2026. The desktop Code tab is documented to load ~/.claude/skills; that it also reads CLAUDE.md and memory when a folder is chosen is my own test. Skills added to your claude.ai account are also copied into Claude Code.')}
+        {t('● reads it · ○ reads a copy · — does not. From Anthropic’s docs, 28 Nov 2026. That the desktop Code tab also reads CLAUDE.md and auto memory when a folder is chosen is my own test; the docs list skills.')}
       </p>
     </Content>
   );
 
+  // One line of a file tree: kept lines in the text colour, the rest muted; an optional note on the right.
+  const T = ({ line, keep, note, dim }: { line: string; keep?: boolean; note?: ReactNode; dim?: boolean }) => (
+    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16 }}>
+      <span style={{ whiteSpace: 'pre', color: keep ? 'var(--osd-text)' : dim ? soft : muted, fontWeight: keep ? 700 : 400 }}>{line}</span>
+      {note && <span style={{ color: keep ? teal : soft, fontFamily: 'var(--osd-font-body)', fontSize: 21, whiteSpace: 'nowrap' }}>{note}</span>}
+    </div>
+  );
+
+  const TreeBox = ({ title, sub, strong, children }: { title: ReactNode; sub: ReactNode; strong?: boolean; children: ReactNode }) => (
+    <div
+      style={{
+        width: 800,
+        boxSizing: 'border-box',
+        padding: '24px 30px',
+        borderRadius: 'var(--osd-radius)',
+        border: `2px solid ${strong ? teal : rule}`,
+        background: strong ? '#e6f1ee' : panel,
+      }}
+    >
+      <div style={{ fontSize: 32, fontWeight: 800, fontFamily: mono }}>{title}</div>
+      <div style={{ fontSize: 24, color: muted, marginTop: 4 }}>{sub}</div>
+      <div style={{ fontFamily: mono, fontSize: 23, lineHeight: 1.5, marginTop: 14 }}>{children}</div>
+    </div>
+  );
+
+  // ~/.claude as it is on disk, next to what memsaga keeps of it (from the Taipei deck). Folder names
+  // are Claude Code's own; the project is a placeholder.
+  const WhatGoesIn: Page = () => (
+    <Content eyebrow={t('Appendix · What goes in')} heading={t('A hidden, noisy folder becomes a folder you can browse')} headingSize={54}>
+      <div style={{ display: 'flex', gap: 40, marginTop: 36 }}>
+        <TreeBox title="~/.claude" sub={t('hidden; about 60 items, mostly caches and logs')}>
+          <T line="CLAUDE.md" keep note={t('kept')} />
+          <T line="skills/  hooks/  scripts/" keep note={t('kept')} />
+          <T line="projects/" />
+          <T line="  -Users-you-code-webapp/" />
+          <T line="    memory/" keep note={t('kept')} />
+          <T line="      MEMORY.md  project-notes.md" keep />
+          <T line="    3f46…e21.jsonl" note={t('saved conversation, not kept')} />
+          <T line="cache/  telemetry/  paste-cache/" dim />
+          <T line="shell-snapshots/  session-env/" dim />
+          <T line="file-history/  history.jsonl  …" dim note={t('not kept')} />
+        </TreeBox>
+        <TreeBox title="memories/" sub={t('your history folder, private on GitHub')} strong>
+          <T line="index.md" keep note={t('~/code/webapp → HOME-code-webapp')} />
+          <T line="claude/" />
+          <T line="  CLAUDE.md" keep />
+          <T line="  skills/  hooks/  scripts/" keep />
+          <T line="  memory/HOME-code-webapp/" keep />
+          <T line="    MEMORY.md  project-notes.md" keep />
+          <T line="  drafts/" keep note={t('any folder you add')} />
+          <T line="claude-alt/" keep note={t('a second account')} />
+          <T line="extra/home/" keep note={t('files outside ~/.claude')} />
+          <T line="companion/" keep note={t('your notes on other repositories')} />
+        </TreeBox>
+      </div>
+    </Content>
+  );
+
   const Item = ({ mark, children, color }: { mark: string; children: ReactNode; color: string }) => (
-    <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 16 }}>
+    <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 14 }}>
       <Num n={mark} color={color} />
-      <div style={{ fontSize: 27, lineHeight: 1.45, paddingTop: 6 }}>{children}</div>
+      <div style={{ fontSize: 27, lineHeight: 1.42, paddingTop: 6 }}>{children}</div>
     </div>
   );
 
   const NeedIt: Page = () => (
     <Content eyebrow={t('Appendix · Do you need memsaga?')} heading={t('Maybe not')}>
-      <div style={{ display: 'flex', gap: 40, marginTop: 40, alignItems: 'stretch' }}>
+      <div style={{ display: 'flex', gap: 40, marginTop: 34, alignItems: 'stretch' }}>
         <Card title={t('You may not need it, if…')}>
           <Item mark="1" color={muted}>
             {t(<>One account on one computer: put <Code>~/.claude</Code> in Git yourself, keep only the files you want, and commit at the end of each session.</>)}
           </Item>
           <Item mark="2" color={muted}>
-            {t('You keep your memory in your own folder, outside Claude Code’s files (like the previous talk).')}
+            {t('You already keep your notes in a system you built (the middle column on page 3).')}
           </Item>
           <Item mark="3" color={muted}>
             {t(<>You are on Windows: <A href={URL_ENGRAM}>Engram</A> is a similar tool.</>)}
@@ -499,46 +601,68 @@ export function buildDeck(lang: Lang) {
           <Item mark="A" color={teal}>{t('Which session made each change')}</Item>
           <Item mark="B" color={teal}>{t('History kept apart from the live files')}</Item>
           <Item mark="C" color={teal}>{t('Several accounts and computers; edits from GitHub or a phone come back')}</Item>
-          <Item mark="D" color={teal}>{t('History from before you installed it, rebuilt from saved sessions')}</Item>
+          <Item mark="D" color={teal}>{t(<>Any file you choose, even outside <Code>~/.claude</Code></>)}</Item>
+          <Item mark="E" color={teal}>{t('History from before you installed it, rebuilt from saved conversations')}</Item>
+          <Item mark="F" color={teal}>{t('Companion docs: your notes and translations beside a repository you must not commit to')}</Item>
         </Card>
       </div>
-      <p style={{ fontSize: 25, color: muted, margin: '26px 0 0' }}>
+      <p style={{ fontSize: 25, color: muted, margin: '22px 0 0' }}>
         {t('The full comparison:')} <A href={URL_NEED}>{t('README, “Do you need memsaga?”')}</A>
       </p>
     </Content>
   );
 
-  const Place = ({ title, sub, strong }: { title: ReactNode; sub: ReactNode; strong?: boolean }) => (
-    <div
-      style={{
-        width: 380,
-        padding: '28px 30px',
-        boxSizing: 'border-box',
-        borderRadius: 'var(--osd-radius)',
-        border: `2px solid ${strong ? teal : rule}`,
-        background: strong ? '#e6f1ee' : panel,
-        textAlign: 'center',
-      }}
-    >
-      <div style={{ fontSize: 38, fontWeight: 700 }}>{title}</div>
-      <div style={{ fontSize: 25, color: muted, marginTop: 10 }}>{sub}</div>
+  const Rule = ({ name, children }: { name: ReactNode; children: ReactNode }) => (
+    <div style={{ marginBottom: 18 }}>
+      <div style={{ fontSize: 29, fontWeight: 800 }}>{name}</div>
+      <div style={{ fontSize: 26, color: muted, marginTop: 4, lineHeight: 1.4 }}>{children}</div>
     </div>
   );
 
-  const Machines: Page = () => (
-    <Content eyebrow={t('Appendix · More than one computer')} heading={t('One history, on every computer')}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 26, marginTop: 64 }}>
-        <Place title={t('My Mac')} sub={t('a record every turn')} />
-        <div style={{ fontSize: 48, color: muted }}>⇄</div>
-        <Place title="GitHub" sub={t('a private repository')} strong />
-        <div style={{ fontSize: 48, color: muted }}>⇄</div>
-        <Place title={t('Backup Mac')} sub={t('one copy, then restore')} />
+  // Panel question 2 (second half): how do you review the memory and CLAUDE.md Claude rewrites,
+  // and what goes into CLAUDE.md, memory and skills? The author's own rules of thumb.
+  const PanelWhatGoesWhere: Page = () => (
+    <Content eyebrow={t('Appendix · For the panel')} heading={t('What goes where, and how I review it')}>
+      <div style={{ display: 'flex', gap: 40, marginTop: 40, alignItems: 'stretch' }}>
+        <Card title={t('What goes where (my rule of thumb)')}>
+          <div style={{ marginTop: 6 }}>
+            <Rule name="CLAUDE.md">{t('Rules that must hold in every session. Keep it short: it is read every time.')}</Rule>
+            <Rule name={t('Skills')}>{t('Steps for one kind of task, loaded only when needed.')}</Rule>
+            <Rule name={t('Memory')}>{t('Facts about one project, and anything that changes or expires.')}</Rule>
+            <Rule name={t('A hook (an automatic check)')}>{t('A rule a script can check. Do not add more text for it.')}</Rule>
+          </div>
+        </Card>
+        <Card title={t('How I review it')} strong>
+          <div style={{ marginTop: 6 }}>
+            <Item mark="1" color={teal}>{t('Claude Code edits memory and skills, then tells me. CLAUDE.md waits for my OK.')}</Item>
+            <Item mark="2" color={teal}>{t('When something looks off, the history shows what changed, in which session, and lets me undo it.')}</Item>
+            <Item mark="3" color={teal}>{t('Now and then, a tidy-up session: merge duplicates, delete stale notes.')}</Item>
+          </div>
+        </Card>
       </div>
-      <ul style={{ fontSize: 31, lineHeight: 1.5, margin: '56px 0 0', paddingLeft: 40, maxWidth: 1600 }}>
-        <li>{t('Setting up my backup Mac: copy the repository, run one restore command, and its CLAUDE.md, skills and memory were back.')}</li>
-        <li>{t('An edit made on GitHub, even from a phone, comes back to the file Claude reads.')}</li>
-        <li>{t('Two Claude accounts on one Mac: both are recorded, each change labelled with its account.')}</li>
-      </ul>
+    </Content>
+  );
+
+  // Panel question 9 (second half): sharing skills and settings across a team or several machines.
+  // Team options per Anthropic's docs, 2026-11-28 (code.claude.com skills, memory, managed-settings;
+  // claude.com/docs plugins and skills).
+  const PanelSharing: Page = () => (
+    <Content eyebrow={t('Appendix · For the panel')} heading={t('Sharing skills and settings')}>
+      <div style={{ display: 'flex', gap: 30, marginTop: 40, alignItems: 'stretch' }}>
+        <Card title={<span style={{ display: 'flex', gap: 14, alignItems: 'center' }}><Num n="1" color={teal} />{t('My computers')}</span>}>
+          <div>{t('One private repository on GitHub.')}</div>
+          <div style={{ marginTop: 10 }}>{t('On another Mac: copy it once and run one restore command; CLAUDE.md, skills and memory are back.')}</div>
+          <div style={{ marginTop: 10, color: muted }}>{t('An edit on GitHub, even from a phone, comes back to the file Claude Code reads.')}</div>
+        </Card>
+        <Card title={<span style={{ display: 'flex', gap: 14, alignItems: 'center' }}><Num n="2" color={teal} />{t('My two accounts')}</span>}>
+          <div>{t('Two Claude Code accounts on one Mac share one CLAUDE.md, skills and memory.')}</div>
+          <div style={{ marginTop: 10, color: muted }}>{t(<>My Mac app <A href={URL_CODEV}>CodeV</A> links them; memsaga records both and labels each change with its account.</>)}</div>
+        </Card>
+        <Card title={<span style={{ display: 'flex', gap: 14, alignItems: 'center' }}><Num n="3" color={teal} />{t('A team')}</span>}>
+          <div>{t('Put CLAUDE.md (or AGENTS.md) and skills in the project’s repository: everyone’s Claude Code reads them.')}</div>
+          <div style={{ marginTop: 10, color: muted }}>{t('Team and Enterprise plans: publish a skill to the organisation, or install a plugin for everyone.')}</div>
+        </Card>
+      </div>
     </Content>
   );
 
@@ -558,72 +682,131 @@ export function buildDeck(lang: Lang) {
       </div>
       <div style={{ marginTop: 64 }}>
         <div style={{ fontSize: 104, fontWeight: 800, lineHeight: 1, color: 'var(--osd-accent)' }}>~12</div>
-        <div style={{ fontSize: 30, color: muted, marginTop: 14 }}>{t('times “who changed this, and why?” was answered from the history')}</div>
+        <div style={{ fontSize: 30, color: muted, marginTop: 14 }}>{t('times “when and why did this change?” was answered from the history')}</div>
       </div>
       <p style={{ fontSize: 25, color: muted, margin: '40px 0 0' }}>
-        {t('Since 20 Sep 2026. On the first day, 502 earlier records (July to September) were rebuilt from Claude Code’s saved sessions.')}
+        {t('Since 20 Sep 2026. On the first day, 502 earlier records (July to September) were rebuilt from Claude Code’s saved conversations.')}
       </p>
     </Content>
   );
 
-  const pages: Page[] = [Cover, Remembers, Where, Problem, WhatIDo, Story, Changed, Close, Surfaces, NeedIt, Machines, Numbers];
+  const Extra = ({ icon, qr, name, href, status, line, children }: { icon: string; qr: string; name: string; href: string; status: ReactNode; line: ReactNode; children?: ReactNode }) => (
+    <div style={{ display: 'flex', gap: 40, marginTop: 44, alignItems: 'flex-start' }}>
+      <img src={icon} alt={`${name} icon`} style={{ width: 120, height: 120, borderRadius: 24, flex: 'none' }} />
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 48, fontWeight: 800 }}>
+          <A href={href}>{name}</A> <span style={{ fontSize: 28, color: muted, fontWeight: 500, fontFamily: mono }}>{status}</span>
+        </div>
+        <div style={{ fontSize: 30, color: muted, marginTop: 10, lineHeight: 1.4 }}>{line}</div>
+        {children}
+      </div>
+      <img src={qr} alt={`QR code for ${href}`} style={{ width: 200, height: 200, imageRendering: 'pixelated' }} />
+    </div>
+  );
 
-  // The talk script, in simple English (the venue runs live machine interpretation into Japanese:
-  // short sentences, one idea each). About 480 words for the eight main pages, roughly four minutes.
+  const OneMoreThing: Page = () => (
+    <Content eyebrow={t('Appendix · Two more side projects')} heading={t('Also free and open source')}>
+      <Extra
+        icon={matchapackIcon}
+        qr={matchapackQr}
+        name="matchapack"
+        href={URL_MATCHAPACK}
+        status={t('first released 2026-11-24')}
+        line={t('Each extra git worktree’s node_modules costs almost no disk: savings like pnpm’s, but the exact tree plain npm or Yarn 1 builds.')}
+      >
+        <div style={{ fontSize: 25, color: muted, marginTop: 8 }}>
+          {t('Measured, 10 worktrees: 20.68 GiB with plain npm → 61 MiB + one 1.82 GiB store')} · <Code>brew install grimmerk/tap/matchapack</Code>
+        </div>
+      </Extra>
+      <Extra
+        icon={codevIcon}
+        qr={codevQr}
+        name="CodeV"
+        href={URL_CODEV}
+        status="macOS"
+        line={t('A Mac app for Claude Code: session switcher, project launcher, built-in terminal, and several accounts sharing one CLAUDE.md, skills and memory.')}
+      />
+    </Content>
+  );
+
+  const pages: Page[] = [
+    Cover,
+    Remembers,
+    Where,
+    Problem,
+    WhatIDo,
+    Story,
+    Changed,
+    Close,
+    Surfaces,
+    WhatGoesIn,
+    NeedIt,
+    PanelWhatGoesWhere,
+    PanelSharing,
+    Numbers,
+    OneMoreThing,
+  ];
+
+  // The talk script, in simple English (the venue plans an app for live machine interpretation:
+  // short sentences, one idea each). About 500 words for the eight main pages, roughly four minutes.
   const notes: (string | undefined)[] = [
     `~15s.
 はじめまして。台湾から来た Grimmer です。よろしくお願いします。
 I will speak in English. The slides are in Japanese.
-Today I will share how I learned to let Claude clean up its own memory.`,
-    `~35s.
+Today I will share how I learned to let Claude Code clean up its own memory.`,
+    `~40s.
 First, how does Claude Code remember things?
+Claude Code is Claude working on your computer, in a terminal or in the desktop app.
 A session is one conversation with Claude Code.
-Every new session starts fresh. Claude does not remember yesterday.
-So Claude keeps notes in plain text files on my computer.
-For example, I say: "Remember, the API tests need a local Redis."
-Claude writes it into a memory file. The next day, it reads that note first.
+Every new session starts fresh. It does not remember yesterday.
+So Claude Code keeps notes in plain text files.
+Here is an example of auto memory.
+On Monday I say: "Remember, start the database before the tests."
+Claude Code writes that into a memory file.
+On Tuesday, a new session reads that note first.
 There are three kinds of files.
 CLAUDE.md: standing instructions, read at the start of every session.
-Memory: notes Claude writes as it works.
+Auto memory: notes Claude Code writes on its own.
 Skills: how-to guides for one kind of task.`,
     `~25s. (Short on time: say only the first and last sentences.)
-Where can this memory live? In three places.
-In your claude.ai account, for Claude chat.
-In your own system, like the talk you just heard: Markdown files and Git.
-Or in Claude Code's own files on your computer.
-Today is about the third one: the files Claude Code reads, and rewrites by itself.`,
+There are three ways to give Claude a memory.
+Claude chat keeps one in your claude.ai account.
+You can build your own, like the talk you just heard.
+And Claude Code has its own files on your computer.
+Today is about these files. Claude Code reads them, and rewrites them by itself.`,
     `~40s.
 Here is the problem.
-Claude changes these files every day. But nothing keeps a history.
+Claude Code changes these files every day. But nothing keeps a history.
 It is like a shared document with no version history.
 So three things happen.
 One: you forget what was tried. An idea was dropped last week, and it comes back again.
 Two: a bad edit cannot be undone. The old version is gone.
-Three: you cannot tell why. A new rule appears, and you do not know who added it, or for what.
-Because of this, I rarely let Claude touch a skill. And I never asked it to clean up its memory.`,
+Three: you cannot tell why. A new rule appears, and you do not know when it was added, or why.
+Because of this, I rarely let Claude Code touch a skill. And I never asked it to clean up its memory.`,
     `~35s.
 So now, every change becomes a record.
-Git is a tool that keeps the history of files. One record is called a commit.
-I wrote a small tool, memsaga. When Claude changes one of these files, memsaga saves a commit.
-Each commit carries the name of the session that made the change.
+Git is a tool that keeps the history of files. One saved change is called a commit. Each commit has a short message.
+I wrote a small tool, memsaga. When Claude Code changes one of these files, memsaga saves a commit.
+The message carries the name of the session that made the change.
 There is also a quiet benefit.
 These files used to hide in a folder full of logs.
 Now they are in one place I can browse, even on my phone.
-Claude works as before. The files stay where they are.`,
+Claude Code works as before. The files stay where they are.`,
     `~40s.
 Here is a real case.
 I found a rule in my CLAUDE.md: "Run the tests before every push."
 I did not remember writing it.
-So I asked Claude: did you add this rule yourself?
-Claude looked it up in the history. The record showed the time and the session.
-I reopened that session.
-Yes, Claude added it, and it said so in its reply. I had missed that line.
+So I asked Claude Code: did you add this rule yourself?
+Claude Code looked it up in the history. The record showed the time and the session.
+Then I read that session's saved conversation.
+Yes, Claude Code added it, and it said so in its reply. I had missed that line.
 Since then, I have a simple rule.
-Memory and skills: Claude can edit them, and tells me.
-CLAUDE.md: Claude waits for my OK.`,
+Memory and skills: Claude Code can edit them, and tells me.
+CLAUDE.md: Claude Code waits for my OK.`,
     `~40s.
 What changed for me?
-Now I let Claude clean up its memory.
+Undo took away the fear.
+Now I let Claude Code clean up its memory.
 About 90 files were removed in these cleanups. Every one can come back.
 One of my skills changed 70 times in two months. I can see each change, and the session behind it.
 And the tool itself made mistakes. Twice, a sync bug broke some files. Both times, the history undid it.
@@ -635,10 +818,13 @@ I can see every change. I can undo any change. So I can hand the work over.
 You do not need my tool for this. Any Git history of these files helps.
 Mine is free and open source.
 Thank you. ありがとうございました。`,
-    `Appendix, for the panel. Which Claude reads which files.`,
+    `Appendix, for the panel and questions. Which Claude reads which files.`,
+    `Appendix, for questions only. What memsaga keeps, next to ~/.claude.`,
     `Appendix, for questions only.`,
-    `Appendix, for the panel (sharing settings across machines).`,
+    `Appendix, for panel question 2: reviewing memory and CLAUDE.md; what goes where.`,
+    `Appendix, for panel question 9: sharing skills and settings across machines and a team.`,
     `Appendix, for questions only.`,
+    `Appendix, not presented: other side projects, for people browsing the slides later.`,
   ];
 
   return { design, pages, notes };
