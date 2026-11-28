@@ -5,12 +5,11 @@ import codevQr from './assets/codev-qr.svg';
 import matchapackIcon from './assets/matchapack-icon.png';
 import matchapackQr from './assets/matchapack-qr.svg';
 import memsagaQr from './assets/memsaga-qr.svg';
-import slidesQrEn from './assets/slides-qr-en.svg';
-import slidesQrJa from './assets/slides-qr-ja.svg';
+import slidesQr from './assets/slides-qr.svg';
 
-// memsaga talk, Fukuoka Claude Meetup (2026-11-29): one source, two decks.
-//   slides/memsaga-fukuoka/index.tsx -> buildDeck('en')  (draft language; the speaker talks in English)
-//   slides/memsaga-ja/index.tsx      -> buildDeck('ja')  (what is shown on stage)
+// memsaga talk, Fukuoka Claude Meetup (2026-11-29), at /s/memsaga-fukuoka: one deck, two languages.
+// It opens in Japanese (what is shown on stage; the speaker talks in English).
+// (/s/memsaga-ja, an earlier Japanese-only URL, redirects here: scripts/pages-extras.sh.)
 // Every visible string goes through t(en, ja); a missing ja falls back to the English.
 // Each deck opens in its own language (or ?lang=en|ja) and switches in place with the EN / 日本語
 // button in the footer: no reload, same page. The button is a <button>, which open-slide exempts
@@ -72,10 +71,8 @@ export function buildDeck(defaultLang: Lang) {
   const useLang = () => useSyncExternalStore(subscribe, () => lang, () => lang);
 
   const t = <T extends ReactNode>(en: T, ja?: T): T => (lang === 'ja' && ja !== undefined ? ja : en);
-  // The QR and URL always name this deck; the button changes only the language shown.
-  const deckPath = defaultLang === 'ja' ? 'memsaga-ja' : 'memsaga-fukuoka';
-  const slidesUrl = `https://slides.grimmer.io/s/${deckPath}`;
-  const slidesQr = defaultLang === 'ja' ? slidesQrJa : slidesQrEn;
+  // The QR and URL name this deck; the button changes only the language shown.
+  const slidesUrl = 'https://slides.grimmer.io/s/memsaga-fukuoka';
 
   // Both stacks list Hiragino Sans before any Chinese font, so kanji get Japanese shapes either way.
   const font =
@@ -605,7 +602,6 @@ export function buildDeck(defaultLang: Lang) {
           <br />
           {t('These slides:', 'このスライド：')} <A href={slidesUrl}>{slidesUrl.replace('https://', '')}</A>
         </p>
-        <p style={{ fontSize: 40, fontWeight: 700, margin: '44px 0 0' }}>{t('Thank you!', 'ありがとうございました')}</p>
       </div>
       <div style={{ width: 340, paddingTop: 150, textAlign: 'center' }}>
         <img src={memsagaQr} alt="QR code for memsaga.grimmer.io" style={{ width: 320, height: 320, imageRendering: 'pixelated' }} />
@@ -981,6 +977,29 @@ export function buildDeck(defaultLang: Lang) {
     </Content>
   );
 
+  const ThankYou: Page = () => (
+    <div lang={lang} style={{ ...fill, ...jaBreak(), display: 'flex', alignItems: 'center', padding: `0 ${PAD}px`, gap: 100 }}>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 120, fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.1 }}>{t('Thank you', 'ありがとうございました')}</div>
+        <div style={{ fontSize: 44, color: muted, marginTop: 24 }}>{t('ありがとうございました', 'Thank you')}</div>
+        <p style={{ fontSize: 30, color: muted, margin: '64px 0 0', lineHeight: 1.7 }}>
+          memsaga: <A href={URL_SITE}>memsaga.grimmer.io</A>
+          <br />
+          {t('These slides:', 'このスライド：')} <A href={slidesUrl}>{slidesUrl.replace('https://', '')}</A>
+          <br />
+          Grimmer · <A href={URL_ME}>github.com/grimmerk</A>
+        </p>
+      </div>
+      <div style={{ textAlign: 'center' }}>
+        <img src={memsagaQr} alt="QR code for memsaga.grimmer.io" style={{ width: 300, height: 300, imageRendering: 'pixelated' }} />
+        <div style={{ fontSize: 24, color: muted, fontFamily: mono, marginTop: 12 }}>memsaga.grimmer.io</div>
+      </div>
+      <div style={{ position: 'absolute', left: PAD, bottom: 56, fontFamily: mono }}>
+        <LangSwitch />
+      </div>
+    </div>
+  );
+
   const pages: Page[] = [
     Cover,
     Remembers,
@@ -999,8 +1018,8 @@ export function buildDeck(defaultLang: Lang) {
     PanelSharing,
     Numbers,
     OneMoreThing,
-    // Page 8 again, so skimming to the end of the appendix lands on the close, not a side project.
-    Close,
+    // The end of the deck, so skimming past the appendix lands here, not on a side project.
+    ThankYou,
   ];
 
   // The talk script, in simple English (the venue plans an app for live machine interpretation:
@@ -1072,7 +1091,7 @@ Thank you.
     `Appendix, for panel question 9: sharing skills and settings across machines and a team.`,
     `Appendix, for questions only.`,
     `Appendix, not presented: other side projects, for people browsing the slides later.`,
-    `The closing page (same as page 8), so the deck ends here rather than on the appendix.`,
+    `The end of the deck: a thank-you page, so skimming past the appendix ends here.`,
   ];
 
   // Each page re-renders when the language changes; PageLink keeps indexing the unwrapped pages.

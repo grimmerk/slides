@@ -25,7 +25,8 @@ for dir in slides/*/; do
 done
 # Aliases: an extra URL that redirects to a deck, keeping ?p=N and #hash.
 # One "alias:deck" per word; the alias page is plain HTML, independent of open-slide.
-ALIASES="memsaga-taipei-2026-11:memsaga"
+# memsaga-ja: the Fukuoka deck's first Japanese-only URL (2026-11-28), now one bilingual deck.
+ALIASES="memsaga-taipei-2026-11:memsaga memsaga-ja:memsaga-fukuoka"
 for pair in $ALIASES; do
   alias=${pair%%:*}
   deck=${pair#*:}
